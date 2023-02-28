@@ -5,10 +5,22 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 // import MicIcon from "@mui/icons-material/Mic";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
+import { fabric } from "fabric";
+import { objectDict } from "../resources/ObjectDict";
 
 export default function VisualPanel() {
 
   const { editor, onReady } = useFabricJSEditor()
+
+  React.useEffect(() => {
+    fabric.Image.fromURL(
+      "https://thegraphicsfairy.com/wp-content/uploads/2019/02/Anatomical-Heart-Illustration-Black-GraphicsFairy.jpg",
+      (image) => {
+        editor?.canvas.add(image);
+      }
+    );
+  }, [fabric, editor])
+
   const onAddCircle = () => {
     editor?.addCircle()
   }
