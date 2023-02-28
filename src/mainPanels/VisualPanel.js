@@ -6,6 +6,7 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import { fabric } from "fabric";
+import Stitch from "../resources/Images/stitch.png";
 import { objectDict } from "../resources/ObjectDict";
 
 export default function VisualPanel() {
@@ -13,13 +14,17 @@ export default function VisualPanel() {
   const { editor, onReady } = useFabricJSEditor()
 
   React.useEffect(() => {
+    if (!editor || !fabric || !editor.canvas.isEmpty()) {
+      return;
+    }
     fabric.Image.fromURL(
-      "https://thegraphicsfairy.com/wp-content/uploads/2019/02/Anatomical-Heart-Illustration-Black-GraphicsFairy.jpg",
+      Stitch,
       (image) => {
-        editor?.canvas.add(image);
+        const obj = editor.canvas.add(image);
+        console.log(obj)
       }
     );
-  }, [fabric, editor])
+  }, [editor?.canvas.isEmpty()])
 
   const onAddCircle = () => {
     editor?.addCircle()
