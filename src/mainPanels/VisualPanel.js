@@ -7,6 +7,7 @@ import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import { fabric } from "fabric";
 import Stitch from "../resources/Images/stitch.png";
+import LottieFabric from "../LottieFabric"
 import { objectDict } from "../resources/ObjectDict";
 
 export default function VisualPanel() {
@@ -24,7 +25,7 @@ export default function VisualPanel() {
         console.log(obj)
       }
     );
-    var textbox = new fabric.Textbox('Ohana means family', {
+    const textbox = new fabric.Textbox('Ohana means family', {
       left: 50,
       top: 50,
       width: 150,
@@ -32,6 +33,10 @@ export default function VisualPanel() {
       fontFamily:'Impact'
     });
     editor.canvas.add(textbox);
+    const fabricImage = new LottieFabric('https://assets5.lottiefiles.com/private_files/lf30_rttpmsbc.json', {
+          scaleX: 1,
+        })
+    editor.canvas.add(fabricImage)
   }, [editor?.canvas.isEmpty()])
 
   const onAddCircle = () => {
