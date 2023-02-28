@@ -24,6 +24,14 @@ export default function VisualPanel() {
         console.log(obj)
       }
     );
+    var textbox = new fabric.Textbox('Ohana means family', {
+      left: 50,
+      top: 50,
+      width: 150,
+      fontSize: 20,
+      fontFamily:'Impact'
+    });
+    editor.canvas.add(textbox);
   }, [editor?.canvas.isEmpty()])
 
   const onAddCircle = () => {
