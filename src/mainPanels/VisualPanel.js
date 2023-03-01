@@ -7,7 +7,9 @@ import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import { fabric } from "fabric";
 import Stitch from "../resources/Images/stitch.png";
-import LottieFabric from "../LottieFabric"
+import LottieFabric from "../LottieFabric";
+import AnimatedHeart1 from "../resources/lotties/heart1.json";
+
 import { objectDict } from "../resources/ObjectDict";
 
 export default function VisualPanel() {
@@ -33,7 +35,7 @@ export default function VisualPanel() {
       fontFamily:'Impact'
     });
     editor.canvas.add(textbox);
-    const fabricImage = new LottieFabric('https://assets5.lottiefiles.com/private_files/lf30_rttpmsbc.json', {
+    const fabricImage = new LottieFabric(AnimatedHeart1, {
           scaleX: 1,
         })
     editor.canvas.add(fabricImage)

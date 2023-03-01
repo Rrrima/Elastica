@@ -8,11 +8,11 @@ const LottieFabric = fabric.util.createClass(fabric.Image, {
   lockSkewingY: true,
   srcFromAttribute: false,
 
-  initialize: function (path, options) {
+  initialize: function (data, options) {
     if (!options.width) options.width = 480
     if (!options.height) options.height = 480
 
-    this.path = path
+    // this.path = path
     this.tmpCanvasEl = fabric.util.createCanvasElement()
     this.tmpCanvasEl.width = options.width
     this.tmpCanvasEl.height = options.height
@@ -21,7 +21,7 @@ const LottieFabric = fabric.util.createClass(fabric.Image, {
       renderer: 'canvas',
       loop: true,
       autoplay: true,
-      path,
+      animationData: data,
       rendererSettings: {
         context: this.tmpCanvasEl.getContext('2d'),
         preserveAspectRatio: 'xMidYMid meet',
@@ -45,9 +45,9 @@ const LottieFabric = fabric.util.createClass(fabric.Image, {
   stop: function () {
     this.lottieItem.stop()
   },
-  getSrc: function () {
-    return this.path
-  },
+  // getSrc: function () {
+  //   return this.path
+  // },
 })
 
 LottieFabric.fromObject = function (_object, callback) {
