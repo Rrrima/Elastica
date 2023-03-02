@@ -70,10 +70,10 @@ const objectDict = {
     isList: false,
     enter: {
       params: {
-        width: 100,
+        width: 150,
         height: 120,
-        x: 100,
-        y: 30,
+        x: 50,
+        y: 50,
         rotation: 0,
         speed: null, // only applicable to lottie objects
         ratio: true,
@@ -102,11 +102,11 @@ const objectDict = {
     isList: false,
     enter: {
       params: {
-        width: 100,
-        height: 120,
+        width: 120,
+        height: 100,
         x: 100,
-        y: 30,
-        rotation: 0,
+        y: 400,
+        rotation: 10,
         speed: null, // only applicable to lottie objects
         ratio: true,
         anchor: false,

@@ -19,9 +19,19 @@ export default function VisualPanel() {
         fabric.Image.fromURL(
           object.renderData.imagePath,
           (image) => {
+            const tImgXScale = object.enter.params.width / image.width;
+            const tImgYScale = object.enter.params.height / image.height;         
+            image.set({
+              left: object.enter.params.x,
+              top: object.enter.params.y,
+              scaleX: tImgXScale,
+              scaleY: tImgYScale,
+              angle: object.enter.params.rotation
+            });
             editor.canvas.add(image);
           }
-        );
+        )
+        ;
         break;
       case 'text':
         const textbox = new fabric.Textbox(object.renderData.text, {
@@ -34,10 +44,10 @@ export default function VisualPanel() {
         editor.canvas.add(textbox);
         break;
       case 'lottie':
-        const fabricImage = new LottieFabric(object.renderData.jsonData, {
+        const fabricLottie = new LottieFabric(object.renderData.jsonData, {
           scaleX: 1,
         })
-        editor.canvas.add(fabricImage)
+        editor.canvas.add(fabricLottie)
         break;
       default:
         console.log(`Unsupported object type ${object.type}.`);
