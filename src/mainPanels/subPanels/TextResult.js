@@ -1,6 +1,4 @@
 import TextFieldsIcon from "@mui/icons-material/TextFields";
-import AnimationIcon from "@mui/icons-material/Animation";
-import Grid from "@mui/material/Grid";
 
 export default function TextResult(props) {
   const selectedText = props.selectedText;
