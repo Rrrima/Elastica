@@ -6,39 +6,51 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import { fabric } from "fabric";
-import Stitch from "../resources/Images/stitch.png";
 import LottieFabric from "../LottieFabric";
-import AnimatedHeart1 from "../resources/lotties/heart1.json";
 
 import { objectDict } from "../resources/ObjectDict";
 
 export default function VisualPanel() {
+  const { editor, onReady } = useFabricJSEditor();
 
-  const { editor, onReady } = useFabricJSEditor()
+  const renderTypes = (object) => {
+    switch (object.type) {
+      case 'image':
+        fabric.Image.fromURL(
+          object.renderData.imagePath,
+          (image) => {
+            editor.canvas.add(image);
+          }
+        );
+        break;
+      case 'text':
+        const textbox = new fabric.Textbox(object.renderData.text, {
+          left: 50,
+          top: 50,
+          width: 150,
+          fontSize: object.renderData.fontSize,
+          fontFamily: object.renderData.fontFamily
+        });
+        editor.canvas.add(textbox);
+        break;
+      case 'lottie':
+        const fabricImage = new LottieFabric(object.renderData.jsonData, {
+          scaleX: 1,
+        })
+        editor.canvas.add(fabricImage)
+        break;
+      default:
+        console.log(`Unsupported object type ${object.type}.`);
+    }    
+  }
 
   React.useEffect(() => {
     if (!editor || !fabric || !editor.canvas.isEmpty()) {
       return;
     }
-    fabric.Image.fromURL(
-      Stitch,
-      (image) => {
-        const obj = editor.canvas.add(image);
-        console.log(obj)
-      }
-    );
-    const textbox = new fabric.Textbox('Ohana means family', {
-      left: 50,
-      top: 50,
-      width: 150,
-      fontSize: 20,
-      fontFamily:'Impact'
-    });
-    editor.canvas.add(textbox);
-    const fabricImage = new LottieFabric(AnimatedHeart1, {
-          scaleX: 1,
-        })
-    editor.canvas.add(fabricImage)
+    for (const word in objectDict) {
+      renderTypes(objectDict[word]);
+    }    
   }, [editor?.canvas.isEmpty()])
 
   const onAddCircle = () => {
