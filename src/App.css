@@ -51,12 +51,14 @@
   border: none;
 }
 
-.canvas-panel {
-  height: 55vh;
-}
-
 #visual-panel {
   height: 60vh;
+}
+
+#myWebcam {
+  width: 100%;
+  height: 60vh;
+  border-radius: 10px;
 }
 
 #script-panel {
@@ -316,5 +318,34 @@
 
 .disabled-field {
   color: rgba(112, 112, 112, 0.4);
+}
+
+.canvas-panel {
+  height: 55vh;
+}
+
+.config-section {
+  padding: 15px 0;
+  padding-bottom: 0;
+  font-family: "Baloo Tamma 2", cursive !important;
+}
+
+.enter-marker:hover {
+  border: solid 1px #4d87f5;
+  cursor: pointer;
+}
+
+.enter-marker {
+  background-color: rgba(165, 196, 255, 0.37);
+  padding: 2px;
+  border-radius: 5px;
+}
+
+#timeline {
+  margin: 30px 30px;
+  width: 90%;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #f4f4f4;
 }
 /*# sourceMappingURL=App.css.map */

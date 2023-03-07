@@ -3,62 +3,111 @@ import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import VideocamIcon from "@mui/icons-material/Videocam";
 // import MicIcon from "@mui/icons-material/Mic";
+import Webcam from "react-webcam";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
-import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
-import { fabric } from "fabric";
-import Stitch from "../resources/Images/stitch.png";
-import LottieFabric from "../LottieFabric";
-import AnimatedHeart1 from "../resources/lotties/heart1.json";
+import { FabricJSCanvas } from "fabricjs-react";
+import { useRef, useEffect, useState } from "react";
+import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
+import * as tf from "@tensorflow/tfjs";
 
-import { objectDict } from "../resources/ObjectDict";
+const VisualPanel = React.forwardRef((props, ref) => {
+  // const { editor, onReady } = useFabricJSEditor();
+  const [previewMode, setMode] = useState(false);
+  const editor = props.editor;
+  const onReady = props.onReady;
+  const webcamRef = useRef(null);
+  const handCanvasRef = useRef(null);
 
-export default function VisualPanel() {
-
-  const { editor, onReady } = useFabricJSEditor()
-
-  React.useEffect(() => {
-    if (!editor || !fabric || !editor.canvas.isEmpty()) {
-      return;
+  const handleChangeMode = () => {
+    if (previewMode) {
+      const ctx = handCanvasRef.current.getContext("2d");
+      ctx.clearRect(
+        0,
+        0,
+        handCanvasRef.current.width,
+        handCanvasRef.current.height
+      );
     }
-    fabric.Image.fromURL(
-      Stitch,
-      (image) => {
-        const obj = editor.canvas.add(image);
-        console.log(obj)
-      }
-    );
-    const textbox = new fabric.Textbox('Ohana means family', {
-      left: 50,
-      top: 50,
-      width: 150,
-      fontSize: 20,
-      fontFamily:'Impact'
-    });
-    editor.canvas.add(textbox);
-    const fabricImage = new LottieFabric(AnimatedHeart1, {
-          scaleX: 1,
-        })
-    editor.canvas.add(fabricImage)
-  }, [editor?.canvas.isEmpty()])
+    setMode(!previewMode);
+  };
 
-  const onAddCircle = () => {
-    editor?.addCircle()
-  }
-  const onAddRectangle = () => {
-    editor?.addRectangle()
-  }
+  const runDetection = async () => {
+    const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
+    const detectorConfig = {
+      runtime: "tfjs",
+      modelType: "full",
+    };
+    const handposeDetector = await handPoseDetection.createDetector(
+      handModel,
+      detectorConfig
+    );
+    console.log("Handpose model loaded");
+    setInterval(() => {
+      detect(handposeDetector);
+    }, 16);
+  };
+
+  const detect = async (net) => {
+    if (
+      typeof webcamRef.current !== "undefined" &&
+      webcamRef.current !== null &&
+      webcamRef.current.video.readyState === 4
+    ) {
+      // get video properties
+      const video = webcamRef.current.video;
+      const videoWidth = webcamRef.current.video.videoWidth;
+      const videoHeight = webcamRef.current.video.videoHeight;
+
+      // set video height and width
+      webcamRef.current.video.width = videoWidth;
+      webcamRef.current.video.height = videoHeight;
+
+      // set canvas height and width
+      handCanvasRef.current.width = videoWidth;
+      handCanvasRef.current.height = videoHeight;
+      const hands = await net.estimateHands(video, { flipHorizontal: true });
+    }
+  };
+
+  useEffect(() => {
+    if (previewMode) {
+      runDetection();
+    }
+  }, [previewMode]);
 
   return (
     <div className="main-panel" id="visual-panel">
-      <div>
-        <button onClick={onAddCircle}>Add circle</button>
-        <button onClick={onAddRectangle}>Add Rectangle</button>
-        <FabricJSCanvas className="canvas-panel" onReady={onReady} />
-      </div>
+      {previewMode && (
+        <Webcam
+          className="webcam_component"
+          id="myWebcam"
+          ref={webcamRef}
+          forceScreenshotSourceSize="true"
+          screenshotFormat="image/jpeg"
+          style={{
+            zIndex: -1,
+            position: "absolute",
+          }}
+          mirrored={true}
+        />
+      )}
+      <FabricJSCanvas className="canvas-panel" onReady={onReady} />
+      <canvas
+        className="webcam_component"
+        id="myCanvas"
+        ref={handCanvasRef}
+        style={{
+          position: "absolute",
+          zIndex: 10,
+        }}
+      />
       <div className="bottom right">
         <Stack direction="row">
-          <IconButton aria-label="videocam">
-            <VideocamIcon fontSize="small" />
+          <IconButton aria-label="videocam" onClick={handleChangeMode}>
+            <VideocamIcon
+              className={`${previewMode ? "color-primary" : ""}`}
+              fontSize="small"
+            />
           </IconButton>
           <IconButton aria-label="scriptfollow">
             <AutoGraphIcon fontSize="small" className="color-primary" />
@@ -67,4 +116,6 @@ export default function VisualPanel() {
       </div>
     </div>
   );
-}
+});
+
+export default VisualPanel;

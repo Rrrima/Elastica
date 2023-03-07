@@ -2,6 +2,7 @@ $light-gray: #f4f4f4;
 $green-prim: #52efbb;
 $bg-grey: #fafbfc;
 $blue-highlight: rgba(165, 196, 255, 0.37);
+$blue-light: #a5c4ff;
 $blue-dark: #4d87f5;
 $orange-highlight: #ffd050;
 @import url("https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;500&display=swap");
@@ -55,6 +56,11 @@ $orange-highlight: #ffd050;
 }
 #visual-panel {
   height: 60vh;
+}
+#myWebcam {
+  width: 100%;
+  height: 60vh;
+  border-radius: 10px;
 }
 #script-panel {
   height: 25vh;
@@ -246,4 +252,33 @@ $orange-highlight: #ffd050;
 }
 .disabled-field {
   color: rgba(112, 112, 112, 0.4);
+}
+.canvas-panel {
+  height: 55vh;
+}
+
+.config-section {
+  padding: 15px 0;
+  padding-bottom: 0;
+  font-family: "Baloo Tamma 2", cursive !important ;
+}
+
+// marker style
+.enter-marker:hover {
+  border: solid 1px $blue-dark;
+  cursor: pointer;
+}
+
+.enter-marker {
+  background-color: $blue-highlight;
+  padding: 2px;
+  border-radius: 5px;
+}
+
+#timeline {
+  margin: 30px 30px;
+  width: 90%;
+  height: 20px;
+  border-radius: 10px;
+  background-color: $light-gray;
 }

@@ -7,6 +7,7 @@ import Grid from "@mui/material/Grid";
 
 export default function SearchPanel(props) {
   const selectedText = props.selectedText;
+  const editor = props.editor;
   return (
     <div>
       <Grid
@@ -32,9 +33,9 @@ export default function SearchPanel(props) {
           />
         </Grid>
         <Grid item>
-          <TextResult selectedText={selectedText} />
-          <ImageResult selectedText={selectedText} />
-          <LottieResult selectedText={selectedText} />
+          <TextResult selectedText={selectedText} editor={editor} />
+          <ImageResult selectedText={selectedText} editor={editor} />
+          <LottieResult selectedText={selectedText} editor={editor} />
         </Grid>
       </Grid>
     </div>

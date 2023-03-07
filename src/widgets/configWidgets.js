@@ -1,6 +1,12 @@
 import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import { objectDict } from "../resources/ObjectDict";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 function InfoBadge(props) {
   const { status, selectedText } = props;
@@ -24,9 +30,8 @@ function GraphicParamBox(props) {
   const { status, selectedText } = props;
   let params = {};
   if (status === "enter") {
-    params = objectDict[selectedText][status];
+    params = objectDict["stitch"][status];
   }
-  console.log(status, params);
   return (
     <div>
       <div id="common-param-box">
@@ -77,4 +82,123 @@ function GraphicParamBox(props) {
   );
 }
 
-export { InfoBadge, GraphicParamBox };
+function HandedSelection() {
+  return (
+    <div className="config-section">
+      <FormControl>
+        <FormLabel id="handed-selection">handed</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="handed-row-radio-buttons-group-label"
+          name="handed-controlp"
+        >
+          <FormControlLabel value="left" control={<Radio />} label="left" />
+          <FormControlLabel value="right" control={<Radio />} label="right" />
+          <FormControlLabel value="both" control={<Radio />} label="both" />
+          <FormControlLabel
+            value="disabled"
+            disabled
+            control={<Radio />}
+            label="random"
+          />
+        </RadioGroup>
+      </FormControl>
+    </div>
+  );
+}
+
+function ParamSelection() {
+  return (
+    <div className="config-section">
+      <FormControl>
+        <FormLabel id="after-enter-selection">after entering:</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="after-enter-row-radio-buttons-group-label"
+          name="after-enter-control"
+        >
+          <FormControlLabel value="stay" control={<Radio />} label="stay" />
+          <FormControlLabel
+            value="floating"
+            control={<Radio />}
+            label="floating"
+          />
+          <FormControlLabel
+            value="following"
+            control={<Radio />}
+            label="following"
+          />
+          <FormControlLabel value="exit" control={<Radio />} label="exit" />
+        </RadioGroup>
+      </FormControl>
+    </div>
+  );
+}
+
+function AfterEnterSelection() {
+  return (
+    <div className="config-section">
+      <FormControl>
+        <FormLabel id="after-enter-selection">after entering:</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="after-enter-row-radio-buttons-group-label"
+          name="after-enter-control"
+        >
+          <FormControlLabel value="stay" control={<Radio />} label="stay" />
+          <FormControlLabel
+            value="floating"
+            control={<Radio />}
+            label="floating"
+          />
+          <FormControlLabel
+            value="following"
+            control={<Radio />}
+            label="following"
+          />
+          <FormControlLabel value="exit" control={<Radio />} label="exit" />
+        </RadioGroup>
+      </FormControl>
+    </div>
+  );
+}
+
+function EnterTemplateSelection() {
+  const handleChange = (e) => {
+    console.log(e.target.value);
+  };
+  return (
+    <div className="config-section">
+      <FormControl>
+        <FormLabel id="enter-template-selection">after entering:</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="enter-template-row-radio-buttons-group-label"
+          name="enter-template-control"
+          onChange={handleChange}
+        >
+          <FormControlLabel value="appear" control={<Radio />} label="appear" />
+          <FormControlLabel
+            value="float"
+            control={<Radio />}
+            label="float up"
+          />
+          <FormControlLabel value="zoom" control={<Radio />} label="zoom in" />
+          <FormControlLabel
+            value="sketch"
+            control={<Radio />}
+            label="sketching"
+          />
+        </RadioGroup>
+      </FormControl>
+    </div>
+  );
+}
+
+export {
+  InfoBadge,
+  GraphicParamBox,
+  HandedSelection,
+  AfterEnterSelection,
+  EnterTemplateSelection,
+};

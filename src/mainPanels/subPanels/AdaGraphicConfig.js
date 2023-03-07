@@ -1,5 +1,10 @@
-import { InfoBadge, GraphicParamBox } from "../../widgets/configWidgets";
-
+import {
+  InfoBadge,
+  GraphicParamBox,
+  HandedSelection,
+  AfterEnterSelection,
+  EnterTemplateSelection,
+} from "../../widgets/configWidgets";
 
 export default function AdaGraphicConfig(props) {
   const selectedText = props.selectedText;
@@ -7,7 +12,11 @@ export default function AdaGraphicConfig(props) {
   return (
     <div>
       <InfoBadge status={status} selectedText={selectedText} />
-      <GraphicParamBox status={status} selectedText={selectedText}/>
+      {/* <GraphicParamBox status={status} selectedText={selectedText} /> */}
+      <EnterTemplateSelection />
+      <HandedSelection />
+      <AfterEnterSelection />
+      <div id="timeline"></div>
     </div>
   );
 }
