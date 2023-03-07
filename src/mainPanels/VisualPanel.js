@@ -9,6 +9,7 @@ import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
+import { canvasObjects } from "../global";
 
 const VisualPanel = React.forwardRef((props, ref) => {
   // const { editor, onReady } = useFabricJSEditor();
@@ -17,6 +18,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   const onReady = props.onReady;
   const webcamRef = useRef(null);
   const handCanvasRef = useRef(null);
+  canvasObjects.canvas = editor;
 
   const handleChangeMode = () => {
     if (previewMode) {

@@ -7,7 +7,8 @@ import { ImageObject } from "../../widgets/ObjectType";
 
 export default function ImageResult(props) {
   const selectedText = props.selectedText;
-  const editor = props.editor;
+  const editor = canvasObjects.canvas;
+  console.log(editor);
 
   function handleSelection(e) {
     const target = e.target;

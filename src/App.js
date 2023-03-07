@@ -60,7 +60,11 @@ function App() {
             </Grid>
           </Grid>
           <Grid item xs={5} id="configContainer">
-            <ConfigPanel selectedText="stitch" editor={editor} />
+            <ConfigPanel
+              selectedText="stitch"
+              editor={editor}
+              onReady={onReady}
+            />
           </Grid>
         </Grid>
       </div>

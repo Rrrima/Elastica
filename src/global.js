@@ -1,5 +1,6 @@
 class CanvasObject {
   constructor() {
+    this.canvas = null;
     this.objectDict = {};
   }
   addToDict(text, obj) {
