@@ -4,6 +4,7 @@ import {
   HandedSelection,
   AfterEnterSelection,
   EnterTemplateSelection,
+  TimelineSection,
 } from "../../widgets/configWidgets";
 
 export default function AdaGraphicConfig(props) {
@@ -16,7 +17,7 @@ export default function AdaGraphicConfig(props) {
       <EnterTemplateSelection />
       <HandedSelection />
       <AfterEnterSelection />
-      <div id="timeline"></div>
+      <TimelineSection />
     </div>
   );
 }

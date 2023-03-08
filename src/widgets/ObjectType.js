@@ -1,7 +1,7 @@
 import gsap from "gsap";
 
 function keyframeExtractor(e) {
-  const attrNames = ["scaleX", "scaleY", "top", "left"];
+  const attrNames = ["scaleX", "scaleY", "top", "left", "opacity"];
   const target = e.target;
   let k = {};
   for (let i = 0; i < attrNames.length; i++) {
@@ -18,10 +18,52 @@ class ImageObject {
     this.relatedText = text;
     this.fabric = obj;
     this.keyframes = [];
+    this.enterTL = gsap.timeline();
     this.tl = gsap.timeline();
     this.currAttr = {};
+    this.attrNames = ["scaleX", "scaleY", "top", "left", "opacity"];
+    this.enterSetting = { effect: "appear", handed: "left", after: "stay" };
     this.create();
     this.addListeners();
+  }
+  changeEnterSetting(d, v) {
+    this.enterSetting[d] = v;
+    this.enter();
+  }
+  getCurrentAttr() {
+    let k = {};
+    for (let i = 0; i < this.attrNames.length; i++) {
+      k[this.attrNames[i]] = this.fabric.get(this.attrNames[i]);
+    }
+    return k;
+  }
+  enter() {
+    let effect = this.enterSetting.effect; //appear, zoom, float
+    let after = this.enterSetting.after; //stay, floating, exit
+    let editor = this.editor;
+    let kf = this.getCurrentAttr();
+    this.getCurrentAttr();
+    if (effect === "zoom") {
+      gsap.fromTo(
+        this.fabric,
+        { scaleX: 0, scaleY: 0 },
+        {
+          ...kf,
+          duration: 1,
+          onUpdate: () => editor.canvas.renderAll(),
+        }
+      );
+    } else if (effect === "float") {
+      gsap.fromTo(
+        this.fabric,
+        { top: kf.top + 30, opacity: 0 },
+        {
+          ...kf,
+          duration: 1,
+          onUpdate: () => editor.canvas.renderAll(),
+        }
+      );
+    }
   }
   create() {
     this.editor.canvas.add(this.fabric);
@@ -37,19 +79,22 @@ class ImageObject {
     }
   }
   animate() {
-    this.fabric.set(this.keyframes[0]);
-    // gsap.to(this.fabric, { ...this.keyframes[1], duration: 1 });
-    this.playTl();
+    // this.fabric.set(this.keyframes[0]);
+    gsap.to(this.fabric, { scaleX: 1, scaleY: 1, duration: 1 });
+    console.log("animate");
+    // this.playTl();
     // this.tl.play();
   }
   addListeners() {
     let relatedText = this.relatedText;
     let thisobj = this;
-    this.fabric.on("modified", function (e) {
-      thisobj.keyframes.push(keyframeExtractor(e));
-    });
+    // this.fabric.on("modified", function (e) {
+    //   thisobj.keyframes.push(keyframeExtractor(e));
+    // });
     this.fabric.on("mousedblclick", function (e) {
-      thisobj.animate();
+      let kf = keyframeExtractor(e);
+      thisobj.keyframes.push(kf);
+      //   thisobj.animate();
     });
   }
 }

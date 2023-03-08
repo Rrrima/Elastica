@@ -342,10 +342,21 @@
 }
 
 #timeline {
-  margin: 30px 30px;
+  margin: 0px 0px;
   width: 90%;
   height: 20px;
   border-radius: 10px;
-  background-color: #f4f4f4;
+  background-color: #fff6f6;
+}
+
+#scrubber {
+  position: absolute;
+  left: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 99px;
+  background-color: #ffa9ab;
+  z-index: 1;
+  cursor: pointer;
 }
 /*# sourceMappingURL=App.css.map */

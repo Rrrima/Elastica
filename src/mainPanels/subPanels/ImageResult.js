@@ -8,7 +8,6 @@ import { ImageObject } from "../../widgets/ObjectType";
 export default function ImageResult(props) {
   const selectedText = props.selectedText;
   const editor = canvasObjects.canvas;
-  console.log(editor);
 
   function handleSelection(e) {
     const target = e.target;
@@ -18,9 +17,12 @@ export default function ImageResult(props) {
       image.set({ left: 200, top: 100 });
       const newFab = new ImageObject(editor, selectedText, image);
       canvasObjects.addToDict(selectedText, newFab);
+      canvasObjects.setFocus(newFab);
+      console.log(" ======  object Dict =======");
       console.log(canvasObjects.objectDict);
     });
   }
+
   return (
     <div className="result-container">
       <div className="icon-caption">
