@@ -11,8 +11,9 @@ export default function ImageResult(props) {
 
   function handleSelection(e) {
     const target = e.target;
+    console.log(target);
     fabric.Image.fromURL(Stitch, (image) => {
-      console.log(image);
+      // console.log(image);
       image.scale(0.2);
       image.set({ left: 200, top: 100 });
       const newFab = new ImageObject(editor, selectedText, image);

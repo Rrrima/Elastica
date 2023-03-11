@@ -34,7 +34,7 @@ export default function SearchPanel(props) {
         <Grid item>
           <TextResult selectedText={selectedText} />
           <ImageResult selectedText={selectedText} />
-          <LottieResult selectedText={selectedText} />
+          {/* <LottieResult selectedText={selectedText} /> */}
         </Grid>
       </Grid>
     </div>

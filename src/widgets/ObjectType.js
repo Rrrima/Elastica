@@ -26,9 +26,23 @@ class ImageObject {
     this.create();
     this.addListeners();
   }
+  play() {
+    console.log(this.enterSetting);
+    this.enterTL.progress(0);
+  }
+  pause() {
+    this.enterTL.pause();
+    console.log(this.enterTL.paused());
+  }
+  playAt(tp) {
+    console.log(tp);
+    this.enterTL.pause();
+    this.enterTL.progress(tp);
+  }
   changeEnterSetting(d, v) {
     this.enterSetting[d] = v;
-    this.enter();
+    this.enterTL.clear();
+    this.createEnter();
   }
   getCurrentAttr() {
     let k = {};
@@ -37,14 +51,15 @@ class ImageObject {
     }
     return k;
   }
-  enter() {
+  createEnter() {
+    console.log("Play enter animation");
     let effect = this.enterSetting.effect; //appear, zoom, float
     let after = this.enterSetting.after; //stay, floating, exit
     let editor = this.editor;
     let kf = this.getCurrentAttr();
     this.getCurrentAttr();
     if (effect === "zoom") {
-      gsap.fromTo(
+      this.enterTL.fromTo(
         this.fabric,
         { scaleX: 0, scaleY: 0 },
         {
@@ -54,7 +69,7 @@ class ImageObject {
         }
       );
     } else if (effect === "float") {
-      gsap.fromTo(
+      this.enterTL.fromTo(
         this.fabric,
         { top: kf.top + 30, opacity: 0 },
         {

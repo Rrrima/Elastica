@@ -11,8 +11,50 @@ import { useRef } from "react";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { canvasObjects } from "../global";
+import IconButton from "@mui/material/IconButton";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import Stack from "@mui/material/Stack";
+import PauseIcon from "@mui/icons-material/Pause";
+import { useState } from "react";
 
 gsap.registerPlugin(Draggable);
+
+function TimelineSection() {
+  const [isPlay, setPlayMode] = useState(false);
+  function changePlayMode() {
+    setPlayMode(!isPlay);
+    if (!isPlay) {
+      canvasObjects.focus.play();
+    }
+  }
+  function getTimePercentage(d) {
+    return d.x / (d.maxX - d.minX);
+  }
+  const scrubberRef = useRef(null);
+  const scrubber = Draggable.create("#scrubber", {
+    type: "x",
+    bounds: document.getElementById("timeline"),
+    onDrag: () => {
+      let tp = getTimePercentage(scrubber[0]);
+      canvasObjects.focus.playAt(tp);
+    },
+  });
+  return (
+    <div className="config-section">
+      timeline
+      <div id="timeline-container">
+        <Stack direction="row" spacing={1}>
+          <IconButton aria-label="delete" onClick={changePlayMode}>
+            {!isPlay && <PlayArrowIcon />}
+            {isPlay && <PauseIcon />}
+          </IconButton>
+          <div id="timeline"></div>
+        </Stack>
+        <div id="scrubber" ref={scrubberRef}></div>
+      </div>
+    </div>
+  );
+}
 
 function InfoBadge(props) {
   const { status, selectedText } = props;
@@ -123,7 +165,7 @@ function EnterTemplateSelection() {
   return (
     <div className="config-section">
       <FormControl>
-        <FormLabel id="enter-template-selection">after entering:</FormLabel>
+        <FormLabel id="enter-template-selection">enter effect:</FormLabel>
         <RadioGroup
           row
           aria-labelledby="enter-template-row-radio-buttons-group-label"
@@ -143,43 +185,13 @@ function EnterTemplateSelection() {
             control={<Radio />}
             label="sketching"
           />
+          <FormControlLabel
+            value="customize"
+            control={<Radio />}
+            label="customize"
+          />
         </RadioGroup>
       </FormControl>
-    </div>
-  );
-}
-
-function TimelineSection() {
-  function getTimePercentage(d) {
-    return d.x / (d.maxX - d.minX);
-  }
-  const scrubberRef = useRef(null);
-  // const scrubber = new Draggable(scrubberRef, {
-  //   type: "x",
-  //   cursor: "pointer",
-  //   // bounds: this.$refs.timeline,
-  //   zIndexBoost: false,
-  // onPress: () => {
-  //   this.timeline.pause();
-  //   this.paused = true;
-  // },
-  // onDrag: () => {
-  //   let progress = this.normalize(this.scrubber.x);
-  //   this.timeline.progress(progress);
-  // },
-  // });
-  const scrubber = Draggable.create("#scrubber", {
-    type: "x",
-    bounds: document.getElementById("timeline"),
-    onDrag: () => {
-      console.log(getTimePercentage(scrubber[0]));
-    },
-  });
-  return (
-    <div className="config-section">
-      timeline
-      <div id="timeline"></div>
-      <div id="scrubber" ref={scrubberRef}></div>
     </div>
   );
 }

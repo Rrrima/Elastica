@@ -1,11 +1,14 @@
 import TextFieldsIcon from "@mui/icons-material/TextFields";
 // import { handleSelection } from "../../functions/canvas";
+
 export default function TextResult(props) {
   const selectedText = props.selectedText;
   const editor = props.editor;
+  const stypeMap = { "text-item1": "impact", "text-item2": "roboto" };
   function handleSelection(e) {
     const target = e.target;
-    console.log(target.id);
+    const t = target.innerHTML;
+    const style = target.id;
   }
   return (
     <div className="result-container">

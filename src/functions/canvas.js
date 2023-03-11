@@ -6,6 +6,6 @@ function handleSelection(e) {
   //   const visualContainer = document.getElementById("canvasContainer");
   //   const visualRoot = createRoot(visualContainer);
   //   visualRoot.render(<VisualPanel element={selection} />);
-  VisualPanel.addElement(selection);
+  console.log(e)
 }
 export { handleSelection };

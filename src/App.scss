@@ -277,12 +277,24 @@ $bg-red: #fff6f6;
   border-radius: 5px;
 }
 
+.update-marker {
+  background-color: white;
+  border-bottom: solid 4px $orange-highlight;
+}
+
+.update-marker:hover {
+  background-color: white;
+  border-bottom: solid 4px #e58a83;
+  cursor: pointer;
+}
+
 #timeline {
   margin: 0px 0px;
   width: 90%;
   height: 20px;
   border-radius: 10px;
-  background-color: $bg-red;
+  background-color: $blue-light;
+  transform: translateY(8px);
 }
 #scrubber {
   position: absolute;
@@ -293,4 +305,11 @@ $bg-red: #fff6f6;
   background-color: $light-red;
   z-index: 1;
   cursor: pointer;
+}
+#timeline-container {
+  padding: 40px 20px;
+  background-color: $bg-grey;
+  height: 60px;
+  width: 95%;
+  border-radius: 10px;
 }

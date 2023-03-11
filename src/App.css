@@ -341,12 +341,25 @@
   border-radius: 5px;
 }
 
+.update-marker {
+  background-color: white;
+  border-bottom: solid 4px #ffd050;
+}
+
+.update-marker:hover {
+  background-color: white;
+  border-bottom: solid 4px #e58a83;
+  cursor: pointer;
+}
+
 #timeline {
   margin: 0px 0px;
   width: 90%;
   height: 20px;
   border-radius: 10px;
-  background-color: #fff6f6;
+  background-color: #a5c4ff;
+  -webkit-transform: translateY(8px);
+          transform: translateY(8px);
 }
 
 #scrubber {
@@ -358,5 +371,13 @@
   background-color: #ffa9ab;
   z-index: 1;
   cursor: pointer;
+}
+
+#timeline-container {
+  padding: 40px 20px;
+  background-color: #fafbfc;
+  height: 60px;
+  width: 95%;
+  border-radius: 10px;
 }
 /*# sourceMappingURL=App.css.map */
