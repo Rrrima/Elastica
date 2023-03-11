@@ -46,7 +46,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
     console.log("Handpose model loaded");
     setInterval(() => {
       detect(handposeDetector);
-    }, 16);
+    }, 20);
   };
 
   const detect = async (net) => {

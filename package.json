@@ -22,6 +22,7 @@
     "gsap": "^3.11.4",
     "lottie-react": "^2.4.0",
     "lottie-web": "^5.10.2",
+    "mathjs": "^11.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-lottie": "^1.2.3",
