@@ -41,8 +41,8 @@ def send_message(message):
     funcname = message['name']
     params = message['params']
     if funcname == 'predictIntentionality':
-        gestureArr = params['gestureArr']
-        intentional = predictIntentionality(gestureArr)
+        handPosArr = params['handPosArr']
+        intentional = predictIntentionality(handPosArr)
         result = {"name":'returnIntentionality', "intentional": intentional}
     server.send_message_to_all(warpdict(result))
 

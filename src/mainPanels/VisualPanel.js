@@ -9,7 +9,7 @@ import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
-import { canvasObjects } from "../global";
+import { canvasObjects, handPos, ws } from "../global";
 
 const VisualPanel = React.forwardRef((props, ref) => {
   // const { editor, onReady } = useFabricJSEditor();
@@ -44,6 +44,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       detectorConfig
     );
     console.log("Handpose model loaded");
+    // detect every 20ms -- [].length == 10
     setInterval(() => {
       detect(handposeDetector);
     }, 20);
@@ -68,6 +69,15 @@ const VisualPanel = React.forwardRef((props, ref) => {
       handCanvasRef.current.width = videoWidth;
       handCanvasRef.current.height = videoHeight;
       const hands = await net.estimateHands(video, { flipHorizontal: true });
+      let handPosVec = handPos.updatePosition(hands);
+      ws.send(
+        JSON.stringify({
+          name: "predictIntentionality",
+          params: {
+            handPosArr: handPosVec,
+          },
+        })
+      );
     }
   };
 
@@ -75,6 +85,20 @@ const VisualPanel = React.forwardRef((props, ref) => {
     if (previewMode) {
       runDetection();
     }
+    ws.onopen = function () {
+      console.log("Socket Connection Open");
+    };
+    ws.onmessage = function (event) {
+      let message = JSON.parse(event.data);
+      console.log(message);
+    };
+    ws.onclose = function () {
+      console.log("socket closed");
+    };
+
+    ws.onerror = function () {
+      console.log("socket error");
+    };
   }, [previewMode]);
 
   return (

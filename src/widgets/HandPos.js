@@ -41,13 +41,7 @@ class HandPos {
       this.detection = { left: this.left, right: this.right };
     }
     this.handPosVec = this.get3dVector();
-    this.handFacing = {
-      left: this.getHandFacing("left"),
-      right: this.getHandFacing("right"),
-    };
-    // console.log(this.handFacing);
-    this.handCenterVec = this.getHandCenters();
-    return [this.get3dVector(), this.getHandCenters(), this.handFacing];
+    return this.handPosVec;
   }
   get3dVector() {
     let leftVec = [];
@@ -83,3 +77,5 @@ class HandPos {
     console.log(this.right);
   }
 }
+
+export default HandPos;
