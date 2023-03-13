@@ -9,7 +9,7 @@ import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
-import { canvasObjects, handPos, ws } from "../global";
+import { canvasObjects, handPos, handPosArr, ws } from "../global";
 
 const VisualPanel = React.forwardRef((props, ref) => {
   // const { editor, onReady } = useFabricJSEditor();
@@ -70,11 +70,13 @@ const VisualPanel = React.forwardRef((props, ref) => {
       handCanvasRef.current.height = videoHeight;
       const hands = await net.estimateHands(video, { flipHorizontal: true });
       let handPosVec = handPos.updatePosition(hands);
+      handPosArr.updateHandArr(handPosVec);
       ws.send(
         JSON.stringify({
           name: "predictIntentionality",
           params: {
-            handPosArr: handPosVec,
+            handed: "left",
+            handPosArr: handPosArr.arrLeft,
           },
         })
       );
@@ -90,7 +92,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
     };
     ws.onmessage = function (event) {
       let message = JSON.parse(event.data);
-      console.log(message);
     };
     ws.onclose = function () {
       console.log("socket closed");

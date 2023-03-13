@@ -2,11 +2,21 @@ from websocket_server import WebsocketServer
 import threading
 import os
 import json
-from gesture import predictIntentionality
+from gesture import HandPosAnalyzer, GestureClassifier
+import torch
+from torch import nn
 
 server = None
 clients = []
 allHandPosResults = []
+handPosAnalyzers = {}
+model = {}
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model['left'] = GestureClassifier().to(device)
+model['left'].load_state_dict(torch.load('model/gesture_left'))
+model['right'] = GestureClassifier().to(device)
+model['right'].load_state_dict(torch.load('model/gesture_right'))
+print("model loaded!")
 
 def new_client(client, server):
     clients.append(client)
@@ -38,15 +48,25 @@ def run_server():
     server.run_forever()
 
 def send_message(message):
+    global model
+    global handPosAnalyzers
     funcname = message['name']
     params = message['params']
-    if funcname == 'predictIntentionality':
+    if funcname == 'registerHandAnalyzer':
+        handAnalyzer = HandPosAnalyzer(model, params["handed"])
+        handPosAnalyzers[params["selectedText"]] = handAnalyzer
+        result = {'name':'registerHandAnalyzer'}
+    if funcname == 'destroyHandAnalyzer':
+        result = {'name': "destroyHandAnalyzer"}
+    if funcname == 'getAnimationParam':
         handPosArr = params['handPosArr']
-        intentional = predictIntentionality(handPosArr)
-        result = {"name":'returnIntentionality', "intentional": intentional}
+        handPosAnalyzer = handPosAnalyzers[params['focused']]
+        animationParam= handPosAnalyzer.getAnimationParam(handPosArr)
+        result = {"name":'returnAnimationParam', "animationParam": animationParam}
     server.send_message_to_all(warpdict(result))
 
 
 if __name__ == "__main__":
+   
     t = threading.Thread(target=run_server)
     t.start()

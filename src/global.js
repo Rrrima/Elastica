@@ -1,4 +1,4 @@
-import HandPos from "./widgets/HandPos";
+import { HandPos, HandPosArr } from "./widgets/HandPos";
 
 class CanvasObject {
   constructor() {
@@ -16,6 +16,7 @@ class CanvasObject {
 
 const canvasObjects = new CanvasObject();
 const handPos = new HandPos([0, 4, 8, 5, 17, 12, 16, 20]);
+const handPosArr = new HandPosArr(10);
 const ws = new WebSocket("ws://localhost:8000/");
 
-export { canvasObjects, handPos, ws };
+export { canvasObjects, handPos, handPosArr, ws };

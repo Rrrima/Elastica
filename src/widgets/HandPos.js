@@ -78,4 +78,26 @@ class HandPos {
   }
 }
 
-export default HandPos;
+class HandPosArr {
+  constructor(length) {
+    this.arrLen = length;
+    this.arrLeft = [];
+    this.arrRight = [];
+  }
+  clearArr() {
+    this.allpos = [];
+  }
+  updateHandArr(posVec) {
+    let leftVec = posVec.left;
+    let rightVec = posVec.right;
+    this.arrLeft.push(leftVec);
+    this.arrRight.push(rightVec);
+    if (this.arrLeft.length > this.arrLen) {
+      // always store the last arrLen
+      this.arrLeft.shift();
+      this.arrRight.shift();
+    }
+  }
+}
+
+export { HandPos, HandPosArr };
