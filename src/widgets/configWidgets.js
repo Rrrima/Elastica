@@ -16,6 +16,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Stack from "@mui/material/Stack";
 import PauseIcon from "@mui/icons-material/Pause";
 import { useState } from "react";
+import { ws } from "../global";
 
 gsap.registerPlugin(Draggable);
 
@@ -24,7 +25,19 @@ function TimelineSection() {
   function changePlayMode() {
     setPlayMode(!isPlay);
     if (!isPlay) {
-      canvasObjects.focus.play();
+      // canvasObjects.focus.play();
+      const curObj = canvasObjects.focus;
+      const relatedText = curObj.relatedText;
+      const handed = curObj.enterSetting.handed;
+      ws.send(
+        JSON.stringify({
+          name: "registerHandAnalyzer",
+          params: {
+            handed: handed,
+            relatedText: relatedText,
+          },
+        })
+      );
     }
   }
   function getTimePercentage(d) {

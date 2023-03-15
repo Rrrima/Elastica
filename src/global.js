@@ -5,6 +5,7 @@ class CanvasObject {
     this.canvas = null;
     this.objectDict = {};
     this.focus = null;
+    this.curGesture = null;
   }
   addToDict(text, obj) {
     this.objectDict[text] = obj;

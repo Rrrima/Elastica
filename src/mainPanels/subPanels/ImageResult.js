@@ -19,8 +19,8 @@ export default function ImageResult(props) {
       const newFab = new ImageObject(editor, selectedText, image);
       canvasObjects.addToDict(selectedText, newFab);
       canvasObjects.setFocus(newFab);
-      console.log(" ======  object Dict =======");
-      console.log(canvasObjects.objectDict);
+      // console.log(" ======  object Dict =======");
+      // console.log(canvasObjects.objectDict);
     });
   }
 

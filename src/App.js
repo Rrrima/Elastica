@@ -25,7 +25,7 @@ function App() {
     // });
     // const textbox = new fabric.Textbox("Ohana means family", {
     //   ...attr,
-    //   fontFamily: "Impact",
+    //   fontFamily: "Baloo Tamma 2",
     // });
     // gsap.to(attr, { left: 1000, top: 500, duration: 1.2 });
     // editor.canvas.add(textbox);

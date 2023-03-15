@@ -21,6 +21,7 @@ class HandPos {
       this.left3d[i] = [null, null, null];
     });
   }
+
   updatePosition(pred) {
     this.hands = pred;
     this.initPos();
@@ -41,8 +42,10 @@ class HandPos {
       this.detection = { left: this.left, right: this.right };
     }
     this.handPosVec = this.get3dVector();
-    return this.handPosVec;
+    this.handCenterVec = this.getHandCenters();
+    return [this.handPosVec, this.handCenterVec];
   }
+
   get3dVector() {
     let leftVec = [];
     let rightVec = [];
@@ -83,19 +86,25 @@ class HandPosArr {
     this.arrLen = length;
     this.arrLeft = [];
     this.arrRight = [];
+    this.arrCenterLeft = [];
+    this.arrCenterRight = [];
   }
   clearArr() {
     this.allpos = [];
   }
-  updateHandArr(posVec) {
+  updateHandArr(posVec, centerVec) {
     let leftVec = posVec.left;
     let rightVec = posVec.right;
     this.arrLeft.push(leftVec);
     this.arrRight.push(rightVec);
+    this.arrCenterLeft.push(centerVec.left);
+    this.arrCenterRight.push(centerVec.right);
     if (this.arrLeft.length > this.arrLen) {
       // always store the last arrLen
       this.arrLeft.shift();
       this.arrRight.shift();
+      this.arrCenterLeft.shift();
+      this.arrCenterRight.shift();
     }
   }
 }

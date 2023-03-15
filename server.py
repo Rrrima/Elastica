@@ -52,21 +52,25 @@ def send_message(message):
     global handPosAnalyzers
     funcname = message['name']
     params = message['params']
+
     if funcname == 'registerHandAnalyzer':
         handAnalyzer = HandPosAnalyzer(model, params["handed"])
-        handPosAnalyzers[params["selectedText"]] = handAnalyzer
+        handPosAnalyzers[params["relatedText"]] = handAnalyzer
+        print("register handpose analyzer for : {}".format(params["relatedText"]))
         result = {'name':'registerHandAnalyzer'}
+
     if funcname == 'destroyHandAnalyzer':
         result = {'name': "destroyHandAnalyzer"}
+
     if funcname == 'getAnimationParam':
         handPosArr = params['handPosArr']
+        handCenterArr = params['handCenterArr']
         handPosAnalyzer = handPosAnalyzers[params['focused']]
-        animationParam= handPosAnalyzer.getAnimationParam(handPosArr)
-        result = {"name":'returnAnimationParam', "animationParam": animationParam}
+        res =  handPosAnalyzer.getGestureType(handPosArr,handCenterArr )
+        result = {"name":'returnAnimationParam', "gesture": res[0], "avgDis": res[1],"dirVec": res[2] }
+
     server.send_message_to_all(warpdict(result))
 
-
 if __name__ == "__main__":
-   
     t = threading.Thread(target=run_server)
     t.start()

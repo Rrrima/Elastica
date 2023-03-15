@@ -2,7 +2,7 @@ import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import TextResult from "./TextResult";
 import ImageResult from "./ImageResult";
-import LottieResult from "./LottieResult";
+// import LottieResult from "./LottieResult";
 import Grid from "@mui/material/Grid";
 
 export default function SearchPanel(props) {
@@ -33,7 +33,7 @@ export default function SearchPanel(props) {
         </Grid>
         <Grid item>
           <TextResult selectedText={selectedText} />
-          <ImageResult selectedText={selectedText} />
+          {/* <ImageResult selectedText={selectedText} /> */}
           {/* <LottieResult selectedText={selectedText} /> */}
         </Grid>
       </Grid>

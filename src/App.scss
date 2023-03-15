@@ -256,9 +256,11 @@ $bg-red: #fff6f6;
   color: rgba(112, 112, 112, 0.4);
 }
 .canvas-panel {
-  height: 55vh;
+  height: 60vh;
 }
-
+.webcam_component {
+  width: 100%;
+}
 .config-section {
   padding: 15px 0;
   padding-bottom: 0;
