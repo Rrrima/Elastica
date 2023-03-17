@@ -4,9 +4,9 @@ import TextResult from "./TextResult";
 import ImageResult from "./ImageResult";
 // import LottieResult from "./LottieResult";
 import Grid from "@mui/material/Grid";
+import { useState } from "react";
 
 export default function SearchPanel(props) {
-  const selectedText = props.selectedText;
   return (
     <div>
       <Grid
@@ -19,7 +19,7 @@ export default function SearchPanel(props) {
         <Grid item>
           <TextField
             id="search-bar"
-            defaultValue={selectedText}
+            defaultValue={props.selectedText}
             variant="filled"
             type="search"
             fullWidth
@@ -32,7 +32,7 @@ export default function SearchPanel(props) {
           />
         </Grid>
         <Grid item>
-          <TextResult selectedText={selectedText} />
+          <TextResult selectedText={props.selectedText} />
           {/* <ImageResult selectedText={selectedText} /> */}
           {/* <LottieResult selectedText={selectedText} /> */}
         </Grid>

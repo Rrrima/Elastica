@@ -55,6 +55,12 @@
   height: 60vh;
 }
 
+#overview-panel {
+  background-color: #f4f4f4;
+  -webkit-filter: drop-shadow(0px 0px 0px var(--shadow-color));
+          filter: drop-shadow(0px 0px 0px var(--shadow-color));
+}
+
 #myWebcam {
   width: 100%;
   height: 60vh;
@@ -100,6 +106,10 @@
 
 .indicateIcon {
   color: #52efbb;
+}
+
+#config-panel {
+  overflow: scroll;
 }
 
 #myScript {
@@ -227,8 +237,17 @@
   color: #4d87f5;
 }
 
+.update-indicator {
+  color: #dea60a;
+}
+
 .enter-chip {
   background-color: rgba(165, 196, 255, 0.37) !important;
+  font-size: 16px !important;
+}
+
+.update-chip {
+  background-color: #ffd050 !important;
   font-size: 16px !important;
 }
 
@@ -359,18 +378,18 @@
 #timeline {
   margin: 0px 0px;
   width: 90%;
-  height: 20px;
+  height: 10px;
   border-radius: 10px;
   background-color: #a5c4ff;
-  -webkit-transform: translateY(8px);
-          transform: translateY(8px);
+  -webkit-transform: translateY(13px);
+          transform: translateY(13px);
 }
 
 #scrubber {
   position: absolute;
   left: 20px;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border-radius: 99px;
   background-color: #ffa9ab;
   z-index: 1;
@@ -379,9 +398,7 @@
 
 #timeline-container {
   padding: 40px 20px;
-  background-color: #fafbfc;
   height: 60px;
   width: 95%;
-  border-radius: 10px;
 }
 /*# sourceMappingURL=App.css.map */

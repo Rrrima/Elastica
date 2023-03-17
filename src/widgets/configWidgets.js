@@ -29,6 +29,7 @@ function TimelineSection() {
       const curObj = canvasObjects.focus;
       const relatedText = curObj.relatedText;
       const handed = curObj.enterSetting.handed;
+      console.log(curObj);
       ws.send(
         JSON.stringify({
           name: "registerHandAnalyzer",
@@ -76,18 +77,23 @@ function InfoBadge(props) {
       <span className={`${status}-indicator`}>{status.toUpperCase()}</span>
       <span> animation for </span>
       <Chip
-        className={`${status}-chip`}
+        className={`enter-chip`}
         label={selectedText}
         // label = "ohana means family"
-        onClick={() => {
-          console.log("clicked!");
-        }}
+        // onClick={() => {
+        //   console.log("clicked!");
+        // }}
       />
     </div>
   );
 }
 
-function HandedSelection() {
+function HandedSelection(props) {
+  const selectedText = props.selectedText;
+  const handleChange = (e) => {
+    console.log("change template animation");
+    canvasObjects.focus.changeEnterSetting("handed", e.target.value);
+  };
   return (
     <div className="config-section">
       <FormControl>
@@ -96,7 +102,12 @@ function HandedSelection() {
           row
           aria-labelledby="handed-row-radio-buttons-group-label"
           name="handed-controlp"
-          defaultValue="left"
+          onChange={handleChange}
+          defaultValue={
+            canvasObjects.focus
+              ? canvasObjects.focus.enterSetting["handed"]
+              : "left"
+          }
         >
           <FormControlLabel value="left" control={<Radio />} label="left" />
           <FormControlLabel value="right" control={<Radio />} label="right" />
@@ -113,7 +124,41 @@ function HandedSelection() {
   );
 }
 
-function ParamSelection() {
+function UpdateHandedSelection(selectedText) {
+  return (
+    <div className="config-section">
+      <FormControl>
+        <FormLabel id="handed-selection">handed</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="handed-row-radio-buttons-group-label"
+          name="handed-controlp"
+          defaultValue={
+            canvasObjects.focus && canvasObjects.focus.updates[selectedText]
+              ? canvasObjects.focus.updates[selectedText].Setting["handed"]
+              : "left"
+          }
+        >
+          <FormControlLabel value="left" control={<Radio />} label="left" />
+          <FormControlLabel value="right" control={<Radio />} label="right" />
+          <FormControlLabel value="both" control={<Radio />} label="both" />
+          <FormControlLabel
+            value="disabled"
+            disabled
+            control={<Radio />}
+            label="random"
+          />
+        </RadioGroup>
+      </FormControl>
+    </div>
+  );
+}
+
+function AfterEnterSelection(props) {
+  const selectedText = props.selectedText;
+  const handleChange = (e) => {
+    canvasObjects.focus.changeEnterSetting("after", e.target.value);
+  };
   return (
     <div className="config-section">
       <FormControl>
@@ -122,6 +167,12 @@ function ParamSelection() {
           row
           aria-labelledby="after-enter-row-radio-buttons-group-label"
           name="after-enter-control"
+          onChange={handleChange}
+          defaultValue={
+            canvasObjects.focus
+              ? canvasObjects.focus.enterSetting["after"]
+              : "stay"
+          }
         >
           <FormControlLabel value="stay" control={<Radio />} label="stay" />
           <FormControlLabel
@@ -141,7 +192,7 @@ function ParamSelection() {
   );
 }
 
-function AfterEnterSelection() {
+function AfterUpdateSelection(selectedText) {
   return (
     <div className="config-section">
       <FormControl>
@@ -150,7 +201,11 @@ function AfterEnterSelection() {
           row
           aria-labelledby="after-enter-row-radio-buttons-group-label"
           name="after-enter-control"
-          defaultValue="stay"
+          defaultValue={
+            canvasObjects.focus && canvasObjects.focus.updates[selectedText]
+              ? canvasObjects.focus.updates[selectedText].Setting["handed"]
+              : "stay"
+          }
         >
           <FormControlLabel value="stay" control={<Radio />} label="stay" />
           <FormControlLabel
@@ -164,13 +219,17 @@ function AfterEnterSelection() {
             label="following"
           />
           <FormControlLabel value="exit" control={<Radio />} label="exit" />
+          <FormControlLabel value="back" control={<Radio />} label="back" />
+          <FormControlLabel value="yoyo" control={<Radio />} label="yoyo" />
+          <FormControlLabel value="repeat" control={<Radio />} label="repeat" />
         </RadioGroup>
       </FormControl>
     </div>
   );
 }
 
-function EnterTemplateSelection() {
+function EnterTemplateSelection(props) {
+  const selectedText = props.selectedText;
   const handleChange = (e) => {
     console.log("change template animation");
     canvasObjects.focus.changeEnterSetting("effect", e.target.value);
@@ -184,7 +243,11 @@ function EnterTemplateSelection() {
           aria-labelledby="enter-template-row-radio-buttons-group-label"
           name="enter-template-control"
           onChange={handleChange}
-          defaultValue="appear"
+          defaultValue={
+            canvasObjects.focus
+              ? canvasObjects.focus.enterSetting["effect"]
+              : "appear"
+          }
         >
           <FormControlLabel value="appear" control={<Radio />} label="appear" />
           <FormControlLabel
@@ -197,6 +260,53 @@ function EnterTemplateSelection() {
             value="sketch"
             control={<Radio />}
             label="sketching"
+          />
+          <FormControlLabel
+            value="customize"
+            control={<Radio />}
+            label="customize"
+          />
+        </RadioGroup>
+      </FormControl>
+    </div>
+  );
+}
+
+function UpdateTemplateSelection(selectedText) {
+  const handleChange = (e) => {
+    console.log("change template animation");
+    canvasObjects.focus.changeEnterSetting("effect", e.target.value);
+  };
+  return (
+    <div className="config-section">
+      <FormControl>
+        <FormLabel id="update-template-selection">enter effect:</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="update-template-row-radio-buttons-group-label"
+          name="update-template-control"
+          onChange={handleChange}
+          defaultValue={
+            canvasObjects.focus && canvasObjects.focus.updates[selectedText]
+              ? canvasObjects.focus.updates[selectedText].Setting["effect"]
+              : "transform"
+          }
+        >
+          <FormControlLabel
+            value="transform"
+            control={<Radio />}
+            label="transform to"
+          />
+          <FormControlLabel
+            value="follow"
+            control={<Radio />}
+            label="hand follow"
+          />
+          <FormControlLabel value="seesaw" control={<Radio />} label="seesaw" />
+          <FormControlLabel
+            value="disappear"
+            control={<Radio />}
+            label="disappear"
           />
           <FormControlLabel
             value="customize"
@@ -265,6 +375,34 @@ function GraphicParamBox(props) {
   );
 }
 
+function ParamSelection() {
+  return (
+    <div className="config-section">
+      <FormControl>
+        <FormLabel id="after-enter-selection">after entering:</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="after-enter-row-radio-buttons-group-label"
+          name="after-enter-control"
+        >
+          <FormControlLabel value="stay" control={<Radio />} label="stay" />
+          <FormControlLabel
+            value="floating"
+            control={<Radio />}
+            label="floating"
+          />
+          <FormControlLabel
+            value="following"
+            control={<Radio />}
+            label="following"
+          />
+          <FormControlLabel value="exit" control={<Radio />} label="exit" />
+        </RadioGroup>
+      </FormControl>
+    </div>
+  );
+}
+
 export {
   InfoBadge,
   GraphicParamBox,
@@ -272,4 +410,7 @@ export {
   AfterEnterSelection,
   EnterTemplateSelection,
   TimelineSection,
+  UpdateHandedSelection,
+  UpdateTemplateSelection,
+  AfterUpdateSelection,
 };

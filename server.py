@@ -9,7 +9,7 @@ from torch import nn
 server = None
 clients = []
 allHandPosResults = []
-handPosAnalyzers = {}
+handAnalyzer = None
 model = {}
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model['left'] = GestureClassifier().to(device)
@@ -49,13 +49,14 @@ def run_server():
 
 def send_message(message):
     global model
-    global handPosAnalyzers
+    global handAnalyzer
     funcname = message['name']
     params = message['params']
 
     if funcname == 'registerHandAnalyzer':
+        # register new analyzer
         handAnalyzer = HandPosAnalyzer(model, params["handed"])
-        handPosAnalyzers[params["relatedText"]] = handAnalyzer
+        # handPosAnalyzers[params["relatedText"]] = handAnalyzer
         print("register handpose analyzer for : {}".format(params["relatedText"]))
         result = {'name':'registerHandAnalyzer'}
 
@@ -65,8 +66,7 @@ def send_message(message):
     if funcname == 'getAnimationParam':
         handPosArr = params['handPosArr']
         handCenterArr = params['handCenterArr']
-        handPosAnalyzer = handPosAnalyzers[params['focused']]
-        res =  handPosAnalyzer.getGestureType(handPosArr,handCenterArr )
+        res =  handAnalyzer.getGestureType(handPosArr,handCenterArr )
         result = {"name":'returnAnimationParam', "gesture": res[0], "avgDis": res[1],"dirVec": res[2] }
 
     server.send_message_to_all(warpdict(result))

@@ -4,6 +4,7 @@ import "./App.css";
 import VisualPanel from "./mainPanels/VisualPanel";
 import ScriptPanel from "./mainPanels/ScriptPanel";
 import ConfigPanel from "./mainPanels/ConfigPanel";
+import OverallVisualPanel from "./mainPanels/OverallVisualPanel";
 import { useEffect, useRef } from "react";
 import { fabric } from "fabric";
 import Stitch from "./resources/Images/stitch.png";
@@ -49,22 +50,25 @@ function App() {
       </div>
       <div className="container">
         <Grid container spacing={4}>
-          <Grid item xs={7}>
+          <Grid item xs={8}>
             <Grid container spacing={2}>
-              <Grid item xs={12} id="canvasContainer">
-                <VisualPanel editor={editor} onReady={onReady} />
+              <Grid item xs={12}>
+                <Grid container spacing={0}>
+                  <Grid item xs={2} id="overviewContainer">
+                    <OverallVisualPanel />
+                  </Grid>
+                  <Grid item xs={12} id="canvasContainer">
+                    <VisualPanel editor={editor} onReady={onReady} />
+                  </Grid>
+                </Grid>
               </Grid>
               <Grid item xs={12}>
                 <ScriptPanel gCanvas={editor} />
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={5} id="configContainer">
-            <ConfigPanel
-              selectedText="stitch"
-              editor={editor}
-              onReady={onReady}
-            />
+          <Grid item xs={4} id="configContainer">
+            <ConfigPanel selectedText="" status="enter" />
           </Grid>
         </Grid>
       </div>

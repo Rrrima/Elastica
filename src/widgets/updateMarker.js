@@ -1,3 +1,7 @@
+import { canvasObjects } from "../global";
+import { createRoot } from "react-dom/client";
+import ConfigPanel from "../mainPanels/ConfigPanel";
+
 export default class UpdateMarkerTool {
   static get isInline() {
     return true;
@@ -44,6 +48,7 @@ export default class UpdateMarkerTool {
     mark.appendChild(selectedText);
     range.insertNode(mark);
     this.api.selection.expandToTag(mark);
+    this.triggerUpdate(mark);
   }
 
   unwrap(range) {
@@ -56,5 +61,16 @@ export default class UpdateMarkerTool {
   checkState() {
     const mark = this.api.selection.findParentTag(this.tag);
     this.state = !!mark;
+  }
+  triggerUpdate(mark) {
+    const curText = mark.innerHTML.trim().toLowerCase();
+    canvasObjects.focusedText = curText;
+    const container = document.getElementById("configContainer");
+    const root = createRoot(container);
+    root.render(<ConfigPanel selectedText={curText} status={"update"} />);
+    mark.addEventListener("click", () => {
+      canvasObjects.focusedText = curText;
+      canvasObjects.setUpdateFocus();
+    });
   }
 }

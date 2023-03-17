@@ -1,9 +1,19 @@
 import gsap from "gsap";
 import { canvasObjects } from "../global";
 import { handPos } from "../global";
+import { createRoot } from "react-dom/client";
+import ConfigPanel from "../mainPanels/ConfigPanel";
 
 function keyframeExtractor(e) {
-  const attrNames = ["scaleX", "scaleY", "top", "left", "opacity"];
+  const attrNames = [
+    "scaleX",
+    "scaleY",
+    "top",
+    "left",
+    "opacity",
+    "dynamicMinWidth",
+    "height",
+  ];
   const target = e.target;
   let k = {};
   for (let i = 0; i < attrNames.length; i++) {
@@ -18,20 +28,77 @@ class TextObject {
   constructor(editor, text, obj) {
     this.editor = editor;
     this.relatedText = text;
+    if (canvasObjects.objectDict[this.relatedText]) {
+      this.objectId =
+        this.relatedText +
+        "-" +
+        canvasObjects.objectDict[this.relatedText].length;
+    } else {
+      this.objectId = this.relatedText + "-0";
+    }
     this.active = false;
     this.entered = false;
     this.fabric = obj;
     // this.keyframes = [];
     this.enterTL = gsap.timeline();
     this.tl = gsap.timeline();
-    this.currAttr = {};
-    this.attrNames = ["scaleX", "scaleY", "top", "left", "opacity"];
+    this.attrNames = [
+      "scaleX",
+      "scaleY",
+      "top",
+      "left",
+      "opacity",
+      "dynamicMinWidth",
+      "height",
+    ];
     this.enterSetting = { effect: "appear", handed: "left", after: "stay" };
+    this.updates = [];
     this.create();
     this.addListeners();
+    this.fixAttr = this.getCurrentAttr();
+  }
+  animateEnter() {
+    this.fabric.set("seletable", true);
+    gsap.to(this.fabric, {
+      ...this.fixAttr,
+      immediateRender: true,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+  }
+  animateUpdate(t) {
+    this.fabric.set("seletable", true);
+    gsap.to(this.fabric, {
+      ...this.updates[t].attr,
+      immediateRender: true,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+  }
+  createUpdate(relatedText) {
+    const d = {
+      relatedText: relatedText,
+      effect: "trasform",
+      handed: "left",
+      after: "stay",
+    };
+  }
+  disabled() {
+    console.log("xxxxxxxxx remove!! ", this.objectId);
+    this.fabric.set("opacity", 0.3);
+    this.fabric.set("selectable", false);
+  }
+  moveBack() {
+    for (let i = 0; i < this.attrNames.length; i++) {
+      let attr = this.attrNames[i];
+      this.fabric.set(attr, this.fixAttr[attr]);
+    }
   }
   setActive() {
     this.active = true;
+    this.editor.canvas.setActiveObject(this.fabric);
+    this.editor.canvas.renderAll();
+  }
+  deactivate() {
+    this.active = false;
   }
   play() {
     console.log(this.enterSetting);
@@ -60,15 +127,30 @@ class TextObject {
   enter() {
     this.entered = true;
   }
-  moveTo(r) {
-    let pos = handPos.left[8];
+  animateTo(r) {
+    const curGes = canvasObjects.curGesture;
+    let offSets = [0, 0];
+    let dim = null;
+    if (curGes === "staging") {
+      offSets = [0, -20];
+    } else if (curGes === "pinch") {
+      offSets = [30, 0];
+      dim = this.fabric.get("height");
+    }
+    let params = handPos.getAnimationParams(
+      curGes,
+      this.enterSetting.handed,
+      r,
+      offSets,
+      dim
+    );
+    console.log(curGes);
+    console.log(params);
     // console.log(this.fabric.get("left"));
     // console.log(this.fabric.get("top"));
-    console.log(r);
-    console.log(canvasObjects.curGesture);
     gsap.to(this.fabric, {
-      left: pos[0] * r,
-      top: pos[1] * r,
+      ...params,
+      height: 2,
       immediateRender: true,
       onUpdate: () => this.editor.canvas.renderAll(),
     });
@@ -126,14 +208,33 @@ class TextObject {
   addListeners() {
     let relatedText = this.relatedText;
     let thisobj = this;
-    // this.fabric.on("modified", function (e) {
-    //   thisobj.keyframes.push(keyframeExtractor(e));
-    // });
+    this.fabric.on("modified", function (e) {
+      if (relatedText === canvasObjects.focusedText) {
+        thisobj.fixAttr = thisobj.getCurrentAttr();
+      } else {
+        thisobj.updates[canvasObjects.focusedText] = {
+          attr: thisobj.getCurrentAttr(),
+          setting: { effect: "transform", handed: "left", after: "stay" },
+        };
+        canvasObjects.addToUpdate(canvasObjects.focusedText, thisobj);
+        canvasObjects.rerenderConfig();
+      }
+    });
+
+    // const container = document.getElementById("configContainer");
+    // const root = createRoot(container);
+    // root.render(
+    //   <ConfigPanel selectedText={canvasObjects.focusedText} status={"update"} />
+    // );
     this.fabric.on("mousedblclick", function (e) {
-      console.log(thisobj.getCurrentAttr());
-      //   let kf = keyframeExtractor(e);
-      //   thisobj.keyframes.push(kf);
-      //   thisobj.animate();
+      if (relatedText !== canvasObjects.focusedText) {
+        thisobj.updates[canvasObjects.focusedText] = {
+          attr: thisobj.getCurrentAttr(),
+          setting: { effect: "transform", handed: "left", after: "stay" },
+        };
+        canvasObjects.addToUpdate(canvasObjects.focusedText, thisobj);
+        canvasObjects.rerenderConfig();
+      }
     });
   }
 }

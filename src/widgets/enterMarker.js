@@ -1,5 +1,7 @@
 import { createRoot } from "react-dom/client";
 import ConfigPanel from "../mainPanels/ConfigPanel";
+import { canvasObjects } from "../global";
+import { objectDict } from "../resources/ObjectDict";
 
 export default class EnterMarkerTool {
   static get isInline() {
@@ -67,6 +69,16 @@ export default class EnterMarkerTool {
     const container = document.getElementById("configContainer");
     const root = createRoot(container);
     const curText = mark.innerHTML.trim().toLowerCase();
-    root.render(<ConfigPanel selectedText={curText} />);
+    canvasObjects.focusedText = curText;
+    root.render(<ConfigPanel selectedText={curText} status={"enter"} />);
+    mark.addEventListener("click", () => {
+      canvasObjects.focusedText = curText;
+      if (canvasObjects.objectDict[curText]) {
+        // set focus to one of the object added to the screen
+        canvasObjects.setFocus(canvasObjects.objectDict[curText][0]);
+      } else {
+        canvasObjects.setFocus(null);
+      }
+    });
   }
 }

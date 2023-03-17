@@ -15,17 +15,17 @@ export default class TextEditor extends Component {
           class: EnterMarkerTool,
           inlineToolbar: true,
         },
-        update: {
-          class: UpdateMarkerTool,
-          inlineToolbar: true,
-        },
+        // update: {
+        //   class: UpdateMarkerTool,
+        //   inlineToolbar: true,
+        // },
       },
       data: {
         blocks: [
           {
             type: "paragraph",
             data: {
-              text: "This is a test script, won't make any sense. I will use stitch as am example, and I also want a heart to appear here. And somehow, when I say ohana means family, it should change position.",
+              text: "How can we do this in AR? First, AR programming has a heavy use of realistic 3D models but we should also be able to work with simple 2D sketches. Also, to animate these objects, designers need to define curves, timings or even detailed keyframe animations. However, designer can simply enact animation with gesture in a similar way to the Wizard of Oz technique",
             },
           },
           // {

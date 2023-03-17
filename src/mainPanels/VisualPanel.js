@@ -116,7 +116,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
           canvasObjects.focus.enter();
         }
         if (canvasObjects.focus.entered) {
-          canvasObjects.focus.moveTo(r);
+          canvasObjects.focus.animateTo(r);
         }
       }
     };

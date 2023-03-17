@@ -5,18 +5,17 @@ import { canvasObjects } from "../global";
 
 export default function ConfigPanel(props) {
   const [selectedText, setSelection] = useState(props.selectedText);
-  const [status, setStatus] = useState("enter");
-  const editor = props.editor;
+  const [status, setStatus] = useState(props.status);
 
   useEffect(() => {
     if (selectedText !== props.selectedText) {
-      console.log(selectedText);
-      console.log(editor);
+      console.log(status, " ---- ", selectedText);
     }
-  }, [props.selectedText]);
+  }, [props]);
   // if (props.selectedText) {
   //   setSelection(props.selectedText);
   // }
+
   return (
     <div className="main-panel" id="config-panel">
       {status === "enter" && <EnterConfigPanel selectedText={selectedText} />}
