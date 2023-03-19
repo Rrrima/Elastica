@@ -50,6 +50,7 @@ export default class EnterMarkerTool {
     mark.appendChild(selectedText);
     range.insertNode(mark);
     this.api.selection.expandToTag(mark);
+    canvasObjects.addToMarkDict(mark);
     this.triggerSearch(mark);
   }
 
@@ -66,13 +67,18 @@ export default class EnterMarkerTool {
   }
 
   triggerSearch(mark) {
-    const container = document.getElementById("configContainer");
-    const root = createRoot(container);
+    // const container = document.getElementById("configContainer");
+    // const root = createRoot(container);
     const curText = mark.innerHTML.trim().toLowerCase();
     canvasObjects.focusedText = curText;
-    root.render(<ConfigPanel selectedText={curText} status={"enter"} />);
+    // canvasObjects.root.render(
+    //   <ConfigPanel selectedText={curText} status={"enter"} />
+    // );
+    canvasObjects.rerenderConfig();
+    canvasObjects.indicateFocus();
     mark.addEventListener("click", () => {
       canvasObjects.focusedText = curText;
+      canvasObjects.indicateFocus();
       if (canvasObjects.objectDict[curText]) {
         // set focus to one of the object added to the screen
         canvasObjects.setFocus(canvasObjects.objectDict[curText][0]);

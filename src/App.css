@@ -18,6 +18,10 @@
   padding: 10px 75px;
 }
 
+.primary-color {
+  color: #52efbb;
+}
+
 #page-header {
   padding: 0px 75px;
   padding-top: 10px;
@@ -241,6 +245,12 @@
   color: #dea60a;
 }
 
+.focus-chip {
+  background-color: #4d87f5 !important;
+  font-size: 16px !important;
+  color: white !important;
+}
+
 .enter-chip {
   background-color: rgba(165, 196, 255, 0.37) !important;
   font-size: 16px !important;
@@ -356,6 +366,11 @@
 .enter-marker:hover {
   border: solid 1px #4d87f5;
   cursor: pointer;
+}
+
+.enter-marker.active {
+  background-color: #4d87f5;
+  color: white;
 }
 
 .enter-marker {

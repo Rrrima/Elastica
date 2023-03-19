@@ -39,6 +39,7 @@ class TextObject {
     this.active = false;
     this.entered = false;
     this.fabric = obj;
+    this.customize = false;
     // this.keyframes = [];
     this.enterTL = gsap.timeline();
     this.tl = gsap.timeline();
@@ -58,7 +59,7 @@ class TextObject {
     this.fixAttr = this.getCurrentAttr();
   }
   animateEnter() {
-    this.fabric.set("seletable", true);
+    this.fabric.set("selectable", true);
     gsap.to(this.fabric, {
       ...this.fixAttr,
       immediateRender: true,
@@ -66,12 +67,19 @@ class TextObject {
     });
   }
   animateUpdate(t) {
-    this.fabric.set("seletable", true);
+    this.fabric.set("selectable", true);
+    const thisfab = this.fabric;
     gsap.to(this.fabric, {
       ...this.updates[t].attr,
       immediateRender: true,
-      onUpdate: () => this.editor.canvas.renderAll(),
+      onUpdate: () => {
+        this.editor.canvas.renderAll();
+        // console.log("after enter!");
+        // console.log(thisfab);
+      },
     });
+    // console.log(" =====  all updated element!! ====");
+    // console.log(this.fabric);
   }
   createUpdate(relatedText) {
     const d = {
@@ -82,7 +90,6 @@ class TextObject {
     };
   }
   disabled() {
-    console.log("xxxxxxxxx remove!! ", this.objectId);
     this.fabric.set("opacity", 0.3);
     this.fabric.set("selectable", false);
   }
@@ -114,7 +121,7 @@ class TextObject {
   }
   changeEnterSetting(d, v) {
     this.enterSetting[d] = v;
-    this.enterTL.clear();
+    this.enterTL = gsap.timeline();
     this.createEnter();
   }
   getCurrentAttr() {
@@ -161,7 +168,7 @@ class TextObject {
     let effect = this.enterSetting.effect; //appear, zoom, float
     let after = this.enterSetting.after; //stay, floating, exit
     let editor = this.editor;
-    let kf = this.getCurrentAttr();
+    let kf = this.fixAttr;
     this.getCurrentAttr();
     if (effect === "zoom") {
       this.enterTL.fromTo(
@@ -183,6 +190,24 @@ class TextObject {
           onUpdate: () => editor.canvas.renderAll(),
         }
       );
+    } else {
+      this.enterTL.fromTo(
+        this.fabric,
+        { ...kf },
+        {
+          ...kf,
+          duration: 1,
+          onUpdate: () => editor.canvas.renderAll(),
+        }
+      );
+    }
+    if (effect === "customize") {
+      this.customize = true;
+      canvasObjects.startCustomization();
+    } else {
+      canvasObjects.endCustomization();
+      canvasObjects.removeHand("left");
+      this.customize = false;
     }
   }
   create() {
@@ -205,12 +230,48 @@ class TextObject {
     // this.playTl();
     // this.tl.play();
   }
+  changeUpdateSetting(dim, val) {
+    this.updates[canvasObjects.focusedText].setting[dim] = val;
+    this.update();
+  }
+  update() {
+    const base = this.updates[canvasObjects.focusedText].attr;
+    const effect = this.updates[canvasObjects.focusedText].setting["effect"];
+    console.log(effect);
+    gsap.to(this.fabric, {
+      ...base,
+      duration: 0,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+    if (effect === "disappear") {
+      gsap.to(this.fabric, {
+        opacity: 0,
+        duration: 1,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    } else if (effect === "seesaw") {
+      gsap.fromTo(
+        this.fabric,
+        { top: base.top },
+        {
+          top: base.top - 20,
+          yoyo: true,
+          repeat: 3,
+          duration: 0.5,
+          ease: "sin.inOut",
+          onUpdate: () => this.editor.canvas.renderAll(),
+        }
+      );
+    }
+  }
   addListeners() {
     let relatedText = this.relatedText;
     let thisobj = this;
     this.fabric.on("modified", function (e) {
       if (relatedText === canvasObjects.focusedText) {
-        thisobj.fixAttr = thisobj.getCurrentAttr();
+        if (thisobj.enterSetting.effect !== "customize") {
+          thisobj.fixAttr = thisobj.getCurrentAttr();
+        }
       } else {
         thisobj.updates[canvasObjects.focusedText] = {
           attr: thisobj.getCurrentAttr(),

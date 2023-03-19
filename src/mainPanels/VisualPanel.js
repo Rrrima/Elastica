@@ -22,16 +22,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
   canvasObjects.canvas = editor;
 
   const handleChangeMode = () => {
-    if (previewMode) {
-      const ctx = handCanvasRef.current.getContext("2d");
-      ctx.clearRect(
-        0,
-        0,
-        handCanvasRef.current.width,
-        handCanvasRef.current.height
-      );
-    }
     setMode(!previewMode);
+    canvasObjects.canmeraOn = !canvasObjects.canmeraOn;
   };
 
   const runDetection = async () => {
@@ -45,12 +37,20 @@ const VisualPanel = React.forwardRef((props, ref) => {
       detectorConfig
     );
     console.log("Handpose model loaded");
+    canvasObjects.initializeIndicator("left");
+    // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
     // detect every 20ms -- [].length == 10
     setInterval(() => {
-      if (canvasObjects.focus && canvasObjects.focus.active) {
+      // if (webcamRef.current) {
+      //   console.log(webcamRef.current.video.videoWidth);
+      //   console.log(webcamRef.current.video.width);
+      // }
+      // webcamRef.current.video.videoWidth = editor.canvas.width;
+      // const test = true;
+      if (canvasObjects.focus && canvasObjects.focus.customize) {
         detect(handposeDetector);
       }
-    }, 20);
+    }, 50);
   };
 
   const detect = async (net) => {
@@ -63,32 +63,40 @@ const VisualPanel = React.forwardRef((props, ref) => {
       const video = webcamRef.current.video;
       const videoWidth = webcamRef.current.video.videoWidth;
       const videoHeight = webcamRef.current.video.videoHeight;
-      r = editor.canvas.width / videoHeight;
+      // r = editor.canvas.width / videoHeight;
+      r = 1;
       // set video height and width
-      webcamRef.current.video.width = videoWidth;
-      webcamRef.current.video.height = videoHeight;
-
+      // webcamRef.current.video.width = videoWidth;
+      // webcamRef.current.video.height = videoHeight;
+      webcamRef.current.video.width = editor.canvas.width;
+      webcamRef.current.video.height = editor.canvas.height;
+      // console.log(editor.canvas.width, videoWidth);
+      // console.log(editor.canvas.height, videoHeight);
+      // console.log(editor.canvas.width, webcamRef.current.video.width);
+      // console.log(editor.canvas.height, webcamRef.current.video.height);
       // set canvas height and width
-      handCanvasRef.current.width = videoWidth;
-      handCanvasRef.current.height = videoHeight;
+      // handCanvasRef.current.width = videoWidth;
+      // handCanvasRef.current.height = videoHeight;
 
       const hands = await net.estimateHands(video, { flipHorizontal: true });
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
+      canvasObjects.visHand("left");
+      // console.log(handPos.getHandAngle("left"));
 
       // get animation parameter for currentfocus
       // TODO: deal with right hand
       // if (!canvasObjects.focus.entered) {
-      ws.send(
-        JSON.stringify({
-          name: "getAnimationParam",
-          params: {
-            handPosArr: handPosArr.arrLeft,
-            handCenterArr: handPosArr.arrCenterLeft,
-            focused: canvasObjects.focus.relatedText,
-          },
-        })
-      );
+      // ws.send(
+      //   JSON.stringify({
+      //     name: "getAnimationParam",
+      //     params: {
+      //       handPosArr: handPosArr.arrLeft,
+      //       handCenterArr: handPosArr.arrCenterLeft,
+      //       focused: canvasObjects.focus.relatedText,
+      //     },
+      //   })
+      // );
       // } else {
       //   canvasObjects.focus.moveTo(r);
       // }
@@ -141,20 +149,24 @@ const VisualPanel = React.forwardRef((props, ref) => {
           style={{
             zIndex: -1,
             position: "absolute",
+            height: "100%",
+            width: "100%",
           }}
           mirrored={true}
         />
       )}
       <FabricJSCanvas className="canvas-panel" onReady={onReady} />
-      <canvas
-        className="webcam_component"
-        id="myCanvas"
-        ref={handCanvasRef}
-        style={{
-          position: "absolute",
-          zIndex: 10,
-        }}
-      />
+      {/* {previewMode && (
+        <canvas
+          className="webcam_component"
+          id="myCanvas"
+          ref={handCanvasRef}
+          style={{
+            position: "absolute",
+            zIndex: 10,
+          }}
+        />
+      )} */}
       <div className="bottom right">
         <Stack direction="row">
           <IconButton aria-label="videocam" onClick={handleChangeMode}>

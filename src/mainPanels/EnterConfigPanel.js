@@ -8,8 +8,6 @@ import { canvasObjects } from "../global";
 
 export default function EnterConfigPanel(props) {
   const selectedText = props.selectedText;
-  console.log(canvasObjects.getEnterObjects());
-  console.log(canvasObjects.getUpdateObjects());
   return (
     <div id="config-panel">
       <Grid container spacing={2}>

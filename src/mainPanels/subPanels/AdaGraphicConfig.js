@@ -13,14 +13,24 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { canvasObjects } from "../../global";
 
 export default function AdaGraphicConfig(props) {
   const selectedText = props.selectedText;
   const status = props.status;
+  const obj = canvasObjects.idDict[props.objectId];
+  const handleExpand = (ep) => {
+    canvasObjects.setSelection(obj);
+  };
   return (
     <div>
       {status === "enter" && (
-        <Accordion>
+        <Accordion
+          onChange={(e, ep) => {
+            handleExpand(ep);
+          }}
+          id={props.objectId}
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
@@ -35,13 +45,18 @@ export default function AdaGraphicConfig(props) {
               selectedText={selectedText}
             />
             <HandedSelection status={status} selectedText={selectedText} />
-            <AfterEnterSelection status={status} selectedText={selectedText} />
+            {/* <AfterEnterSelection status={status} selectedText={selectedText} /> */}
           </AccordionDetails>
           {/* <TimelineSection status={status} selectedText={selectedText} /> */}
         </Accordion>
       )}
       {status === "update" && (
-        <Accordion>
+        <Accordion
+          onChange={(e, ep) => {
+            handleExpand(ep);
+          }}
+          id={props.objectId}
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
@@ -59,7 +74,7 @@ export default function AdaGraphicConfig(props) {
               status={status}
               selectedText={selectedText}
             />
-            <AfterUpdateSelection status={status} selectedText={selectedText} />
+            {/* <AfterUpdateSelection status={status} selectedText={selectedText} /> */}
           </AccordionDetails>
           {/* <TimelineSection status={status} selectedText={selectedText} /> */}
         </Accordion>

@@ -2,6 +2,7 @@ import React, { Component, useEffect, useState } from "react";
 import EnterConfigPanel from "./EnterConfigPanel";
 import UpdateConfigPanel from "./UpdateConfigPanel";
 import { canvasObjects } from "../global";
+import { createRoot } from "react-dom/client";
 
 export default function ConfigPanel(props) {
   const [selectedText, setSelection] = useState(props.selectedText);
@@ -9,7 +10,12 @@ export default function ConfigPanel(props) {
 
   useEffect(() => {
     if (selectedText !== props.selectedText) {
-      console.log(status, " ---- ", selectedText);
+      setSelection(props.selectedText);
+    }
+    if (!canvasObjects.root) {
+      const container = document.getElementById("configContainer");
+      const root = createRoot(container);
+      canvasObjects.root = root;
     }
   }, [props]);
   // if (props.selectedText) {
@@ -19,7 +25,7 @@ export default function ConfigPanel(props) {
   return (
     <div className="main-panel" id="config-panel">
       {status === "enter" && <EnterConfigPanel selectedText={selectedText} />}
-      {status === "update" && <UpdateConfigPanel selectedText={selectedText} />}
+      {/* {status === "update" && <UpdateConfigPanel selectedText={selectedText} />} */}
     </div>
   );
 }

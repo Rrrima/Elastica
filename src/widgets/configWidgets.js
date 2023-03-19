@@ -17,45 +17,61 @@ import Stack from "@mui/material/Stack";
 import PauseIcon from "@mui/icons-material/Pause";
 import { useState } from "react";
 import { ws } from "../global";
+import { handRecord } from "../global";
 
 gsap.registerPlugin(Draggable);
 
 function TimelineSection() {
   const [isPlay, setPlayMode] = useState(false);
+
   function changePlayMode() {
     setPlayMode(!isPlay);
     if (!isPlay) {
-      // canvasObjects.focus.play();
+      // play the animation based on hand gesture
       const curObj = canvasObjects.focus;
-      const relatedText = curObj.relatedText;
-      const handed = curObj.enterSetting.handed;
-      console.log(curObj);
-      ws.send(
-        JSON.stringify({
-          name: "registerHandAnalyzer",
-          params: {
-            handed: handed,
-            relatedText: relatedText,
-          },
-        })
-      );
+      const curText = canvasObjects.focusedText;
+      let effect = null;
+      let status = "enter";
+      if (curObj.relatedText === curText) {
+        effect = curObj.enterSetting.effect;
+      } else {
+        effect = curObj.updates[curText].setting.effect;
+      }
+      if (canvasObjects.canmeraOn) {
+        if (effect === "customize") {
+          const rkey = curText + "-" + curObj.objectId;
+          console.log(handRecord.record[rkey]);
+          curObj.moveBack();
+        } else {
+          curObj.enterWithHand(effect);
+        }
+      }
     }
   }
   function getTimePercentage(d) {
-    return d.x / (d.maxX - d.minX);
+    return (d.x - d.minX) / (d.maxX - d.minX);
   }
   const scrubberRef = useRef(null);
   const scrubber = Draggable.create("#scrubber", {
     type: "x",
     bounds: document.getElementById("timeline"),
     onDrag: () => {
+      console.log(getTimePercentage(scrubber[0]));
       let tp = getTimePercentage(scrubber[0]);
       canvasObjects.focus.playAt(tp);
     },
   });
   return (
     <div className="config-section">
-      timeline
+      timeline mapped to{" "}
+      <Chip
+        className={`focus-chip`}
+        label={canvasObjects.focusedText}
+        // label = "ohana means family"
+        // onClick={() => {
+        //   console.log("clicked!");
+        // }}
+      />
       <div id="timeline-container">
         <Stack direction="row" spacing={1}>
           <IconButton aria-label="delete" onClick={changePlayMode}>
@@ -229,9 +245,7 @@ function AfterUpdateSelection(selectedText) {
 }
 
 function EnterTemplateSelection(props) {
-  const selectedText = props.selectedText;
   const handleChange = (e) => {
-    console.log("change template animation");
     canvasObjects.focus.changeEnterSetting("effect", e.target.value);
   };
   return (
@@ -275,12 +289,12 @@ function EnterTemplateSelection(props) {
 function UpdateTemplateSelection(selectedText) {
   const handleChange = (e) => {
     console.log("change template animation");
-    canvasObjects.focus.changeEnterSetting("effect", e.target.value);
+    canvasObjects.focus.changeUpdateSetting("effect", e.target.value);
   };
   return (
     <div className="config-section">
       <FormControl>
-        <FormLabel id="update-template-selection">enter effect:</FormLabel>
+        <FormLabel id="update-template-selection">update effect:</FormLabel>
         <RadioGroup
           row
           aria-labelledby="update-template-row-radio-buttons-group-label"

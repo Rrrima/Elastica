@@ -4,7 +4,7 @@ import TextResult from "./TextResult";
 import ImageResult from "./ImageResult";
 // import LottieResult from "./LottieResult";
 import Grid from "@mui/material/Grid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SearchPanel(props) {
   return (

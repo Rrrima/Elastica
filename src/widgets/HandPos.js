@@ -1,5 +1,28 @@
 import * as math from "mathjs";
 
+function angleBetweenVectors(v1, v2) {
+  const dotProduct = v1.x * v2.x + v1.y * v2.y;
+  const magV1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
+  const magV2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
+  const angleInRadians = Math.acos(dotProduct / (magV1 * magV2));
+  const angleInDegrees = (angleInRadians * 180) / Math.PI;
+  return angleInDegrees;
+}
+
+function sumArray(arr) {
+  let sum = 0;
+  for (let i = 0; i < arr.length; i++) {
+    sum += arr[i];
+  }
+  return sum;
+}
+
+function normalizeVector(vector) {
+  const vec = vector.map((component) => component - 1 / 2);
+  const r = sumArray(vec);
+  return vec.map((v) => v / r);
+}
+
 class HandPos {
   constructor(index) {
     this.index = index;
@@ -8,11 +31,37 @@ class HandPos {
     this.left3d = {};
     this.right3d = {};
     this.detection = null;
+    this.isDetected = { either: false, right: false, left: false };
     this.handPosVec = null;
     this.handCenterVec = null;
     this.initPos();
     this.hands = null;
+    this.allFingers = ["thumb", "index", "middle", "ring", "pinky"];
+    this.fingerMap = {
+      thumb: [0, 2, 4],
+      index: [5, 6, 8],
+      middle: [9, 10, 12],
+      ring: [13, 14, 16],
+      pinky: [17, 19, 20],
+    };
   }
+
+  getFingertipPos(handed, fingerNames) {
+    let res = {};
+    if (fingerNames === "all") {
+      fingerNames = this.allFingers;
+    }
+    fingerNames.forEach((fingerName) => {
+      let idx = this.fingerMap[fingerName][2];
+      if (handed === "left") {
+        res[fingerName] = this.left[idx];
+      } else if (handed === "right") {
+        res[fingerName] = this.right[idx];
+      }
+    });
+    return res;
+  }
+
   initPos() {
     this.index.forEach((i) => {
       this.right[i] = [null, null, null];
@@ -20,30 +69,88 @@ class HandPos {
       this.left[i] = [null, null, null];
       this.left3d[i] = [null, null, null];
     });
+    this.isDetected.either = false;
+    this.isDetected.left = false;
+    this.isDetected.right = false;
   }
 
   updatePosition(pred) {
     this.hands = pred;
     this.initPos();
     if (pred.length > 0) {
+      this.isDetected.either = true;
       pred.forEach((p) => {
         this.index.forEach((i) => {
           let t = p.keypoints[i];
           let t3 = p.keypoints3D[i];
           if (p.handedness === "Right") {
+            this.isDetected.right = true;
             this.right[i] = [t.x, t.y, t3.z];
             this.right3d[i] = [t3.x, t3.y, t3.z];
           } else if (p.handedness === "Left") {
+            this.isDetected.left = true;
             this.left[i] = [t.x, t.y, t3.z];
             this.left3d[i] = [t3.x, t3.y, t3.z];
           }
         });
       });
       this.detection = { left: this.left, right: this.right };
+    } else {
+      this.detection = { left: this.left, right: this.right };
     }
     this.handPosVec = this.get3dVector();
     this.handCenterVec = this.getHandCenters();
     return [this.handPosVec, this.handCenterVec];
+  }
+
+  getAngle(handed, fingerName) {
+    const ptIndx = this.fingerMap[fingerName];
+    let hand3d = null;
+    if (handed === "left") {
+      hand3d = this.left3d;
+    } else if (handed === "right") {
+      hand3d = this.right3d;
+    }
+    if (this.isDetected[handed]) {
+      // console.log(ptIndx);
+      // const p0 = hand3d[0];
+      const p1 = hand3d[ptIndx[0]];
+      const p2 = hand3d[ptIndx[1]];
+      const p3 = hand3d[ptIndx[2]];
+      const v1 = { x: p3[0] - p2[0], y: p3[1] - p2[1] };
+      const v2 = { x: p1[0] - p2[0], y: p1[1] - p2[1] };
+      // const v3 = { x: p0[0] - p1[0], y: p0[1] - p1[1] };
+      // const v4 = { x: p2[0] - p1[0], y: p2[1] - p1[1] };
+      const angle = (angleBetweenVectors(v1, v2) - 90) / 90;
+      // const angleOut = (angleBetweenVectors(v3, v4) - 90) / 90;
+      return angle;
+    } else {
+      return;
+    }
+  }
+
+  getHandAngle(handed) {
+    const vec = [
+      this.getAngle(handed, "thumb"),
+      this.getAngle(handed, "index"),
+      this.getAngle(handed, "middle"),
+      this.getAngle(handed, "ring"),
+      this.getAngle(handed, "pinky"),
+    ];
+    return normalizeVector(vec);
+  }
+
+  getVisHandAngle(handed) {
+    const vec = [
+      this.getAngle(handed, "thumb"),
+      this.getAngle(handed, "index"),
+      this.getAngle(handed, "middle"),
+      this.getAngle(handed, "ring"),
+      this.getAngle(handed, "pinky"),
+    ];
+    const ftAng = normalizeVector(vec);
+    const r = Math.max(...ftAng);
+    return ftAng.map((v) => v / r);
   }
 
   get3dVector() {

@@ -10,8 +10,6 @@ export default function ImageResult(props) {
   const editor = canvasObjects.canvas;
 
   function handleSelection(e) {
-    const target = e.target;
-    console.log(target);
     fabric.Image.fromURL(Stitch, (image) => {
       // console.log(image);
       image.scale(0.2);
