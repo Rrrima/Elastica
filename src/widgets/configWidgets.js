@@ -44,6 +44,9 @@ function TimelineSection() {
           curObj.moveBack();
         } else {
           curObj.enterWithHand(effect);
+          setTimeout(() => {
+            curObj.endEnterWithHand(effect);
+          }, 1500);
         }
       }
     }

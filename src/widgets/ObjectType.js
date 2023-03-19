@@ -3,6 +3,7 @@ import { canvasObjects } from "../global";
 import { handPos } from "../global";
 import { createRoot } from "react-dom/client";
 import ConfigPanel from "../mainPanels/ConfigPanel";
+import { FaceRetouchingOffSharp } from "@mui/icons-material";
 
 function keyframeExtractor(e) {
   const attrNames = [
@@ -36,8 +37,10 @@ class TextObject {
     } else {
       this.objectId = this.relatedText + "-0";
     }
+    this.animateFocus = false;
     this.active = false;
     this.entered = false;
+    this.status = null;
     this.fabric = obj;
     this.customize = false;
     // this.keyframes = [];
@@ -57,6 +60,29 @@ class TextObject {
     this.create();
     this.addListeners();
     this.fixAttr = this.getCurrentAttr();
+  }
+  enterWithHand(effect) {
+    this.animateFocus = true;
+    this.status = "enter";
+    this.effect = effect;
+
+    if (effect === "zoom") {
+      gsap.fromTo(
+        this.fabric,
+        { scaleX: 0, scaleY: 0 },
+        {
+          scaleX: this.fixAttr.scaleX,
+          scaleY: this.fixAttr.scaleY,
+          duration: 1,
+          onUpdate: () => this.editor.canvas.renderAll(),
+        }
+      );
+    }
+  }
+  endEnterWithHand() {
+    this.animateFocus = false;
+    this.status = null;
+    this.moveBack();
   }
   animateEnter() {
     this.fabric.set("selectable", true);
@@ -94,10 +120,13 @@ class TextObject {
     this.fabric.set("selectable", false);
   }
   moveBack() {
-    for (let i = 0; i < this.attrNames.length; i++) {
-      let attr = this.attrNames[i];
-      this.fabric.set(attr, this.fixAttr[attr]);
-    }
+    gsap.to(this.fabric, {
+      ...this.fixAttr,
+      immediateRender: true,
+      onUpdate: () => {
+        this.editor.canvas.renderAll();
+      },
+    });
   }
   setActive() {
     this.active = true;
@@ -133,6 +162,13 @@ class TextObject {
   }
   enter() {
     this.entered = true;
+  }
+  moveTo(pos) {
+    gsap.to(this.fabric, {
+      left: pos[0],
+      top: pos[1],
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
   }
   animateTo(r) {
     const curGes = canvasObjects.curGesture;
@@ -270,6 +306,7 @@ class TextObject {
     this.fabric.on("modified", function (e) {
       if (relatedText === canvasObjects.focusedText) {
         if (thisobj.enterSetting.effect !== "customize") {
+          console.log("fix position change");
           thisobj.fixAttr = thisobj.getCurrentAttr();
         }
       } else {
@@ -361,8 +398,7 @@ class ImageObject {
     //   }
     // );
   }
-  moveTo() {
-    let pos = handPos.left[8];
+  moveTo(pos) {
     gsap.to(this.fabric, {
       left: pos[0],
       top: pos[1],

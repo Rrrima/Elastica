@@ -47,7 +47,10 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // }
       // webcamRef.current.video.videoWidth = editor.canvas.width;
       // const test = true;
-      if (canvasObjects.focus && canvasObjects.focus.customize) {
+      if (
+        canvasObjects.focus &&
+        (canvasObjects.focus.customize || canvasObjects.focus.animateFocus)
+      ) {
         detect(handposeDetector);
       }
     }, 50);
@@ -61,8 +64,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
     ) {
       // get video properties
       const video = webcamRef.current.video;
-      const videoWidth = webcamRef.current.video.videoWidth;
-      const videoHeight = webcamRef.current.video.videoHeight;
+      // const videoWidth = webcamRef.current.video.videoWidth;
+      // const videoHeight = webcamRef.current.video.videoHeight;
       // r = editor.canvas.width / videoHeight;
       r = 1;
       // set video height and width
@@ -77,11 +80,19 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // set canvas height and width
       // handCanvasRef.current.width = videoWidth;
       // handCanvasRef.current.height = videoHeight;
-
+      const obj = canvasObjects.focus;
       const hands = await net.estimateHands(video, { flipHorizontal: true });
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
-      canvasObjects.visHand("left");
+      if (obj.customize && !obj.animateFocus) {
+        canvasObjects.visHand("left");
+      }
+
+      if (obj.animateFocus) {
+        let pm = handPos.getHandCenters()["left"];
+        obj.moveTo(pm);
+      }
+
       // console.log(handPos.getHandAngle("left"));
 
       // get animation parameter for currentfocus

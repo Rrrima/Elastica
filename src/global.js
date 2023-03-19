@@ -52,7 +52,7 @@ class CanvasObject {
     });
   }
   removeHand(handed) {
-    console.log("remove!");
+    // console.log("remove!");
     this.allFingers.forEach((f) => {
       this.handIndicators[handed][f].set({
         opacity: 0,
