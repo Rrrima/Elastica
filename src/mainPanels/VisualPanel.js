@@ -9,23 +9,92 @@ import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
-import { canvasObjects, handPos, handPosArr, ws } from "../global";
+import { canvasObjects, handPos, handPosArr, ws, handRecord } from "../global";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+import { tracker } from "../global";
 
 const VisualPanel = React.forwardRef((props, ref) => {
   // const { editor, onReady } = useFabricJSEditor();
   const [previewMode, setMode] = useState(false);
+  const [scriptFollowing, setScriptFollowing] = useState(false);
   const editor = props.editor;
   const onReady = props.onReady;
   const webcamRef = useRef(null);
   const handCanvasRef = useRef(null);
+  let gNumWordsInScript = 0;
   let r = 1;
   canvasObjects.canvas = editor;
+
+  var { transcript, resetTranscript } = useSpeechRecognition({});
+
+  function generateSpan(inToken, inIndex) {
+    return '<span id="' + inIndex + '">' + inToken + " </span>";
+  }
+
+  function populateScript(inString) {
+    // Sending the script when populated by default (python server should be connected)
+    ws.send(
+      JSON.stringify({
+        name: "populateScript",
+        params: { referenceScript: inString },
+      })
+    );
+    // split into tokens
+    const tokens = inString.split(/\s+/);
+    // generate spans
+    let htmlString = "";
+    let index = 0;
+    for (const token of tokens) {
+      if (token.toLowerCase().match(/[^_\W]+/g)) {
+        //
+        htmlString += generateSpan(token, index);
+        index++;
+      }
+    }
+
+    gNumWordsInScript = index;
+    console.log("Number of words in the script", gNumWordsInScript);
+
+    // const tpScript = document.getElementById("teleprompter-script");
+    // tpScript.innerHTML = htmlString;
+  }
+
+  if (scriptFollowing && transcript) {
+    ws.send(
+      JSON.stringify({
+        name: "scriptFollowing",
+        params: { transcript: transcript },
+      })
+    );
+  }
 
   const handleChangeMode = () => {
     setMode(!previewMode);
     canvasObjects.canmeraOn = !canvasObjects.canmeraOn;
   };
 
+  const handleChangeScriptFollowing = () => {
+    setScriptFollowing(!scriptFollowing);
+    if (!scriptFollowing) {
+      canvasObjects.textEditor.current.editor.save().then((data) => {
+        let currentScript = data.blocks[0].data.text;
+        populateScript(currentScript);
+      });
+      SpeechRecognition.startListening({ continuous: true });
+    } else {
+      tracker.revertQ();
+      resetTranscript();
+      SpeechRecognition.abortListening();
+      ws.send(
+        JSON.stringify({
+          name: "transcriptionComplete",
+          params: {},
+        })
+      );
+    }
+  };
   const runDetection = async () => {
     const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
     const detectorConfig = {
@@ -84,13 +153,24 @@ const VisualPanel = React.forwardRef((props, ref) => {
       const hands = await net.estimateHands(video, { flipHorizontal: true });
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
-      if (obj.customize && !obj.animateFocus) {
-        canvasObjects.visHand("left");
-      }
-
+      const isIntentioanl = handPosArr.isIntentional("left");
+      canvasObjects.visHand("left");
+      // console.log(obj.effect);
+      // if (obj.effect === "customize") {
+      //   let w = handRecord.calculateDis();
+      //   let pm = handPos.getAnimationParam;
+      // } else {
       if (obj.animateFocus) {
-        let pm = handPos.getHandCenters()["left"];
-        obj.moveTo(pm);
+        let pm = handPos.getAnimationParams(
+          "left",
+          obj.effect,
+          obj.fixAttr,
+          obj.t / 1000
+        );
+        obj.animateTo(pm);
+        // console.log(pm);
+        // }
+        obj.t += 50;
       }
 
       // console.log(handPos.getHandAngle("left"));
@@ -137,6 +217,9 @@ const VisualPanel = React.forwardRef((props, ref) => {
         if (canvasObjects.focus.entered) {
           canvasObjects.focus.animateTo(r);
         }
+      }
+      if (message.wid) {
+        tracker.trackTo(message.wid);
       }
     };
     ws.onclose = function () {
@@ -186,8 +269,14 @@ const VisualPanel = React.forwardRef((props, ref) => {
               fontSize="small"
             />
           </IconButton>
-          <IconButton aria-label="scriptfollow">
-            <AutoGraphIcon fontSize="small" className="color-primary" />
+          <IconButton
+            aria-label="scriptfollow"
+            onClick={handleChangeScriptFollowing}
+          >
+            <AutoGraphIcon
+              fontSize="small"
+              className={`${scriptFollowing ? "color-primary" : ""}`}
+            />
           </IconButton>
         </Stack>
       </div>

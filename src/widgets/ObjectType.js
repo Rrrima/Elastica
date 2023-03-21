@@ -43,6 +43,7 @@ class TextObject {
     this.status = null;
     this.fabric = obj;
     this.customize = false;
+    this.t = 0;
     // this.keyframes = [];
     this.enterTL = gsap.timeline();
     this.tl = gsap.timeline();
@@ -65,21 +66,9 @@ class TextObject {
     this.animateFocus = true;
     this.status = "enter";
     this.effect = effect;
-
-    if (effect === "zoom") {
-      gsap.fromTo(
-        this.fabric,
-        { scaleX: 0, scaleY: 0 },
-        {
-          scaleX: this.fixAttr.scaleX,
-          scaleY: this.fixAttr.scaleY,
-          duration: 1,
-          onUpdate: () => this.editor.canvas.renderAll(),
-        }
-      );
-    }
   }
   endEnterWithHand() {
+    this.t = 0;
     this.animateFocus = false;
     this.status = null;
     this.moveBack();
@@ -170,25 +159,25 @@ class TextObject {
       onUpdate: () => this.editor.canvas.renderAll(),
     });
   }
-  animateTo(r) {
-    const curGes = canvasObjects.curGesture;
-    let offSets = [0, 0];
-    let dim = null;
-    if (curGes === "staging") {
-      offSets = [0, -20];
-    } else if (curGes === "pinch") {
-      offSets = [30, 0];
-      dim = this.fabric.get("height");
-    }
-    let params = handPos.getAnimationParams(
-      curGes,
-      this.enterSetting.handed,
-      r,
-      offSets,
-      dim
-    );
-    console.log(curGes);
-    console.log(params);
+  animateTo(params) {
+    // const curGes = canvasObjects.curGesture;
+    // let offSets = [0, 0];
+    // let dim = null;
+    // if (curGes === "staging") {
+    //   offSets = [0, -20];
+    // } else if (curGes === "pinch") {
+    //   offSets = [30, 0];
+    //   dim = this.fabric.get("height");
+    // }
+    // let params = handPos.getAnimationParams(
+    //   curGes,
+    //   this.enterSetting.handed,
+    //   r,
+    //   offSets,
+    //   dim
+    // );
+    // console.log(curGes);
+    // console.log(params);
     // console.log(this.fabric.get("left"));
     // console.log(this.fabric.get("top"));
     gsap.to(this.fabric, {

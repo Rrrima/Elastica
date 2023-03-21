@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import ConfigPanel from "../mainPanels/ConfigPanel";
 import { canvasObjects } from "../global";
 import { objectDict } from "../resources/ObjectDict";
+import { tracker } from "../global";
 
 export default class EnterMarkerTool {
   static get isInline() {
@@ -52,6 +53,8 @@ export default class EnterMarkerTool {
     this.api.selection.expandToTag(mark);
     canvasObjects.addToMarkDict(mark);
     this.triggerSearch(mark);
+    tracker.addHighlight(range.startContainer.textContent, mark.innerHTML);
+    tracker.log();
   }
 
   unwrap(range) {
@@ -75,6 +78,7 @@ export default class EnterMarkerTool {
     //   <ConfigPanel selectedText={curText} status={"enter"} />
     // );
     canvasObjects.rerenderConfig();
+    // indicate focus with the marks in the script panel
     canvasObjects.indicateFocus();
     mark.addEventListener("click", () => {
       canvasObjects.focusedText = curText;
@@ -82,8 +86,10 @@ export default class EnterMarkerTool {
       if (canvasObjects.objectDict[curText]) {
         // set focus to one of the object added to the screen
         canvasObjects.setFocus(canvasObjects.objectDict[curText][0]);
+        canvasObjects.animateAtMark();
       } else {
         canvasObjects.setFocus(null);
+        canvasObjects.animateAtMark();
       }
     });
   }

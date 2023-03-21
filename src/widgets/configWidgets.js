@@ -39,8 +39,9 @@ function TimelineSection() {
       }
       if (canvasObjects.canmeraOn) {
         if (effect === "customize") {
-          const rkey = curText + "-" + curObj.objectId;
-          console.log(handRecord.record[rkey]);
+          // const rkey = curText + "-" + curObj.objectId;
+          // console.log(handRecord.record[rkey]);
+          curObj.enterWithHand(effect);
           curObj.moveBack();
         } else {
           curObj.enterWithHand(effect);
@@ -194,11 +195,11 @@ function AfterEnterSelection(props) {
           }
         >
           <FormControlLabel value="stay" control={<Radio />} label="stay" />
-          <FormControlLabel
+          {/* <FormControlLabel
             value="floating"
             control={<Radio />}
             label="floating"
-          />
+          /> */}
           <FormControlLabel
             value="following"
             control={<Radio />}
@@ -227,11 +228,11 @@ function AfterUpdateSelection(selectedText) {
           }
         >
           <FormControlLabel value="stay" control={<Radio />} label="stay" />
-          <FormControlLabel
+          {/* <FormControlLabel
             value="floating"
             control={<Radio />}
             label="floating"
-          />
+          /> */}
           <FormControlLabel
             value="following"
             control={<Radio />}
@@ -239,8 +240,8 @@ function AfterUpdateSelection(selectedText) {
           />
           <FormControlLabel value="exit" control={<Radio />} label="exit" />
           <FormControlLabel value="back" control={<Radio />} label="back" />
-          <FormControlLabel value="yoyo" control={<Radio />} label="yoyo" />
-          <FormControlLabel value="repeat" control={<Radio />} label="repeat" />
+          {/* <FormControlLabel value="yoyo" control={<Radio />} label="yoyo" />
+          <FormControlLabel value="repeat" control={<Radio />} label="repeat" /> */}
         </RadioGroup>
       </FormControl>
     </div>

@@ -4,12 +4,17 @@ import Stack from "@mui/material/Stack";
 import EditIcon from "@mui/icons-material/Edit";
 import ViewTimelineIcon from "@mui/icons-material/ViewTimeline";
 import TextEditor from "./TextEditor";
+import { useRef } from "react";
+import { canvasObjects } from "../global";
 
 export default function ScriptPanel(props) {
   const gCanvas = props.gCanvas;
+  const textEditorRef = useRef(null);
+  canvasObjects.textEditor = textEditorRef;
+
   return (
     <div className="main-panel" id="script-panel">
-      <TextEditor gCanvas={gCanvas} />
+      <TextEditor gCanvas={gCanvas} ref={textEditorRef} />
 
       <div className="bottom right floatButton">
         <Stack direction="row">

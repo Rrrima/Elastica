@@ -45,7 +45,7 @@ export default function AdaGraphicConfig(props) {
               selectedText={selectedText}
             />
             <HandedSelection status={status} selectedText={selectedText} />
-            {/* <AfterEnterSelection status={status} selectedText={selectedText} /> */}
+            <AfterEnterSelection status={status} selectedText={selectedText} />
           </AccordionDetails>
           {/* <TimelineSection status={status} selectedText={selectedText} /> */}
         </Accordion>
@@ -74,7 +74,7 @@ export default function AdaGraphicConfig(props) {
               status={status}
               selectedText={selectedText}
             />
-            {/* <AfterUpdateSelection status={status} selectedText={selectedText} /> */}
+            <AfterUpdateSelection status={status} selectedText={selectedText} />
           </AccordionDetails>
           {/* <TimelineSection status={status} selectedText={selectedText} /> */}
         </Accordion>

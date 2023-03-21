@@ -1,27 +1,10 @@
+import {
+  angleBetweenVectors,
+  normalizeVector,
+  calculateAvgDistance,
+} from "./utils";
 import * as math from "mathjs";
-
-function angleBetweenVectors(v1, v2) {
-  const dotProduct = v1.x * v2.x + v1.y * v2.y;
-  const magV1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
-  const magV2 = Math.sqrt(v2.x * v2.x + v2.y * v2.y);
-  const angleInRadians = Math.acos(dotProduct / (magV1 * magV2));
-  const angleInDegrees = (angleInRadians * 180) / Math.PI;
-  return angleInDegrees;
-}
-
-function sumArray(arr) {
-  let sum = 0;
-  for (let i = 0; i < arr.length; i++) {
-    sum += arr[i];
-  }
-  return sum;
-}
-
-function normalizeVector(vector) {
-  const vec = vector.map((component) => component - 1 / 2);
-  const r = sumArray(vec);
-  return vec.map((v) => v / r);
-}
+import { handRecord } from "../global";
 
 class HandPos {
   constructor(index) {
@@ -98,7 +81,11 @@ class HandPos {
     } else {
       this.detection = { left: this.left, right: this.right };
     }
-    this.handPosVec = this.get3dVector();
+    // this.handPosVec = this.get3dVector();
+    this.handPosVec = {
+      left: this.getHandAngle("left"),
+      right: this.getHandAngle("right"),
+    };
     this.handCenterVec = this.getHandCenters();
     return [this.handPosVec, this.handCenterVec];
   }
@@ -180,40 +167,76 @@ class HandPos {
     return { left: [xleft, yleft], right: [xright, yright] };
   }
 
-  getAnimationParams(g, handed, r, offSets, dim) {
-    if (g === "pointing") {
-      if (handed === "left") {
-        let pos = this.left[8];
-        return {
-          left: pos[0] * r + offSets[0],
-          top: pos[1] * r + offSets[1],
-          scaleY: 1,
-        };
-      } else if (handed === "right") {
-        let pos = this.right[8];
-        return {
-          left: pos[0] * r + offSets[0],
-          top: pos[1] * r + offSets[1],
-          scaleY: 1,
-        };
-      }
-    } else if (g === "staging") {
-      let pos = this.handCenterVec[handed];
+  getAnimationParams(handed, effect, fa, ts) {
+    const center = this.getHandCenters()[handed];
+    const opacity = ts;
+    if (effect === "float") {
+      const top = center[1] - (fa.height * fa.scaleY) / 2 - 30 * (1 - ts);
+      return { left: center[0], top: top, opacity: opacity };
+    } else if (effect === "zoom") {
+      const scaleX = fa.scaleX * ts;
+      const scaleY = fa.scaleY * ts;
+      const top = center[1];
       return {
-        left: pos[0] * r + offSets[0],
-        top: pos[1] * r + offSets[1],
-        scaleY: 1,
+        left: center[0],
+        top: top,
+        scaleX: scaleX,
+        scaleY: scaleY,
+        opacity: opacity,
       };
-    } else if (g === "pinch") {
-      let params = this.getPinchHandDim(handed);
-      let pos = params.pos;
+    } else if (effect === "appear") {
       return {
-        left: pos[0] * r + offSets[0],
-        top: pos[1] * r + offSets[1],
-        scaleY: params.height / dim.height,
+        left: center[0],
+        top: center[1],
+        opacity: opacity,
+      };
+    } else if (effect === "customize") {
+      let pm = handRecord.getParams();
+      return {
+        left: center[0] + pm.dl,
+        top: center[1] + pm.dt,
+        opacity: opacity,
+        scaleX: pm.sx,
+        scaleY: pm.sy,
+        height: 100,
       };
     }
   }
+
+  // getAnimationParams(g, handed, r, offSets, dim) {
+  //   if (g === "pointing") {
+  //     if (handed === "left") {
+  //       let pos = this.left[8];
+  //       return {
+  //         left: pos[0] * r + offSets[0],
+  //         top: pos[1] * r + offSets[1],
+  //         scaleY: 1,
+  //       };
+  //     } else if (handed === "right") {
+  //       let pos = this.right[8];
+  //       return {
+  //         left: pos[0] * r + offSets[0],
+  //         top: pos[1] * r + offSets[1],
+  //         scaleY: 1,
+  //       };
+  //     }
+  //   } else if (g === "staging") {
+  //     let pos = this.handCenterVec[handed];
+  //     return {
+  //       left: pos[0] * r + offSets[0],
+  //       top: pos[1] * r + offSets[1],
+  //       scaleY: 1,
+  //     };
+  //   } else if (g === "pinch") {
+  //     let params = this.getPinchHandDim(handed);
+  //     let pos = params.pos;
+  //     return {
+  //       left: pos[0] * r + offSets[0],
+  //       top: pos[1] * r + offSets[1],
+  //       scaleY: params.height / dim.height,
+  //     };
+  //   }
+  // }
 
   getPinchHandDim(handed) {
     // if handed is left/right, pos, and
@@ -283,6 +306,18 @@ class HandPosArr {
       this.arrRight.shift();
       this.arrCenterLeft.shift();
       this.arrCenterRight.shift();
+    }
+  }
+  isIntentional(handed, effect) {
+    let arr = this.arrCenterLeft;
+    if (handed === "right") {
+      arr = this.arrCenterRight;
+    }
+    const avgDis = calculateAvgDistance(arr);
+    if (avgDis < 5) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

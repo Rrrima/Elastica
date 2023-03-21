@@ -3,15 +3,22 @@ import { createRoot } from "react-dom/client";
 import ConfigPanel from "./mainPanels/ConfigPanel";
 import { fabric } from "fabric";
 import gsap from "gsap";
+import {
+  euclideanDistance,
+  getIndexOfMinElement,
+  sumArray,
+} from "./widgets/utils";
+import ScriptTracker from "./widgets/ScriptTracker";
+import AnimationDriver from "./widgets/AnimationDriver";
 
 class CanvasObject {
   constructor() {
     this.canvas = null; // == editor
     this.objectDict = {}; // selectedText -> [obj,obj]
-    this.updateDict = {}; // selctedText -> [obj,obj]
+    this.updateDict = {}; // selectedText -> [obj,obj]
     this.idDict = {};
     this.textRank = {};
-    this._n_marks = 0;
+    this._n_marks = 0; // count id for each object
     this.focus = null;
     this.focusedText = null;
     this.curGesture = null;
@@ -20,6 +27,8 @@ class CanvasObject {
     this.markDict = {}; // seletedText -> {'marker': marker dom, 'pos':}
     this.handIndicators = { left: {}, right: {} };
     this.allFingers = ["thumb", "index", "middle", "ring", "pinky"];
+    this.indicateColor = "blue";
+    this.textEditor = null;
     //   createRoots() {
     //     console.log("create root");
     //     const container = document.getElementById("configContainer");
@@ -63,6 +72,7 @@ class CanvasObject {
   visHand(handed) {
     const ftPos = handPos.getFingertipPos(handed, "all");
     let ftAng = handPos.getVisHandAngle(handed);
+    const fill = this.indicateColor;
 
     // var tl = gsap.timeline();
     // this.allFingers.forEach((f) => {
@@ -75,7 +85,12 @@ class CanvasObject {
     // });
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
-        let pm = { top: ftPos[f][1], left: ftPos[f][0], opacity: ftAng[idx] };
+        let pm = {
+          top: ftPos[f][1],
+          left: ftPos[f][0],
+          opacity: ftAng[idx],
+          fill: fill,
+        };
         this.handIndicators[handed][f].set(pm);
       });
     } else {
@@ -111,8 +126,6 @@ class CanvasObject {
     return this.updateDict[this.focusedText];
   }
   indicateFocus() {
-    const updates = this.updateDict[this.focusedText];
-    const enters = this.objectDict[this.focusedText];
     Object.keys(this.markDict).forEach((k) => {
       if (k === this.focusedText) {
         this.markDict[k].mark.classList.add("active");
@@ -185,6 +198,8 @@ class CanvasObject {
     this.root.render(
       <ConfigPanel selectedText={this.focusedText} status={"enter"} />
     );
+  }
+  animateAtMark() {
     const idDict = this.idDict;
     if (this.objectDict[this.focusedText]) {
       this.objectDict[this.focusedText].forEach((obj) => {
@@ -225,10 +240,49 @@ class HandRecords {
     r.handed = "left";
     r.handFinger = handPos.getHandAngle(r.handed);
     r.handCenter = handPos.getHandCenters()[r.handed];
+    r.offsets = [
+      r.objAttr.left - r.handCenter[0],
+      r.objAttr.top - r.handCenter[1],
+    ];
     if (this.record[rkey]) {
       this.record[rkey].push(r);
     } else {
       this.record[rkey] = [r];
+    }
+    canvasObjects.indicateColor = "red";
+    setTimeout(() => {
+      canvasObjects.indicateColor = "blue";
+    }, 300);
+  }
+  calculateDis() {
+    const rkey = canvasObjects.focusedText + "-" + canvasObjects.focus.objectId;
+    const records = this.record[rkey];
+    const dist = [];
+    let v2 = handPos.getHandAngle("left");
+    records.forEach((r) => {
+      let v1 = r.handFinger;
+      dist.push(euclideanDistance(v1, v2));
+    });
+    let weights = dist.map((d) => 1 / d ** 2 + 1);
+    const r = sumArray(weights);
+    weights = weights.map((v) => v / r);
+    return weights;
+  }
+  getParams() {
+    const rkey = canvasObjects.focusedText + "-" + canvasObjects.focus.objectId;
+    const records = this.record[rkey];
+    const w = this.calculateDis();
+    let pm = { dl: 0, dt: 0, sx: 0, sy: 0 };
+    if (w[0]) {
+      records.forEach((r, i) => {
+        pm.dl += w[i] * r.offsets[0];
+        pm.dt += w[i] * r.offsets[1];
+        pm.sx += w[i] * r.objAttr.scaleX;
+        pm.sy += w[i] * r.objAttr.scaleY;
+      });
+      return pm;
+    } else {
+      return;
     }
   }
 }
@@ -240,5 +294,15 @@ const handPos = new HandPos([
 const handPosArr = new HandPosArr(10);
 const ws = new WebSocket("ws://localhost:8000/");
 const handRecord = new HandRecords();
+const tracker = new ScriptTracker();
+const aniDriver = new AnimationDriver();
 
-export { canvasObjects, handPos, handPosArr, ws, handRecord };
+export {
+  canvasObjects,
+  handPos,
+  handPosArr,
+  ws,
+  handRecord,
+  tracker,
+  aniDriver,
+};
