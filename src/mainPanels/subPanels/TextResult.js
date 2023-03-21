@@ -6,7 +6,7 @@ import { TextObject } from "../../widgets/ObjectType";
 export default function TextResult(props) {
   const selectedText = props.selectedText;
   const editor = canvasObjects.canvas;
-  const attr = { left: 50, top: 50, width: 150, fontSize: 20 };
+  const attr = { left: 300, top: 200, width: 150, fontSize: 35 };
   const styleMap = {
     "text-item1": "Impact",
     "text-item2": "Poppins",

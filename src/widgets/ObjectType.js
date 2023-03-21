@@ -42,7 +42,10 @@ class TextObject {
       after: "stay",
       customize: false,
     };
-    this.updates = [];
+    this.updates = {};
+    // {focusedText:{}}
+    // attr: thisobj.getCurrentAttr(),
+    // setting: { effect: "transform", handed: "left", after: "stay" },
     this.create();
     this.addListeners();
     this.fixAttr = this.getCurrentAttr();
@@ -50,6 +53,15 @@ class TextObject {
   }
   exitCanvas() {
     this.editor.canvas.remove(this.fabric);
+    this.editor.canvas.renderAll();
+  }
+  revert() {
+    const preText = canvasObjects.getPreviousKey(Object.keys(this.updates));
+    if (preText) {
+      this.fabric.set(this.updates[preText].attr);
+    } else {
+      this.fabric.set(this.fixAttr);
+    }
     this.editor.canvas.renderAll();
   }
   enterWithHand(effect) {
@@ -120,14 +132,14 @@ class TextObject {
     // console.log(" =====  all updated element!! ====");
     // console.log(this.fabric);
   }
-  createUpdate(relatedText) {
-    const d = {
-      relatedText: relatedText,
-      effect: "trasform",
-      handed: "left",
-      after: "stay",
-    };
-  }
+  //   createUpdate(relatedText) {
+  //     const d = {
+  //       relatedText: relatedText,
+  //       effect: "trasform",
+  //       handed: "left",
+  //       after: "stay",
+  //     };
+  //   }
   disabled() {
     this.fabric.set("opacity", 0.3);
     this.fabric.set("selectable", false);

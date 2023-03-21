@@ -35,27 +35,50 @@ export default function AdaGraphicConfig(props) {
         newList.push(e);
       }
     });
+    if (newList.length === 0) {
+      newList = null;
+    }
     canvasObjects.objectDict[canvasObjects.focusedText] = newList;
     // remove from updateDict
-    let newList2 = [];
-    if (
-      canvasObjects.updatetDict &&
-      canvasObjects.updateDict[canvasObjects.focusedText]
-    ) {
-      canvasObjects.updatetDict[canvasObjects.focusedText].forEach((e) => {
-        if (e.objectId !== curId) {
-          newList2.push(e);
+    if (canvasObjects.updateDict) {
+      Object.keys(canvasObjects.updateDict).forEach((t) => {
+        let newList2 = [];
+        canvasObjects.updateDict[t].forEach((e) => {
+          if (e !== curId) {
+            newList2.push(e);
+          }
+        });
+        if (newList2.length === 0) {
+          newList2 = null;
         }
+        canvasObjects.updateDict[t] = newList2;
       });
     }
-    canvasObjects.updateDict[canvasObjects.focusedText] = newList2;
+
     // remove from idDict
     delete canvasObjects.idDict[curId];
     canvasObjects.rerenderConfig();
   };
   const removeState = () => {
     const curFocus = canvasObjects.focus;
+    const curText = canvasObjects.focusedText;
     const curId = curFocus.objectId;
+    curFocus.revert();
+    // remove from updateDict
+    let newList2 = [];
+    console.log(curId);
+    canvasObjects.updateDict[canvasObjects.focusedText].forEach((e) => {
+      if (e !== curId) {
+        newList2.push(e);
+      }
+    });
+    if (newList2.length === 0) {
+      newList2 = null;
+    }
+    canvasObjects.updateDict[canvasObjects.focusedText] = newList2;
+    // update object updates list
+    delete curFocus.updates[curText];
+    canvasObjects.rerenderConfig();
   };
   return (
     <div>
@@ -113,7 +136,7 @@ export default function AdaGraphicConfig(props) {
               selectedText={selectedText}
             />
             <AfterUpdateSelection status={status} selectedText={selectedText} />
-            <IconButton aria-label="delete" onClick={() => {}}>
+            <IconButton aria-label="delete" onClick={removeState}>
               <DeleteIcon />
             </IconButton>
           </AccordionDetails>

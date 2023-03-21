@@ -157,8 +157,20 @@ class CanvasObject {
       <ConfigPanel selectedText={this.focusedText} status={"enter"} />
     );
   }
+  getPreviousKey(keys) {
+    let mdist = 999;
+    let findK = null;
+    const textRank = this.textRank;
+    const curRank = textRank[this.focusedText];
+    keys.forEach((k) => {
+      if (textRank[k] < curRank && mdist > curRank - textRank[k]) {
+        findK = k;
+        mdist = curRank - textRank[k];
+      }
+    });
+    return findK;
+  }
   addToUpdate(text, obj) {
-    console.log("add to update");
     if (this.updateDict[text]) {
       if (!this.updateDict[text].includes(obj.objectId)) {
         this.updateDict[text].push(obj.objectId);
@@ -166,29 +178,6 @@ class CanvasObject {
     } else {
       this.updateDict[text] = [obj.objectId];
     }
-  }
-  removeObject() {
-    const curFocus = canvasObjects.focus;
-    const curId = this.focus.objectId;
-    this.focus.exitCanvas();
-    // remove from obejctDict
-    let newList = [];
-    this.objectDict[this.focusedText].forEach((e) => {
-      if (e.objectId !== curId) {
-        newList.push(e);
-      }
-    });
-    this.objectDict[this.focusedText] = newList;
-    // remove from updateDict
-    let newList2 = [];
-    this.updatetDict[this.focusedText].forEach((e) => {
-      if (e.objectId !== curId) {
-        newList2.push(e);
-      }
-    });
-    this.updateDict[this.focusedText] = newList2;
-    // remove from idDict
-    this.idDict.delete(curId);
   }
   enbaleAll() {
     Object.keys(this.idDict).forEach((k) => {

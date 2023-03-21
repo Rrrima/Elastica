@@ -19,6 +19,7 @@ import PauseIcon from "@mui/icons-material/Pause";
 import { useState } from "react";
 import { ws } from "../global";
 import { handRecord } from "../global";
+import { aniDriver } from "../global";
 
 gsap.registerPlugin(Draggable);
 
@@ -33,38 +34,7 @@ function handleCustomizationEnter() {
 }
 
 function TimelineSection() {
-  const [isPlay, setPlayMode] = useState(false);
-
-  function changePlayMode() {
-    setPlayMode(!isPlay);
-    if (!isPlay) {
-      // play the animation based on hand gesture
-      const curObj = canvasObjects.focus;
-      const curText = canvasObjects.focusedText;
-      let effect = null;
-      let status = "enter";
-      if (curObj.relatedText === curText) {
-        effect = curObj.enterSetting.effect;
-      } else {
-        effect = curObj.updates[curText].setting.effect;
-      }
-      if (canvasObjects.canmeraOn) {
-        if (effect === "customize") {
-          // const rkey = curText + "-" + curObj.objectId;
-          // console.log(handRecord.record[rkey]);
-          curObj.enterWithHand(effect);
-          curObj.moveBack();
-        } else {
-          curObj.enterWithHand(effect);
-          setTimeout(() => {
-            curObj.endEnterWithHand(effect);
-          }, 1500);
-        }
-      } else {
-        canvasObjects.animateAtMark();
-      }
-    }
-  }
+  // const [isPlay, setPlayMode] = useState(false);
   function getTimePercentage(d) {
     return (d.x - d.minX) / (d.maxX - d.minX);
   }
@@ -91,9 +61,8 @@ function TimelineSection() {
       />
       <div id="timeline-container">
         <Stack direction="row" spacing={1}>
-          <IconButton aria-label="delete" onClick={changePlayMode}>
-            {!isPlay && <PlayArrowIcon />}
-            {isPlay && <PauseIcon />}
+          <IconButton aria-label="delete" onClick={aniDriver.triggerAuthoring}>
+            <PlayArrowIcon />
           </IconButton>
           <div id="timeline"></div>
         </Stack>
@@ -122,7 +91,6 @@ function InfoBadge(props) {
 }
 
 function HandedSelection(props) {
-  const selectedText = props.selectedText;
   const handleChange = (e) => {
     console.log("change template animation");
     canvasObjects.focus.changeEnterSetting("handed", e.target.value);
