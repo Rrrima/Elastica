@@ -81,11 +81,11 @@ class HandPos {
     } else {
       this.detection = { left: this.left, right: this.right };
     }
-    // this.handPosVec = this.get3dVector();
-    this.handPosVec = {
-      left: this.getHandAngle("left"),
-      right: this.getHandAngle("right"),
-    };
+    this.handPosVec = this.get3dVector();
+    // this.handPosVec = {
+    //   left: this.getHandAngle("left"),
+    //   right: this.getHandAngle("right"),
+    // };
     this.handCenterVec = this.getHandCenters();
     return [this.handPosVec, this.handCenterVec];
   }
@@ -167,7 +167,7 @@ class HandPos {
     return { left: [xleft, yleft], right: [xright, yright] };
   }
 
-  getAnimationParams(handed, effect, fa, ts) {
+  getAnimationParams(obj, handed, effect, fa, ts) {
     const center = this.getHandCenters()[handed];
     const opacity = ts;
     if (effect === "float") {
@@ -191,7 +191,7 @@ class HandPos {
         opacity: opacity,
       };
     } else if (effect === "customize") {
-      let pm = handRecord.getParams();
+      let pm = obj.handRecord.getParams();
       return {
         left: center[0] + pm.dl,
         top: center[1] + pm.dt,

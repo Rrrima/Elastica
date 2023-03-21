@@ -207,6 +207,9 @@ $bg-red: #fff6f6;
   overflow: scroll;
 }
 /////////////////  PARAM CONFIG PANEL  /////////////////
+.delete-button {
+  position: absolute;
+}
 .enter-indicator {
   color: $blue-dark;
 }

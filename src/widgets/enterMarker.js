@@ -54,7 +54,7 @@ export default class EnterMarkerTool {
     canvasObjects.addToMarkDict(mark);
     this.triggerSearch(mark);
     tracker.addHighlight(range.startContainer.textContent, mark.innerHTML);
-    tracker.log();
+    // tracker.log();
   }
 
   unwrap(range) {

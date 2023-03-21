@@ -50,6 +50,37 @@ function calculateAvgDistance(arr) {
   }
 }
 
+function distPenalty(xg, xf, t) {
+  return 1 / (1 + Math.pow(t, 2) * Math.pow(xg - xf, 2));
+}
+
+function gaussianBlending(xg, xf, t) {
+  let w = Math.exp(-Math.pow(0.04 * t, 2));
+  if (t > 30) {
+    w = distPenalty(xg, xf, t) * w;
+  }
+  console.log(w);
+  return w * xg + (1 - w) * xf;
+}
+
+function bumpBlending(xg, xf, t) {
+  let eps = 14;
+  let w;
+  if (t < eps) {
+    if (t > 0.9 * eps) {
+      w =
+        distPenalty(xg, xf, t) *
+        Math.exp(-1 / (1 - Math.pow(t / eps, 2))) *
+        Math.E;
+    } else {
+      w = Math.exp(-1 / (1 - Math.pow(t / eps, 2))) * Math.E;
+    }
+  } else {
+    w = 0;
+  }
+  return w * xg + (1 - w) * xf;
+}
+
 export {
   euclideanDistance,
   angleBetweenVectors,
@@ -57,4 +88,6 @@ export {
   normalizeVector,
   calculateAvgDistance,
   getIndexOfMinElement,
+  gaussianBlending,
+  bumpBlending,
 };

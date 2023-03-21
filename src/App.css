@@ -237,6 +237,10 @@
   overflow: scroll;
 }
 
+.delete-button {
+  position: absolute;
+}
+
 .enter-indicator {
   color: #4d87f5;
 }

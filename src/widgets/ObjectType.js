@@ -1,27 +1,6 @@
 import gsap from "gsap";
 import { canvasObjects } from "../global";
-import { handPos } from "../global";
-import { createRoot } from "react-dom/client";
-import ConfigPanel from "../mainPanels/ConfigPanel";
-import { FaceRetouchingOffSharp } from "@mui/icons-material";
-
-function keyframeExtractor(e) {
-  const attrNames = [
-    "scaleX",
-    "scaleY",
-    "top",
-    "left",
-    "opacity",
-    "dynamicMinWidth",
-    "height",
-  ];
-  const target = e.target;
-  let k = {};
-  for (let i = 0; i < attrNames.length; i++) {
-    k[attrNames[i]] = target[attrNames[i]];
-  }
-  return k;
-}
+import HandRecords from "./HandRecords";
 
 class TextObject {
   // initiate a new object
@@ -37,7 +16,8 @@ class TextObject {
     } else {
       this.objectId = this.relatedText + "-0";
     }
-    this.animateFocus = false;
+    this.animateFocus = false; // indicate the intentionality detected
+    this.animateReady = true; // indicate the active window start
     this.active = false;
     this.entered = false;
     this.status = null;
@@ -56,11 +36,21 @@ class TextObject {
       "dynamicMinWidth",
       "height",
     ];
-    this.enterSetting = { effect: "appear", handed: "left", after: "stay" };
+    this.enterSetting = {
+      effect: "appear",
+      handed: "left",
+      after: "stay",
+      customize: false,
+    };
     this.updates = [];
     this.create();
     this.addListeners();
     this.fixAttr = this.getCurrentAttr();
+    this.handRecord = new HandRecords();
+  }
+  exitCanvas() {
+    this.editor.canvas.remove(this.fabric);
+    this.editor.canvas.renderAll();
   }
   enterWithHand(effect) {
     this.animateFocus = true;
@@ -73,17 +63,51 @@ class TextObject {
     this.status = null;
     this.moveBack();
   }
+  getReady(pos) {
+    const rdict = { ...this.fixAttr };
+    rdict.opacity = 0;
+    if (!pos) {
+      this.fabric.set(rdict);
+    }
+  }
   animateEnter() {
     this.fabric.set("selectable", true);
-    gsap.to(this.fabric, {
-      ...this.fixAttr,
-      immediateRender: true,
-      onUpdate: () => this.editor.canvas.renderAll(),
-    });
+    // this.fixAttr : the enter point
+    this.getReady();
+    const kf = this.fixAttr;
+    const effect = this.enterSetting.effect;
+    const editor = this.editor;
+    if (effect === "zoom") {
+      gsap.fromTo(
+        this.fabric,
+        { scaleX: 0, scaleY: 0 },
+        {
+          ...kf,
+          duration: 1,
+          onUpdate: () => editor.canvas.renderAll(),
+        }
+      );
+    } else if (effect === "float") {
+      gsap.fromTo(
+        this.fabric,
+        { top: kf.top + 30, opacity: 0 },
+        {
+          ...kf,
+          duration: 1,
+          onUpdate: () => editor.canvas.renderAll(),
+        }
+      );
+    } else {
+      gsap.to(this.fabric, {
+        ...this.fixAttr,
+        immediateRender: true,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    }
   }
   animateUpdate(t) {
     this.fabric.set("selectable", true);
-    const thisfab = this.fabric;
+    //
     gsap.to(this.fabric, {
       ...this.updates[t].attr,
       immediateRender: true,
@@ -182,7 +206,6 @@ class TextObject {
     // console.log(this.fabric.get("top"));
     gsap.to(this.fabric, {
       ...params,
-      height: 2,
       immediateRender: true,
       onUpdate: () => this.editor.canvas.renderAll(),
     });
@@ -262,7 +285,6 @@ class TextObject {
   update() {
     const base = this.updates[canvasObjects.focusedText].attr;
     const effect = this.updates[canvasObjects.focusedText].setting["effect"];
-    console.log(effect);
     gsap.to(this.fabric, {
       ...base,
       duration: 0,
@@ -289,12 +311,29 @@ class TextObject {
       );
     }
   }
+  isIntentional() {
+    if (this.animateReady) {
+      // start intentionality detection
+      const curText = canvasObjects.focusedText;
+      if (this.relatedText === curText) {
+        // enter
+        if (this.handRecord.record[curText]) {
+          const sim = this.handRecord.record[curText].getSimilarity();
+          console.log(sim);
+        } else {
+          console.log();
+        }
+      }
+    } else {
+      console.log("activate object for intentionality detection");
+    }
+  }
   addListeners() {
     let relatedText = this.relatedText;
     let thisobj = this;
     this.fabric.on("modified", function (e) {
       if (relatedText === canvasObjects.focusedText) {
-        if (thisobj.enterSetting.effect !== "customize") {
+        if (!canvasObjects.customizeMode) {
           console.log("fix position change");
           thisobj.fixAttr = thisobj.getCurrentAttr();
         }

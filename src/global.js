@@ -3,13 +3,9 @@ import { createRoot } from "react-dom/client";
 import ConfigPanel from "./mainPanels/ConfigPanel";
 import { fabric } from "fabric";
 import gsap from "gsap";
-import {
-  euclideanDistance,
-  getIndexOfMinElement,
-  sumArray,
-} from "./widgets/utils";
 import ScriptTracker from "./widgets/ScriptTracker";
 import AnimationDriver from "./widgets/AnimationDriver";
+import { CurrencyFranc } from "@mui/icons-material";
 
 class CanvasObject {
   constructor() {
@@ -29,6 +25,8 @@ class CanvasObject {
     this.allFingers = ["thumb", "index", "middle", "ring", "pinky"];
     this.indicateColor = "blue";
     this.textEditor = null;
+    this.customizaMode = false;
+    this.handed = "left";
     //   createRoots() {
     //     console.log("create root");
     //     const container = document.getElementById("configContainer");
@@ -38,14 +36,17 @@ class CanvasObject {
   }
 
   handleCustomization(event) {
+    const curObj = this.focus;
     if (event.key === "r") {
-      handRecord.addToRecord();
+      curObj.handRecord.addToRecord();
     }
   }
   startCustomization() {
+    this.customizaMode = true;
     document.addEventListener("keydown", this.handleCustomization);
   }
   endCustomization() {
+    this.customizaMode = false;
     document.removeEventListener("keydown", this.handleCustomization);
   }
   initializeIndicator(handed) {
@@ -71,9 +72,8 @@ class CanvasObject {
   }
   visHand(handed) {
     const ftPos = handPos.getFingertipPos(handed, "all");
-    let ftAng = handPos.getVisHandAngle(handed);
+    // let ftAng = handPos.getVisHandAngle(handed);
     const fill = this.indicateColor;
-
     // var tl = gsap.timeline();
     // this.allFingers.forEach((f) => {
     //   let pm = { top: ftPos[f][1], left: ftPos[f][0], opacity: 1 };
@@ -88,7 +88,8 @@ class CanvasObject {
         let pm = {
           top: ftPos[f][1],
           left: ftPos[f][0],
-          opacity: ftAng[idx],
+          opacity: 1,
+          //   opacity: ftAng[idx],
           fill: fill,
         };
         this.handIndicators[handed][f].set(pm);
@@ -125,6 +126,7 @@ class CanvasObject {
   getUpdateObjects() {
     return this.updateDict[this.focusedText];
   }
+  // set different style of the mark to indicate focus
   indicateFocus() {
     Object.keys(this.markDict).forEach((k) => {
       if (k === this.focusedText) {
@@ -165,14 +167,36 @@ class CanvasObject {
       this.updateDict[text] = [obj.objectId];
     }
   }
-  removeObject() {}
-  removeUpdate(text, obj) {}
+  removeObject() {
+    const curFocus = canvasObjects.focus;
+    const curId = this.focus.objectId;
+    this.focus.exitCanvas();
+    // remove from obejctDict
+    let newList = [];
+    this.objectDict[this.focusedText].forEach((e) => {
+      if (e.objectId !== curId) {
+        newList.push(e);
+      }
+    });
+    this.objectDict[this.focusedText] = newList;
+    // remove from updateDict
+    let newList2 = [];
+    this.updatetDict[this.focusedText].forEach((e) => {
+      if (e.objectId !== curId) {
+        newList2.push(e);
+      }
+    });
+    this.updateDict[this.focusedText] = newList2;
+    // remove from idDict
+    this.idDict.delete(curId);
+  }
   enbaleAll() {
     Object.keys(this.idDict).forEach((k) => {
       this.idDict[k].fabric.set("selectable", true);
     });
   }
   setSelection(obj) {
+    // same as setfocus but do not re-render config panel
     this.enbaleAll();
     if (obj) {
       if (this.focus) {
@@ -199,6 +223,7 @@ class CanvasObject {
       <ConfigPanel selectedText={this.focusedText} status={"enter"} />
     );
   }
+  // default animate all at mark
   animateAtMark() {
     const idDict = this.idDict;
     if (this.objectDict[this.focusedText]) {
@@ -229,80 +254,13 @@ class CanvasObject {
   }
 }
 
-class HandRecords {
-  constructor() {
-    this.record = {};
-  }
-  addToRecord() {
-    const rkey = canvasObjects.focusedText + "-" + canvasObjects.focus.objectId;
-    const r = {};
-    r.objAttr = canvasObjects.focus.getCurrentAttr();
-    r.handed = "left";
-    r.handFinger = handPos.getHandAngle(r.handed);
-    r.handCenter = handPos.getHandCenters()[r.handed];
-    r.offsets = [
-      r.objAttr.left - r.handCenter[0],
-      r.objAttr.top - r.handCenter[1],
-    ];
-    if (this.record[rkey]) {
-      this.record[rkey].push(r);
-    } else {
-      this.record[rkey] = [r];
-    }
-    canvasObjects.indicateColor = "red";
-    setTimeout(() => {
-      canvasObjects.indicateColor = "blue";
-    }, 300);
-  }
-  calculateDis() {
-    const rkey = canvasObjects.focusedText + "-" + canvasObjects.focus.objectId;
-    const records = this.record[rkey];
-    const dist = [];
-    let v2 = handPos.getHandAngle("left");
-    records.forEach((r) => {
-      let v1 = r.handFinger;
-      dist.push(euclideanDistance(v1, v2));
-    });
-    let weights = dist.map((d) => 1 / d ** 2 + 1);
-    const r = sumArray(weights);
-    weights = weights.map((v) => v / r);
-    return weights;
-  }
-  getParams() {
-    const rkey = canvasObjects.focusedText + "-" + canvasObjects.focus.objectId;
-    const records = this.record[rkey];
-    const w = this.calculateDis();
-    let pm = { dl: 0, dt: 0, sx: 0, sy: 0 };
-    if (w[0]) {
-      records.forEach((r, i) => {
-        pm.dl += w[i] * r.offsets[0];
-        pm.dt += w[i] * r.offsets[1];
-        pm.sx += w[i] * r.objAttr.scaleX;
-        pm.sy += w[i] * r.objAttr.scaleY;
-      });
-      return pm;
-    } else {
-      return;
-    }
-  }
-}
-
 const canvasObjects = new CanvasObject();
 const handPos = new HandPos([
   0, 2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 19, 20,
 ]);
 const handPosArr = new HandPosArr(10);
 const ws = new WebSocket("ws://localhost:8000/");
-const handRecord = new HandRecords();
 const tracker = new ScriptTracker();
 const aniDriver = new AnimationDriver();
 
-export {
-  canvasObjects,
-  handPos,
-  handPosArr,
-  ws,
-  handRecord,
-  tracker,
-  aniDriver,
-};
+export { canvasObjects, handPos, handPosArr, ws, tracker, aniDriver };

@@ -2,6 +2,7 @@ import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import { objectDict } from "../resources/ObjectDict";
 import Radio from "@mui/material/Radio";
+import { Switch } from "@mui/material";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
@@ -20,6 +21,16 @@ import { ws } from "../global";
 import { handRecord } from "../global";
 
 gsap.registerPlugin(Draggable);
+
+function handleCustomizationEnter() {
+  let curObj = canvasObjects.focus;
+  curObj.enterSetting["customize"] = !curObj.enterSetting["customize"];
+  if (curObj.enterSetting["customize"] && !canvasObjects.canmeraOn) {
+    console.log("please open camera for customization");
+  } else if (canvasObjects.canmeraOn) {
+    canvasObjects.startCustomization();
+  }
+}
 
 function TimelineSection() {
   const [isPlay, setPlayMode] = useState(false);
@@ -49,6 +60,8 @@ function TimelineSection() {
             curObj.endEnterWithHand(effect);
           }, 1500);
         }
+      } else {
+        canvasObjects.animateAtMark();
       }
     }
   }
@@ -60,7 +73,7 @@ function TimelineSection() {
     type: "x",
     bounds: document.getElementById("timeline"),
     onDrag: () => {
-      console.log(getTimePercentage(scrubber[0]));
+      // console.log(getTimePercentage(scrubber[0]));
       let tp = getTimePercentage(scrubber[0]);
       canvasObjects.focus.playAt(tp);
     },
@@ -132,12 +145,7 @@ function HandedSelection(props) {
           <FormControlLabel value="left" control={<Radio />} label="left" />
           <FormControlLabel value="right" control={<Radio />} label="right" />
           <FormControlLabel value="both" control={<Radio />} label="both" />
-          <FormControlLabel
-            value="disabled"
-            disabled
-            control={<Radio />}
-            label="random"
-          />
+          <FormControlLabel value="none" control={<Radio />} label="none" />
         </RadioGroup>
       </FormControl>
     </div>
@@ -274,15 +282,16 @@ function EnterTemplateSelection(props) {
             label="float up"
           />
           <FormControlLabel value="zoom" control={<Radio />} label="zoom in" />
-          <FormControlLabel
+          {/* <FormControlLabel
             value="sketch"
             control={<Radio />}
             label="sketching"
-          />
+          /> */}
           <FormControlLabel
             value="customize"
-            control={<Radio />}
+            control={<Switch />}
             label="customize"
+            onChange={handleCustomizationEnter}
           />
         </RadioGroup>
       </FormControl>
