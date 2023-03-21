@@ -28,6 +28,7 @@ function handleCustomizationEnter() {
   curObj.enterSetting["customize"] = !curObj.enterSetting["customize"];
   if (curObj.enterSetting["customize"] && !canvasObjects.canmeraOn) {
     console.log("please open camera for customization");
+    canvasObjects.startCustomization();
   } else if (canvasObjects.canmeraOn) {
     canvasObjects.startCustomization();
   }
@@ -61,7 +62,7 @@ function TimelineSection() {
       />
       <div id="timeline-container">
         <Stack direction="row" spacing={1}>
-          <IconButton aria-label="delete" onClick={aniDriver.triggerAuthoring}>
+          <IconButton aria-label="delete" onClick={aniDriver.triggerPreview}>
             <PlayArrowIcon />
           </IconButton>
           <div id="timeline"></div>

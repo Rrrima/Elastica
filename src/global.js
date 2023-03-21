@@ -5,13 +5,19 @@ import { fabric } from "fabric";
 import gsap from "gsap";
 import ScriptTracker from "./widgets/ScriptTracker";
 import AnimationDriver from "./widgets/AnimationDriver";
-import { CurrencyFranc } from "@mui/icons-material";
+
+function handleCustomization(event) {
+  const curObj = canvasObjects.focus;
+  if (event.key === "r") {
+    curObj.handRecord.addToRecord();
+  }
+}
 
 class CanvasObject {
   constructor() {
     this.canvas = null; // == editor
     this.objectDict = {}; // selectedText -> [obj,obj]
-    this.updateDict = {}; // selectedText -> [obj,obj]
+    this.updateDict = {}; // selectedText -> [objid,objid]
     this.idDict = {};
     this.textRank = {};
     this._n_marks = 0; // count id for each object
@@ -25,7 +31,7 @@ class CanvasObject {
     this.allFingers = ["thumb", "index", "middle", "ring", "pinky"];
     this.indicateColor = "blue";
     this.textEditor = null;
-    this.customizaMode = false;
+    this.customizeMode = false;
     this.handed = "left";
     //   createRoots() {
     //     console.log("create root");
@@ -35,19 +41,14 @@ class CanvasObject {
     //   }
   }
 
-  handleCustomization(event) {
-    const curObj = this.focus;
-    if (event.key === "r") {
-      curObj.handRecord.addToRecord();
-    }
-  }
   startCustomization() {
-    this.customizaMode = true;
-    document.addEventListener("keydown", this.handleCustomization);
+    console.log("customization started");
+    this.customizeMode = true;
+    document.addEventListener("keydown", handleCustomization);
   }
   endCustomization() {
-    this.customizaMode = false;
-    document.removeEventListener("keydown", this.handleCustomization);
+    this.customizeMode = false;
+    document.removeEventListener("keydown", handleCustomization);
   }
   initializeIndicator(handed) {
     this.allFingers.forEach((f) => {
@@ -63,11 +64,13 @@ class CanvasObject {
   }
   removeHand(handed) {
     // console.log("remove!");
-    this.allFingers.forEach((f) => {
-      this.handIndicators[handed][f].set({
-        opacity: 0,
+    if (this.handIndicators[handed]) {
+      this.allFingers.forEach((f) => {
+        this.handIndicators[handed][f].set({
+          opacity: 0,
+        });
       });
-    });
+    }
     this.canvas.canvas.renderAll();
   }
   visHand(handed) {
@@ -251,5 +254,9 @@ const handPosArr = new HandPosArr(10);
 const ws = new WebSocket("ws://localhost:8000/");
 const tracker = new ScriptTracker();
 const aniDriver = new AnimationDriver();
+const C = {
+  sim: { eps: 1.5, b: 0.45, thred: 0.7 },
+  handStatic: { eps: 0.5, b: 6, thred: 0.99 },
+};
 
-export { canvasObjects, handPos, handPosArr, ws, tracker, aniDriver };
+export { canvasObjects, handPos, handPosArr, ws, tracker, aniDriver, C };

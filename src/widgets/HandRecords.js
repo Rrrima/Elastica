@@ -1,6 +1,7 @@
 import { canvasObjects, handPos } from "../global";
 import { euclideanDistance, sumArray } from "./utils";
-
+import { gaussianRBF } from "./utils";
+import { C } from "../global";
 export default class HandRecords {
   constructor() {
     this.record = {};
@@ -35,7 +36,11 @@ export default class HandRecords {
       let v2 = handPos.handPosVec[r.handed];
       dist.push(euclideanDistance(v1, v2));
     });
-    return dist;
+    // console.log(dist);
+    const sim = dist.map((d) =>
+      d > C.sim.b ? gaussianRBF(C.sim.eps, d - C.sim.b) : 1
+    );
+    return sim;
   }
   getWeights() {
     const dist = this.getSimilarity();

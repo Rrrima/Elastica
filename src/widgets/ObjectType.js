@@ -1,6 +1,8 @@
 import gsap from "gsap";
-import { canvasObjects } from "../global";
+import { canvasObjects, handPos, handPosArr } from "../global";
 import HandRecords from "./HandRecords";
+import { entropy, normalizeSumOne } from "./utils";
+import { C } from "../global";
 
 class TextObject {
   // initiate a new object
@@ -17,7 +19,7 @@ class TextObject {
       this.objectId = this.relatedText + "-0";
     }
     this.animateFocus = false; // indicate the intentionality detected
-    this.animateReady = true; // indicate the active window start
+    this.animateReady = false; // indicate the active window start
     this.active = false;
     this.entered = false;
     this.status = null;
@@ -50,6 +52,40 @@ class TextObject {
     this.addListeners();
     this.fixAttr = this.getCurrentAttr();
     this.handRecord = new HandRecords();
+  }
+  detectIntentionality() {
+    // for preview;
+    // detect intentionality whenever animteFocus == false
+    // for performance detect for 600ms
+    // called when camera on
+    this.animateReady = true; // open active window
+    const curText = canvasObjects.focusedText;
+    let status = "enter";
+    let handed = "left";
+    canvasObjects.removeHand(handed);
+    // get status
+    if (this.relatedText !== curText) {
+      status = "update";
+    }
+    if (status === "enter") {
+      handed = this.enterSetting.handed;
+    } else {
+      handed = this.updates[curText].setting.handed;
+    }
+    const intention = this.isIntentional(handed);
+    if (
+      intention.type === "general" &&
+      intention.confidence > C.handStatic.thred
+    ) {
+      this.animateFocus = true; // start adaptation from t
+    }
+    if (intention.type === "customize") {
+      if (this.intention.confidence[0] > C.sim.thred) {
+        this.animateFocus = true;
+      } else if (this.intention.confidence[1] > C.handStatic.thred) {
+        this.animateFocus = true;
+      }
+    }
   }
   exitCanvas() {
     this.editor.canvas.remove(this.fabric);
@@ -323,17 +359,26 @@ class TextObject {
       );
     }
   }
-  isIntentional() {
+  isIntentional(handed) {
     if (this.animateReady) {
       // start intentionality detection
       const curText = canvasObjects.focusedText;
       if (this.relatedText === curText) {
         // enter
         if (this.handRecord.record[curText]) {
-          const sim = this.handRecord.record[curText].getSimilarity();
-          console.log(sim);
+          const sim = this.handRecord.getSimilarity(); // euclidean distance between vector
+          const confidence = Math.max(...sim);
+          const weights = normalizeSumOne(sim);
+          return {
+            type: "customize",
+            confidence: [confidence, handPosArr.isIntentional(handed)],
+            weights: weights,
+          };
         } else {
-          console.log();
+          return {
+            type: "general",
+            confidence: handPosArr.isIntentional(handed),
+          };
         }
       }
     } else {
@@ -377,6 +422,7 @@ class TextObject {
   }
 }
 
+//////////
 class ImageObject {
   // initiate a new object
   // -- link to a certain object with entering config

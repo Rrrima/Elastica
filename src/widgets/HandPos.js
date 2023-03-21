@@ -2,9 +2,11 @@ import {
   angleBetweenVectors,
   normalizeVector,
   calculateAvgDistance,
+  gaussianRBF,
 } from "./utils";
 import * as math from "mathjs";
 import { handRecord } from "../global";
+import { C } from "../global";
 
 class HandPos {
   constructor(index) {
@@ -81,13 +83,40 @@ class HandPos {
     } else {
       this.detection = { left: this.left, right: this.right };
     }
-    this.handPosVec = this.get3dVector();
+    // this.handPosVec = this.get3dVector();
+    this.handPosVec = this.getAnglePlusVector();
     // this.handPosVec = {
     //   left: this.getHandAngle("left"),
     //   right: this.getHandAngle("right"),
     // };
     this.handCenterVec = this.getHandCenters();
     return [this.handPosVec, this.handCenterVec];
+  }
+
+  getAnglePlusVector() {
+    let vec = {};
+    ["left", "right"].forEach((handed) => {
+      const vec1 = this.getHandAngle(handed);
+      const vec2 = this.getHandFingerTip(handed);
+      vec[handed] = [...vec1, ...vec2];
+    });
+    return vec;
+  }
+
+  getFingerTip(handed, fingerName) {
+    const ptIndx = this.fingerMap[fingerName];
+    let hand3d = null;
+    if (handed === "left") {
+      hand3d = this.left3d;
+    } else if (handed === "right") {
+      hand3d = this.right3d;
+    }
+    if (this.isDetected[handed]) {
+      const p1 = hand3d[ptIndx[2]];
+      return p1.map((p) => p * 10);
+    } else {
+      return [null, null, null];
+    }
   }
 
   getAngle(handed, fingerName) {
@@ -98,6 +127,7 @@ class HandPos {
     } else if (handed === "right") {
       hand3d = this.right3d;
     }
+
     if (this.isDetected[handed]) {
       // console.log(ptIndx);
       // const p0 = hand3d[0];
@@ -115,7 +145,16 @@ class HandPos {
       return;
     }
   }
-
+  getHandFingerTip(handed) {
+    const vec = [
+      ...this.getFingerTip(handed, "thumb"),
+      ...this.getFingerTip(handed, "index"),
+      ...this.getFingerTip(handed, "middle"),
+      ...this.getFingerTip(handed, "ring"),
+      ...this.getFingerTip(handed, "pinky"),
+    ];
+    return vec;
+  }
   getHandAngle(handed) {
     const vec = [
       this.getAngle(handed, "thumb"),
@@ -308,17 +347,15 @@ class HandPosArr {
       this.arrCenterRight.shift();
     }
   }
-  isIntentional(handed, effect) {
+  isIntentional(handed) {
     let arr = this.arrCenterLeft;
     if (handed === "right") {
       arr = this.arrCenterRight;
     }
-    const avgDis = calculateAvgDistance(arr);
-    if (avgDis < 5) {
-      return true;
-    } else {
-      return false;
-    }
+    const d = calculateAvgDistance(arr);
+    return d > C.handStatic.b
+      ? gaussianRBF(C.handStatic.eps, d - C.handStatic.b)
+      : 1;
   }
 }
 

@@ -10,33 +10,33 @@ export default class AnimationDriver {
       canvasObjects.animateAtMark(); // not only positi
     } else {
       // if camera on -- adaptation
-      const curObj = canvasObjects.focus;
-      const curText = canvasObjects.focusedText;
-      let effect = null;
-      let status = "enter";
-      if (curObj.relatedText !== curText) {
-        status = "update";
-      }
-      if (status === "enter") {
-        effect = curObj.enterSetting.effect;
-      } else {
-        effect = curObj.updates[curText].setting.effect;
-      }
-      if (canvasObjects.canmeraOn) {
-        if (curObj.enterSetting.customize) {
-          c;
-        } else {
-          curObj.enterWithHand(effect);
-          setTimeout(() => {
-            curObj.endEnterWithHand(effect);
-          }, 1500);
-        }
-      } else {
-        canvasObjects.animateAtMark();
-      }
     }
   }
-  triggerAuthoring() {}
+  triggerPreview(obj) {
+    // preview is triggered for certain object
+    let curObj = canvasObjects.focus;
+    // const curText = canvasObjects.focusedText;
+    // let effect = null;
+    // let status = "enter";
+    // let handed = "left";
+    // // get status
+    // if (curObj.relatedText !== curText) {
+    //   status = "update";
+    // }
+    // if (status === "enter") {
+    //   effect = curObj.enterSetting.effect;
+    //   handed = curObj.enterSetting.handed;
+    // } else {
+    //   effect = curObj.updates[curText].setting.effect;
+    //   handed = curObj.updates[curText].setting.handed;
+    // }
+    if (canvasObjects.canmeraOn) {
+      canvasObjects.endCustomization();
+      curObj.detectIntentionality();
+    } else {
+      canvasObjects.animateAtMark();
+    }
+  }
   backtoPosition() {
     if (!canvasObjects.canmeraOn) {
       console.log("back");

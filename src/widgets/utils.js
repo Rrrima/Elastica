@@ -30,8 +30,9 @@ function euclideanDistance(A, B) {
 
 function normalizeVector(vector) {
   const vec = vector.map((component) => component - 1 / 2);
-  const r = sumArray(vec);
-  return vec.map((v) => v / r);
+  //   const r = sumArray(vec);
+  //   return vec.map((v) => v / r);
+  return vec;
 }
 
 function calculateAvgDistance(arr) {
@@ -81,6 +82,27 @@ function bumpBlending(xg, xf, t) {
   return w * xg + (1 - w) * xf;
 }
 
+function gaussianRBF(eps, r) {
+  return Math.exp(-Math.pow(eps * r, 2));
+}
+
+function entropy(arr) {
+  let entropy = 0;
+  const length = arr.length;
+  for (let i = 0; i < length; i++) {
+    const p = arr[i];
+    if (p > 0) {
+      entropy -= p * Math.log2(p);
+    }
+  }
+  return entropy;
+}
+
+function normalizeSumOne(weights) {
+  const sum = weights.reduce((acc, val) => acc + val, 0);
+  return weights.map((val) => val / sum);
+}
+
 export {
   euclideanDistance,
   angleBetweenVectors,
@@ -88,6 +110,7 @@ export {
   normalizeVector,
   calculateAvgDistance,
   getIndexOfMinElement,
-  gaussianBlending,
-  bumpBlending,
+  gaussianRBF,
+  entropy,
+  normalizeSumOne,
 };
