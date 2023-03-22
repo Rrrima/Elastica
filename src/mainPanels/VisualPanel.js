@@ -9,7 +9,14 @@ import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
-import { canvasObjects, handPos, handPosArr, ws, handRecord } from "../global";
+import {
+  canvasObjects,
+  handPos,
+  handPosArr,
+  ws,
+  handRecord,
+  aniDriver,
+} from "../global";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
@@ -71,8 +78,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   const handleChangeMode = () => {
+    canvasObjects.removeHand();
     setMode(!previewMode);
     canvasObjects.canmeraOn = !canvasObjects.canmeraOn;
+    if (previewMode) {
+      canvasObjects.removeHand();
+    }
   };
 
   const handleChangeScriptFollowing = () => {
@@ -107,6 +118,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
     );
     console.log("Handpose model loaded");
     canvasObjects.initializeIndicator("left");
+    canvasObjects.initializeIndicator("right");
     // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
     // detect every 20ms -- [].length == 10
     setInterval(() => {
@@ -115,10 +127,11 @@ const VisualPanel = React.forwardRef((props, ref) => {
       //   console.log(webcamRef.current.video.width);
       // }
       // webcamRef.current.video.videoWidth = editor.canvas.width;
-      // const test = true;
+      const test = true;
       if (
-        canvasObjects.focus &&
-        (canvasObjects.customizeMode || canvasObjects.focus.animateReady)
+        (canvasObjects.focus &&
+          (canvasObjects.customizeMode || canvasObjects.focus.animateReady)) ||
+        test
       ) {
         detect(handposeDetector);
       }
@@ -150,28 +163,36 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // set canvas height and width
       // handCanvasRef.current.width = videoWidth;
       // handCanvasRef.current.height = videoHeight;
-      const obj = canvasObjects.focus;
       const hands = await net.estimateHands(video, { flipHorizontal: true });
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
       // const isIntentioanl = handPosArr.isIntentional("left");
       canvasObjects.visHand("left");
+      canvasObjects.visHand("right");
       // console.log(obj.effect);
       // if (obj.effect === "customize") {
       //   let w = handRecord.calculateDis();
       //   let pm = handPos.getAnimationParam;
       // } else {
-      if (obj.animateFocus) {
-        canvasObjects.indicateColor = "red";
-        let pm = obj.getAnimationParams();
-        obj.animateTo(pm);
-      }
-      if (
-        canvasObjects.focus.animateReady &&
-        !canvasObjects.focus.animateFocus
-      ) {
-        canvasObjects.focus.detectIntentionality();
-      }
+      aniDriver.activeObjects.forEach((obj) => {
+        if (obj.animateFocus) {
+          if (obj.t < 300) {
+            canvasObjects.indicateColor = "red";
+          } else {
+            canvasObjects.indicateColor = "blue";
+          }
+          let pm = obj.getAnimationParams();
+          console.log(pm);
+          if (obj.t > obj.timeThred) {
+            obj.endAnimationFocus();
+          }
+          // obj.animateTo(pm);
+        }
+        if (obj.animateReady && !obj.focus.animateFocus) {
+          canvasObjects.focus.detectIntentionality();
+        }
+      });
+
       // console.log(handPos.getHandAngle("left"));
 
       // get animation parameter for currentfocus

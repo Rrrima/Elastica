@@ -20,6 +20,7 @@ class TextObject {
     }
     this.animateFocus = false; // indicate the intentionality detected
     this.animateReady = false; // indicate the active window start
+    this.timeThred = 1500;
     this.active = false;
     this.entered = false;
     this.status = null;
@@ -53,16 +54,19 @@ class TextObject {
     this.fixAttr = this.getCurrentAttr();
     this.handRecord = new HandRecords();
   }
+  endAnimationFocus() {
+    this.animateFocus = false;
+  }
   detectIntentionality() {
     // for preview;
     // detect intentionality whenever animteFocus == false
     // for performance detect for 600ms
     // called when camera on
     this.animateReady = true; // open active window
+    this.animateFocus = false; // reset to be not the focus
     const curText = canvasObjects.focusedText;
     let status = "enter";
     let handed = "left";
-    canvasObjects.removeHand(handed);
     // get status
     if (this.relatedText !== curText) {
       status = "update";
@@ -73,20 +77,28 @@ class TextObject {
       handed = this.updates[curText].setting.handed;
     }
     const intention = this.isIntentional(handed);
-    console.log(intention);
     if (
       intention.type === "general" &&
       intention.confidence > C.handStatic.thred
     ) {
       this.animateFocus = true; // start adaptation from t
+      this.t = 0;
     }
     if (intention.type === "customize") {
       if (intention.confidence[0] > C.sim.thred) {
         this.animateFocus = true;
+        this.t = 0;
       }
       //   else if (intention.confidence[1] > C.handStatic.thred) {
       //     this.animateFocus = true;
       //   }
+    }
+  }
+  animateAtMark() {
+    if (this.relatedText === canvasObjects.focusedText) {
+      this.animateEnter();
+    } else {
+      this.animateUpdate(canvasObjects.focusedText);
     }
   }
   exitCanvas() {
@@ -94,13 +106,17 @@ class TextObject {
     this.editor.canvas.renderAll();
   }
   revert() {
-    const preText = canvasObjects.getPreviousKey(Object.keys(this.updates));
-    if (preText) {
-      this.fabric.set(this.updates[preText].attr);
+    if (canvasObjects.focusedText === this.relatedText) {
+      this.getReady();
     } else {
-      this.fabric.set(this.fixAttr);
+      const preText = canvasObjects.getPreviousKey(Object.keys(this.updates));
+      if (preText) {
+        this.fabric.set(this.updates[preText].attr);
+      } else {
+        this.fabric.set(this.fixAttr);
+      }
+      this.editor.canvas.renderAll();
     }
-    this.editor.canvas.renderAll();
   }
   enterWithHand(effect) {
     this.animateFocus = true;
@@ -158,6 +174,7 @@ class TextObject {
   animateUpdate(t) {
     this.fabric.set("selectable", true);
     //
+    this.revert();
     gsap.to(this.fabric, {
       ...this.updates[t].attr,
       immediateRender: true,

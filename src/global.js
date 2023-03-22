@@ -62,16 +62,18 @@ class CanvasObject {
       this.canvas.canvas.add(this.handIndicators[handed][f]);
     });
   }
-  removeHand(handed) {
-    // console.log("remove!");
-    if (this.handIndicators[handed]) {
-      this.allFingers.forEach((f) => {
-        this.handIndicators[handed][f].set({
-          opacity: 0,
+  removeHand() {
+    console.log("remove!");
+    ["left", "right"].forEach((handed) => {
+      if (this.handIndicators[handed]) {
+        this.allFingers.forEach((f) => {
+          if (this.handIndicators[handed][f]) {
+            this.canvas.canvas.remove(this.handIndicators[handed][f]);
+          }
         });
-      });
-    }
-    this.canvas.canvas.renderAll();
+      }
+      this.canvas.canvas.renderAll();
+    });
   }
   visHand(handed) {
     const ftPos = handPos.getFingertipPos(handed, "all");
@@ -163,12 +165,12 @@ class CanvasObject {
   getPreviousKey(keys) {
     let mdist = 999;
     let findK = null;
-    const textRank = this.textRank;
-    const curRank = textRank[this.focusedText];
+    const markDict = this.markDict;
+    const curRank = markDict[this.focusedText].idx;
     keys.forEach((k) => {
-      if (textRank[k] < curRank && mdist > curRank - textRank[k]) {
+      if (markDict[k].idx < curRank && mdist > curRank - markDict[k].idx) {
         findK = k;
-        mdist = curRank - textRank[k];
+        mdist = curRank - markDict[k].idx;
       }
     });
     return findK;

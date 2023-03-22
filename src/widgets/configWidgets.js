@@ -34,24 +34,45 @@ function handleCustomizationEnter() {
   }
 }
 
+function triggerPreviewAll() {
+  aniDriver.activeObjects = [];
+  const curText = canvasObjects.focusedText;
+  if (canvasObjects.objectDict[curText]) {
+    canvasObjects.objectDict[curText].forEach((obj) => {
+      aniDriver.activeObjects.push(obj);
+    });
+  }
+  if (canvasObjects.updateDict[curText]) {
+    canvasObjects.updateDict[curText].forEach((objid) => {
+      aniDriver.activeObjects.push(canvasObjects.idDict[objid]);
+    });
+  }
+  aniDriver.preview();
+}
+function triggerPreview() {
+  // preview is triggered for focused object
+  aniDriver.activeObjects = [canvasObjects.focus];
+  aniDriver.preview();
+}
+
 function TimelineSection() {
   // const [isPlay, setPlayMode] = useState(false);
-  function getTimePercentage(d) {
-    return (d.x - d.minX) / (d.maxX - d.minX);
-  }
-  const scrubberRef = useRef(null);
-  const scrubber = Draggable.create("#scrubber", {
-    type: "x",
-    bounds: document.getElementById("timeline"),
-    onDrag: () => {
-      // console.log(getTimePercentage(scrubber[0]));
-      let tp = getTimePercentage(scrubber[0]);
-      canvasObjects.focus.playAt(tp);
-    },
-  });
+  // function getTimePercentage(d) {
+  //   return (d.x - d.minX) / (d.maxX - d.minX);
+  // }
+  // const scrubberRef = useRef(null);
+  // const scrubber = Draggable.create("#scrubber", {
+  //   type: "x",
+  //   bounds: document.getElementById("timeline"),
+  //   onDrag: () => {
+  //     // console.log(getTimePercentage(scrubber[0]));
+  //     let tp = getTimePercentage(scrubber[0]);
+  //     canvasObjects.focus.playAt(tp);
+  //   },
+  // });
   return (
     <div className="config-section">
-      timeline mapped to{" "}
+      Play animation at:{" "}
       <Chip
         className={`focus-chip`}
         label={canvasObjects.focusedText}
@@ -60,15 +81,19 @@ function TimelineSection() {
         //   console.log("clicked!");
         // }}
       />
-      <div id="timeline-container">
-        <Stack direction="row" spacing={1}>
-          <IconButton aria-label="delete" onClick={aniDriver.triggerPreview}>
-            <PlayArrowIcon />
-          </IconButton>
-          <div id="timeline"></div>
-        </Stack>
-        <div id="scrubber" ref={scrubberRef}></div>
-      </div>
+      {/* <div id="timeline-container"> */}
+      <Stack direction="row" spacing={1}>
+        play one
+        <IconButton aria-label="playone" onClick={triggerPreview}>
+          <PlayArrowIcon />
+        </IconButton>
+        play all
+        <IconButton aria-label="playall" onClick={triggerPreviewAll}>
+          <PlayArrowIcon />
+        </IconButton>
+      </Stack>
+      {/* <div id="scrubber" ref={scrubberRef}></div> */}
+      {/* </div> */}
     </div>
   );
 }
@@ -93,7 +118,7 @@ function InfoBadge(props) {
 
 function HandedSelection(props) {
   const handleChange = (e) => {
-    console.log("change template animation");
+    // console.log("change template animation");
     canvasObjects.focus.changeEnterSetting("handed", e.target.value);
   };
   return (
@@ -152,7 +177,6 @@ function UpdateHandedSelection(selectedText) {
 }
 
 function AfterEnterSelection(props) {
-  const selectedText = props.selectedText;
   const handleChange = (e) => {
     canvasObjects.focus.changeEnterSetting("after", e.target.value);
   };

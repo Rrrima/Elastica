@@ -1,6 +1,9 @@
 import { canvasObjects } from "../global";
 
 export default class AnimationDriver {
+  constructor() {
+    this.activeObjects = [];
+  }
   triggerAnimation(k) {
     // trigger animation at certain keywords -- highlighted word
     const curText = k.trim().toLowerCase();
@@ -12,30 +15,33 @@ export default class AnimationDriver {
       // if camera on -- adaptation
     }
   }
-  triggerPreview(obj) {
-    // preview is triggered for certain object
-    let curObj = canvasObjects.focus;
-    // const curText = canvasObjects.focusedText;
-    // let effect = null;
-    // let status = "enter";
-    // let handed = "left";
-    // // get status
-    // if (curObj.relatedText !== curText) {
-    //   status = "update";
-    // }
-    // if (status === "enter") {
-    //   effect = curObj.enterSetting.effect;
-    //   handed = curObj.enterSetting.handed;
-    // } else {
-    //   effect = curObj.updates[curText].setting.effect;
-    //   handed = curObj.updates[curText].setting.handed;
-    // }
-    if (canvasObjects.canmeraOn) {
-      canvasObjects.endCustomization();
-      curObj.detectIntentionality();
-    } else {
-      canvasObjects.animateAtMark();
-    }
+  triggerPreviewAll() {
+    console.log(this);
+    this.activeObjects = [];
+    const curText = canvasObjects.focusedText;
+    canvasObjects.objectDict[curText].forEach((obj) => {
+      this.activeObjects.push(obj);
+    });
+    canvasObjects.updateDict[curText].forEach((objid) => {
+      this.activeObjects.push(canvasObjects.idDict[objid]);
+    });
+    this.preview();
+  }
+  triggerPreview() {
+    // preview is triggered for focused object
+    this.activeObjects = [canvasObjects.focus];
+    this.preview();
+  }
+  preview() {
+    canvasObjects.endCustomization();
+    this.activeObjects.forEach((curObj) => {
+      if (canvasObjects.canmeraOn) {
+        curObj.revert();
+        curObj.detectIntentionality();
+      } else {
+        curObj.animateAtMark();
+      }
+    });
   }
   backtoPosition() {
     if (!canvasObjects.canmeraOn) {
