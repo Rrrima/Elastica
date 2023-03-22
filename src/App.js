@@ -21,6 +21,18 @@ function App() {
     if (!editor || !fabric || !editor.canvas.isEmpty()) {
       return;
     }
+    var rect = new fabric.Rect({
+      left: 0,
+      top: 0,
+      width: editor.canvas.width -5,
+      height: editor.canvas.height -5,
+      fill: 'red',
+      stroke: 'green', // add a green border
+      strokeWidth: 5, // set the width of the border,
+      opacity: 0.5 // make the fill semi-transparent
+    });
+    
+    editor.canvas.add(rect);
     // fabric.Image.fromURL(Stitch, (image) => {
     //   image.scale(0.2);
     //   image = editor.canvas.add(image);

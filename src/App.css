@@ -354,7 +354,13 @@
 }
 
 .canvas-panel {
-  height: 60vh;
+  width: min(100%, 80vh);
+  height: 0;
+  padding-bottom: min(76.25%, 60vh);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .webcam_component {
