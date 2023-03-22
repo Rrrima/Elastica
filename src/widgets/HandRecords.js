@@ -1,5 +1,5 @@
 import { canvasObjects, handPos } from "../global";
-import { euclideanDistance, sumArray } from "./utils";
+import { euclideanDistance, normalizeSumOne, sumArray } from "./utils";
 import { gaussianRBF } from "./utils";
 import { C } from "../global";
 export default class HandRecords {
@@ -43,11 +43,8 @@ export default class HandRecords {
     return sim;
   }
   getWeights() {
-    const dist = this.getSimilarity();
-    let weights = dist.map((d) => 1 / d ** 2 + 1);
-    const r = sumArray(weights);
-    weights = weights.map((v) => v / r);
-    return weights;
+    const sim = this.getSimilarity();
+    return normalizeSumOne(sim);
   }
   getParams() {
     const rkey = canvasObjects.focusedText;

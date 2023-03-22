@@ -162,18 +162,10 @@ const VisualPanel = React.forwardRef((props, ref) => {
       //   let pm = handPos.getAnimationParam;
       // } else {
       if (obj.animateFocus) {
-        let pm = handPos.getAnimationParams(
-          "left",
-          obj.effect,
-          obj.fixAttr,
-          obj.t / 1000
-        );
+        canvasObjects.indicateColor = "red";
+        let pm = obj.getAnimationParams();
         obj.animateTo(pm);
-        // console.log(pm);
-        // }
-        obj.t += 50;
       }
-
       if (
         canvasObjects.focus.animateReady &&
         !canvasObjects.focus.animateFocus

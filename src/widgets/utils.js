@@ -1,3 +1,5 @@
+import { C } from "../global";
+
 function angleBetweenVectors(v1, v2) {
   const dotProduct = v1.x * v2.x + v1.y * v2.y;
   const magV1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
@@ -56,12 +58,16 @@ function distPenalty(xg, xf, t) {
 }
 
 function gaussianBlending(xg, xf, t) {
-  let w = Math.exp(-Math.pow(0.04 * t, 2));
-  if (t > 30) {
-    w = distPenalty(xg, xf, t) * w;
+  if (t < C.ada.gaussian.b) {
+    return xg;
+  } else {
+    let w = gaussianRBF(C.ada.gaussian.eps, t - C.ada.gaussian.b);
+    // if (t === 1) {
+    //   w = distPenalty(xg, xf, t) * w;
+    // }
+    // console.log(w);
+    return w * xg + (1 - w) * xf;
   }
-  console.log(w);
-  return w * xg + (1 - w) * xf;
 }
 
 function bumpBlending(xg, xf, t) {
@@ -113,4 +119,5 @@ export {
   gaussianRBF,
   entropy,
   normalizeSumOne,
+  gaussianBlending,
 };

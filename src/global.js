@@ -257,6 +257,8 @@ const aniDriver = new AnimationDriver();
 const C = {
   sim: { eps: 1.5, b: 0.45, thred: 0.7 },
   handStatic: { eps: 0.5, b: 6, thred: 0.99 },
+  time: { duration: 1200, step: 50 },
+  ada: { gaussian: { eps: 3, b: 0.5 } },
 };
 
 export { canvasObjects, handPos, handPosArr, ws, tracker, aniDriver, C };

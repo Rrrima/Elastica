@@ -1,8 +1,8 @@
 import gsap from "gsap";
 import { canvasObjects, handPos, handPosArr } from "../global";
 import HandRecords from "./HandRecords";
-import { entropy, normalizeSumOne } from "./utils";
 import { C } from "../global";
+import { gaussianBlending } from "./utils";
 
 class TextObject {
   // initiate a new object
@@ -73,6 +73,7 @@ class TextObject {
       handed = this.updates[curText].setting.handed;
     }
     const intention = this.isIntentional(handed);
+    console.log(intention);
     if (
       intention.type === "general" &&
       intention.confidence > C.handStatic.thred
@@ -80,11 +81,12 @@ class TextObject {
       this.animateFocus = true; // start adaptation from t
     }
     if (intention.type === "customize") {
-      if (this.intention.confidence[0] > C.sim.thred) {
-        this.animateFocus = true;
-      } else if (this.intention.confidence[1] > C.handStatic.thred) {
+      if (intention.confidence[0] > C.sim.thred) {
         this.animateFocus = true;
       }
+      //   else if (intention.confidence[1] > C.handStatic.thred) {
+      //     this.animateFocus = true;
+      //   }
     }
   }
   exitCanvas() {
@@ -231,27 +233,75 @@ class TextObject {
       onUpdate: () => this.editor.canvas.renderAll(),
     });
   }
+  gaussianBlending(pm) {
+    const fa = this.fixAttr;
+    let ts = this.t / C.time.duration;
+    let bpm = {};
+    Object.keys(pm).forEach((k) => {
+      if (k !== "opacity") {
+        bpm[k] = gaussianBlending(pm[k], fa[k], ts);
+      } else {
+        bpm[k] = pm[k];
+      }
+    });
+    return bpm;
+  }
+  getAnimationParams() {
+    // called for adaptation
+    const curText = canvasObjects.focusedText;
+    let ts = this.t / C.time.duration;
+    this.t += C.time.step;
+    let opacity = ts;
+    if (ts > 1) {
+      opacity = 1;
+    }
+    const fa = this.fixAttr;
+    if (curText === this.relatedText) {
+      const handed = this.enterSetting.handed;
+      const center = handPos.getHandCenters()[handed];
+      if (this.enterSetting.customize) {
+        let pm = this.handRecord.getParams();
+        pm = {
+          left: center[0] + pm.dl,
+          top: center[1] + pm.dt,
+          opacity: opacity,
+          scaleX: pm.sx,
+          scaleY: pm.sy,
+          height: 100,
+        };
+        let intention = this.isIntentional().confidence[0];
+        return this.gaussianBlending(pm);
+      } else {
+        const effect = this.enterSetting.effect;
+        let pm = {};
+        if (effect === "float") {
+          const top =
+            center[1] - (fa.height * fa.scaleY) / 2 - 30 * (1 - opacity);
+          pm = { left: center[0], top: top, opacity: opacity };
+        } else if (effect === "zoom") {
+          const scaleX = fa.scaleX * ts;
+          const scaleY = fa.scaleY * ts;
+          const top = center[1];
+          pm = {
+            left: center[0],
+            top: top,
+            scaleX: scaleX,
+            scaleY: scaleY,
+            opacity: opacity,
+          };
+        } else if (effect === "appear") {
+          pm = {
+            left: center[0],
+            top: center[1],
+            opacity: opacity,
+          };
+        }
+        return this.gaussianBlending(pm);
+      }
+    } else {
+    }
+  }
   animateTo(params) {
-    // const curGes = canvasObjects.curGesture;
-    // let offSets = [0, 0];
-    // let dim = null;
-    // if (curGes === "staging") {
-    //   offSets = [0, -20];
-    // } else if (curGes === "pinch") {
-    //   offSets = [30, 0];
-    //   dim = this.fabric.get("height");
-    // }
-    // let params = handPos.getAnimationParams(
-    //   curGes,
-    //   this.enterSetting.handed,
-    //   r,
-    //   offSets,
-    //   dim
-    // );
-    // console.log(curGes);
-    // console.log(params);
-    // console.log(this.fabric.get("left"));
-    // console.log(this.fabric.get("top"));
     gsap.to(this.fabric, {
       ...params,
       immediateRender: true,
@@ -368,11 +418,10 @@ class TextObject {
         if (this.handRecord.record[curText]) {
           const sim = this.handRecord.getSimilarity(); // euclidean distance between vector
           const confidence = Math.max(...sim);
-          const weights = normalizeSumOne(sim);
+          //   const weights = normalizeSumOne(sim);
           return {
             type: "customize",
             confidence: [confidence, handPosArr.isIntentional(handed)],
-            weights: weights,
           };
         } else {
           return {
