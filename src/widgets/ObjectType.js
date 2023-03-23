@@ -490,7 +490,7 @@ class TextObject {
   createEnter() {
     console.log("Play enter animation");
     let effect = this.enterSetting.effect; //appear, zoom, float
-    let after = this.enterSetting.after; //stay, floating, exit
+    // let after = this.enterSetting.after; //stay, floating, exit
     let editor = this.editor;
     let kf = this.fixAttr;
     this.getCurrentAttr();
@@ -799,7 +799,7 @@ class ImageObject {
   createEnter() {
     console.log("Play enter animation");
     let effect = this.enterSetting.effect; //appear, zoom, float
-    let after = this.enterSetting.after; //stay, floating, exit
+    // let after = this.enterSetting.after; //stay, floating, exit
     let editor = this.editor;
     let kf = this.getCurrentAttr();
     this.getCurrentAttr();
@@ -846,7 +846,7 @@ class ImageObject {
     // this.tl.play();
   }
   addListeners() {
-    let relatedText = this.relatedText;
+    // let relatedText = this.relatedText;
     let thisobj = this;
     // this.fabric.on("modified", function (e) {
     //   thisobj.keyframes.push(keyframeExtractor(e));

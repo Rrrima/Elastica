@@ -27,9 +27,9 @@ const VisualPanel = React.forwardRef((props, ref) => {
 
   var { transcript, resetTranscript } = useSpeechRecognition({});
 
-  function generateSpan(inToken, inIndex) {
-    return '<span id="' + inIndex + '">' + inToken + " </span>";
-  }
+  // function generateSpan(inToken, inIndex) {
+  //   return '<span id="' + inIndex + '">' + inToken + " </span>";
+  // }
 
   function populateScript(inString) {
     // Sending the script when populated by default (python server should be connected)
@@ -236,7 +236,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
     // ws.onerror = function () {
     //   console.log("socket error");
     // };
-  }, [previewMode]);
+  });
 
   return (
     <div className="main-panel" id="visual-panel">

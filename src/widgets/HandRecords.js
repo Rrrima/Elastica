@@ -1,5 +1,5 @@
 import { canvasObjects, handPos } from "../global";
-import { euclideanDistance, isValid, normalizeSumOne, sumArray } from "./utils";
+import { euclideanDistance, normalizeSumOne } from "./utils";
 import { gaussianRBF, hasNan } from "./utils";
 import { C } from "../global";
 export default class HandRecords {
