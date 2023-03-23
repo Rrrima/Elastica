@@ -1,5 +1,5 @@
 import gsap from "gsap";
-import { aniDriver, canvasObjects, handPos, handPosArr } from "../global";
+import { canvasObjects, handPos, handPosArr } from "../global";
 import HandRecords from "./HandRecords";
 import { C } from "../global";
 import { gaussianBlending, isValid } from "./utils";

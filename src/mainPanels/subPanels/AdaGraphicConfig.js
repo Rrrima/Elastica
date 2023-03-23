@@ -1,10 +1,8 @@
 import {
   InfoBadge,
-  GraphicParamBox,
   HandedSelection,
   AfterEnterSelection,
   EnterTemplateSelection,
-  TimelineSection,
   UpdateHandedSelection,
   UpdateTemplateSelection,
   AfterUpdateSelection,
@@ -19,7 +17,6 @@ import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Grid from "@mui/material/Grid";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import Button from "@mui/material/Button";
 import { aniDriver } from "../../global";
 
 export default function AdaGraphicConfig(props) {

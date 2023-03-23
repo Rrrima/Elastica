@@ -7,8 +7,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
-import Checkbox from "@mui/material/Checkbox";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { canvasObjects } from "../global";
@@ -16,12 +15,10 @@ import IconButton from "@mui/material/IconButton";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Stack from "@mui/material/Stack";
 
-import { handRecord } from "../global";
 import { aniDriver } from "../global";
 import { FabricJSCanvas } from "fabricjs-react";
 import { useFabricJSEditor } from "fabricjs-react";
 import { fabric } from "fabric";
-import Divider from "@mui/material/Divider";
 import StarsIcon from "@mui/icons-material/Stars";
 
 gsap.registerPlugin(Draggable);

@@ -5,7 +5,6 @@ import {
   gaussianRBF,
 } from "./utils";
 import * as math from "mathjs";
-import { handRecord } from "../global";
 import { C } from "../global";
 
 class HandPos {

@@ -1,8 +1,6 @@
 import { HandPos, HandPosArr } from "./widgets/HandPos";
-import { createRoot } from "react-dom/client";
 import ConfigPanel from "./mainPanels/ConfigPanel";
 import { fabric } from "fabric";
-import gsap from "gsap";
 import ScriptTracker from "./widgets/ScriptTracker";
 import AnimationDriver from "./widgets/AnimationDriver";
 

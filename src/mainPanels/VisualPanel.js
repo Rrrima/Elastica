@@ -9,13 +9,7 @@ import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
-import {
-  canvasObjects,
-  handPos,
-  handPosArr,
-  handRecord,
-  aniDriver,
-} from "../global";
+import { canvasObjects, handPos, handPosArr, aniDriver } from "../global";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
@@ -28,9 +22,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   const editor = props.editor;
   const onReady = props.onReady;
   const webcamRef = useRef(null);
-  const handCanvasRef = useRef(null);
   let gNumWordsInScript = 0;
-  let r = 1;
   canvasObjects.canvas = editor;
 
   var { transcript, resetTranscript } = useSpeechRecognition({});

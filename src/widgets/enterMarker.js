@@ -1,7 +1,4 @@
-import { createRoot } from "react-dom/client";
-import ConfigPanel from "../mainPanels/ConfigPanel";
 import { canvasObjects } from "../global";
-import { objectDict } from "../resources/ObjectDict";
 import { tracker } from "../global";
 
 export default class EnterMarkerTool {

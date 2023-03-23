@@ -5,13 +5,9 @@ import VisualPanel from "./mainPanels/VisualPanel";
 import ScriptPanel from "./mainPanels/ScriptPanel";
 import ConfigPanel from "./mainPanels/ConfigPanel";
 import OverallVisualPanel from "./mainPanels/OverallVisualPanel";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { fabric } from "fabric";
-import Stitch from "./resources/Images/stitch.png";
-import LottieFabric from "./LottieFabric";
-import AnimatedHeart1 from "./resources/lotties/heart1.json";
 import { useFabricJSEditor } from "fabricjs-react";
-import gsap from "gsap";
 import useWindowDimensions from "./functions/useWindowDimensions";
 
 function App() {

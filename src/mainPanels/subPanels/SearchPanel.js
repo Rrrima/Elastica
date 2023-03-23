@@ -1,10 +1,8 @@
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import TextResult from "./TextResult";
-import ImageResult from "./ImageResult";
 // import LottieResult from "./LottieResult";
 import Grid from "@mui/material/Grid";
-import { useEffect, useState } from "react";
 
 export default function SearchPanel(props) {
   return (

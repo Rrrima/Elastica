@@ -4,7 +4,6 @@ import Grid from "@mui/material/Grid";
 import SearchPanel from "./subPanels/SearchPanel";
 import Divider from "@mui/material/Divider";
 import { TimelineSection } from "../widgets/configWidgets";
-import { canvasObjects } from "../global";
 
 export default function EnterConfigPanel(props) {
   const selectedText = props.selectedText;
