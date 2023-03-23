@@ -142,7 +142,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // const videoWidth = webcamRef.current.video.videoWidth;
       // const videoHeight = webcamRef.current.video.videoHeight;
       // r = editor.canvas.width / videoHeight;
-      r = 1;
       // set video height and width
       // webcamRef.current.video.width = videoWidth;
       // webcamRef.current.video.height = videoHeight;
