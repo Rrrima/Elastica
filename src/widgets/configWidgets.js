@@ -15,9 +15,7 @@ import { canvasObjects } from "../global";
 import IconButton from "@mui/material/IconButton";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Stack from "@mui/material/Stack";
-import PauseIcon from "@mui/icons-material/Pause";
-import { useState } from "react";
-import { ws } from "../global";
+
 import { handRecord } from "../global";
 import { aniDriver } from "../global";
 import { FabricJSCanvas } from "fabricjs-react";

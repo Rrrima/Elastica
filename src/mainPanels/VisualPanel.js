@@ -13,7 +13,6 @@ import {
   canvasObjects,
   handPos,
   handPosArr,
-  ws,
   handRecord,
   aniDriver,
 } from "../global";
@@ -42,12 +41,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
 
   function populateScript(inString) {
     // Sending the script when populated by default (python server should be connected)
-    ws.send(
-      JSON.stringify({
-        name: "populateScript",
-        params: { referenceScript: inString },
-      })
-    );
+    // ws.send(
+    //   JSON.stringify({
+    //     name: "populateScript",
+    //     params: { referenceScript: inString },
+    //   })
+    // );
     // split into tokens
     const tokens = inString.split(/\s+/);
     // generate spans
@@ -69,12 +68,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   if (scriptFollowing && transcript) {
-    ws.send(
-      JSON.stringify({
-        name: "scriptFollowing",
-        params: { transcript: transcript },
-      })
-    );
+    // ws.send(
+    //   JSON.stringify({
+    //     name: "scriptFollowing",
+    //     params: { transcript: transcript },
+    //   })
+    // );
   }
 
   const handleChangeMode = () => {
@@ -99,12 +98,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
       resetTranscript();
       SpeechRecognition.abortListening();
       canvasObjects.endPresentation();
-      ws.send(
-        JSON.stringify({
-          name: "transcriptionComplete",
-          params: {},
-        })
-      );
+      // ws.send(
+      //   JSON.stringify({
+      //     name: "transcriptionComplete",
+      //     params: {},
+      //   })
+      // );
     }
   };
   const runDetection = async () => {
@@ -215,37 +214,37 @@ const VisualPanel = React.forwardRef((props, ref) => {
     if (previewMode) {
       runDetection();
     }
-    ws.onopen = function () {
-      console.log("Socket Connection Open");
-    };
-    ws.onmessage = function (event) {
-      let message = JSON.parse(event.data);
-      if (message.name === "registerHandAnalyzer") {
-        canvasObjects.focus.setActive();
-      }
-      if (message.name === "returnAnimationParam") {
-        let gesture = message.gesture;
-        let avgDis = message.avgDis;
-        let dirVec = message.dirVec;
-        canvasObjects.curGesture = gesture;
-        if (avgDis < 1 && !canvasObjects.focus.entered) {
-          canvasObjects.focus.enter();
-        }
-        if (canvasObjects.focus.entered) {
-          canvasObjects.focus.animateTo(r);
-        }
-      }
-      if (message.wid) {
-        tracker.trackTo(message.wid);
-      }
-    };
-    ws.onclose = function () {
-      console.log("socket closed");
-    };
+    // ws.onopen = function () {
+    //   console.log("Socket Connection Open");
+    // };
+    // ws.onmessage = function (event) {
+    //   let message = JSON.parse(event.data);
+    //   if (message.name === "registerHandAnalyzer") {
+    //     canvasObjects.focus.setActive();
+    //   }
+    //   if (message.name === "returnAnimationParam") {
+    //     let gesture = message.gesture;
+    //     let avgDis = message.avgDis;
+    //     let dirVec = message.dirVec;
+    //     canvasObjects.curGesture = gesture;
+    //     if (avgDis < 1 && !canvasObjects.focus.entered) {
+    //       canvasObjects.focus.enter();
+    //     }
+    //     if (canvasObjects.focus.entered) {
+    //       canvasObjects.focus.animateTo(r);
+    //     }
+    //   }
+    //   if (message.wid) {
+    //     tracker.trackTo(message.wid);
+    //   }
+    // };
+    // ws.onclose = function () {
+    //   console.log("socket closed");
+    // };
 
-    ws.onerror = function () {
-      console.log("socket error");
-    };
+    // ws.onerror = function () {
+    //   console.log("socket error");
+    // };
   }, [previewMode]);
 
   return (

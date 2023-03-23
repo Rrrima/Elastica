@@ -347,7 +347,7 @@ const handPos = new HandPos([
   0, 2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 19, 20,
 ]);
 const handPosArr = new HandPosArr(10);
-const ws = new WebSocket("ws://localhost:8000/");
+// const ws = new WebSocket("ws://localhost:8000/");
 const tracker = new ScriptTracker();
 const aniDriver = new AnimationDriver();
 const C = {
@@ -357,4 +357,4 @@ const C = {
   ada: { gaussian: { eps: 3, b: 0.5 } },
 };
 
-export { canvasObjects, handPos, handPosArr, ws, tracker, aniDriver, C };
+export { canvasObjects, handPos, handPosArr, tracker, aniDriver, C };
