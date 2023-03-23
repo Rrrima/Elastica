@@ -42,12 +42,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
     // split into tokens
     const tokens = inString.split(/\s+/);
     // generate spans
-    let htmlString = "";
+    // let htmlString = "";
     let index = 0;
     for (const token of tokens) {
       if (token.toLowerCase().match(/[^_\W]+/g)) {
         //
-        htmlString += generateSpan(token, index);
+        // htmlString += generateSpan(token, index);
         index++;
       }
     }

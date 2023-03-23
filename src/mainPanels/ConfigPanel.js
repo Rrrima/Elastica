@@ -16,7 +16,7 @@ export default function ConfigPanel(props) {
       const root = createRoot(container);
       canvasObjects.root = root;
     }
-  }, [props]);
+  }, [selectedText]);
   // if (props.selectedText) {
   //   setSelection(props.selectedText);
   // }
