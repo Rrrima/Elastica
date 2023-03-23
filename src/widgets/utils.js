@@ -91,23 +91,23 @@ function gaussianBlending(xg, xf, t) {
   }
 }
 
-function bumpBlending(xg, xf, t) {
-  let eps = 14;
-  let w;
-  if (t < eps) {
-    if (t > 0.9 * eps) {
-      w =
-        distPenalty(xg, xf, t) *
-        Math.exp(-1 / (1 - Math.pow(t / eps, 2))) *
-        Math.E;
-    } else {
-      w = Math.exp(-1 / (1 - Math.pow(t / eps, 2))) * Math.E;
-    }
-  } else {
-    w = 0;
-  }
-  return w * xg + (1 - w) * xf;
-}
+// function bumpBlending(xg, xf, t) {
+//   let eps = 14;
+//   let w;
+//   if (t < eps) {
+//     if (t > 0.9 * eps) {
+//       w =
+//         distPenalty(xg, xf, t) *
+//         Math.exp(-1 / (1 - Math.pow(t / eps, 2))) *
+//         Math.E;
+//     } else {
+//       w = Math.exp(-1 / (1 - Math.pow(t / eps, 2))) * Math.E;
+//     }
+//   } else {
+//     w = 0;
+//   }
+//   return w * xg + (1 - w) * xf;
+// }
 
 function gaussianRBF(eps, r) {
   return Math.exp(-Math.pow(eps * r, 2));

@@ -8,7 +8,7 @@ import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
-import * as tf from "@tensorflow/tfjs";
+import "@tensorflow/tfjs";
 import { canvasObjects, handPos, handPosArr, aniDriver } from "../global";
 import SpeechRecognition, {
   useSpeechRecognition,

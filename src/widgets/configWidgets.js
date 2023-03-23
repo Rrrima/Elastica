@@ -496,7 +496,7 @@ function UpdateTemplateSelection(selectedText) {
 }
 
 function GraphicParamBox(props) {
-  const { status, selectedText } = props;
+  const { status } = props;
   let params = {};
   if (status === "enter") {
     params = objectDict["stitch"][status];
@@ -551,33 +551,33 @@ function GraphicParamBox(props) {
   );
 }
 
-function ParamSelection() {
-  return (
-    <div className="config-section">
-      <FormControl>
-        <FormLabel id="after-enter-selection">after entering:</FormLabel>
-        <RadioGroup
-          row
-          aria-labelledby="after-enter-row-radio-buttons-group-label"
-          name="after-enter-control"
-        >
-          <FormControlLabel value="stay" control={<Radio />} label="stay" />
-          <FormControlLabel
-            value="floating"
-            control={<Radio />}
-            label="floating"
-          />
-          <FormControlLabel
-            value="following"
-            control={<Radio />}
-            label="following"
-          />
-          <FormControlLabel value="exit" control={<Radio />} label="exit" />
-        </RadioGroup>
-      </FormControl>
-    </div>
-  );
-}
+// function ParamSelection() {
+//   return (
+//     <div className="config-section">
+//       <FormControl>
+//         <FormLabel id="after-enter-selection">after entering:</FormLabel>
+//         <RadioGroup
+//           row
+//           aria-labelledby="after-enter-row-radio-buttons-group-label"
+//           name="after-enter-control"
+//         >
+//           <FormControlLabel value="stay" control={<Radio />} label="stay" />
+//           <FormControlLabel
+//             value="floating"
+//             control={<Radio />}
+//             label="floating"
+//           />
+//           <FormControlLabel
+//             value="following"
+//             control={<Radio />}
+//             label="following"
+//           />
+//           <FormControlLabel value="exit" control={<Radio />} label="exit" />
+//         </RadioGroup>
+//       </FormControl>
+//     </div>
+//   );
+// }
 
 export {
   InfoBadge,

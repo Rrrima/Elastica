@@ -2,8 +2,8 @@ import AdaGraphicConfig from "./AdaGraphicConfig";
 import { canvasObjects } from "../../global";
 
 export default function TextGraphicConfig(props) {
-  const selectedText = props.selectedText;
-  const status = props.status;
+  // const selectedText = props.selectedText;
+  // const status = props.status;
   return (
     <div>
       {/* <div>Config graphic elements here:</div> */}
