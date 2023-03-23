@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { canvasObjects } from "../global";
+// import { canvasObjects } from "../global";
 
 export default function UpdateConfigPanel(props) {
   const selectedText = props.selectedText;

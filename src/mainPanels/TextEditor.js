@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import EditorJS from "@editorjs/editorjs";
 import EnterMarkerTool from "../widgets/enterMarker";
-import UpdateMarkerTool from "../widgets/updateMarker";
 
 export default class TextEditor extends Component {
   constructor(props) {

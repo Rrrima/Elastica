@@ -1,8 +1,5 @@
 import * as React from "react";
-import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
-import EditIcon from "@mui/icons-material/Edit";
-import ViewTimelineIcon from "@mui/icons-material/ViewTimeline";
+
 import TextEditor from "./TextEditor";
 import { useRef } from "react";
 import { canvasObjects } from "../global";

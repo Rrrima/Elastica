@@ -14,7 +14,7 @@ function App() {
   const { editor, onReady } = useFabricJSEditor();
   const { width, height } = useWindowDimensions();
   console.warn = console.error = () => {};
-  let attr = { left: 50, top: 50, width: 150, fontSize: 20 };
+  // let attr = { left: 50, top: 50, width: 150, fontSize: 20 };
   useEffect(() => {
     console.log(width, height);
     const padding = (width - 90 - (height - 60) * 1.2) / 2;
