@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EnterConfigPanel from "./EnterConfigPanel";
 import { canvasObjects } from "../global";
 import { createRoot } from "react-dom/client";
@@ -6,18 +6,19 @@ import { createRoot } from "react-dom/client";
 export default function ConfigPanel(props) {
   const [selectedText, setSelection] = useState(props.selectedText);
   // const [status, setStatus] = useState(props.status);
-
-  if (selectedText !== props.selectedText) {
-    setSelection(props.selectedText);
-  }
-  if (!canvasObjects.root) {
-    const container = document.getElementById("configContainer");
-    const root = createRoot(container);
-    canvasObjects.root = root;
-  }
-  // if (props.selectedText) {
-  //   setSelection(props.selectedText);
-  // }
+  useEffect(() => {
+    if (selectedText !== props.selectedText) {
+      setSelection(props.selectedText);
+    }
+    if (!canvasObjects.root) {
+      const container = document.getElementById("configContainer");
+      const root = createRoot(container);
+      canvasObjects.root = root;
+    }
+    // if (props.selectedText) {
+    //   setSelection(props.selectedText);
+    // }
+  }, [selectedText, props.selectedText]);
 
   return (
     <div className="main-panel" id="config-panel">
