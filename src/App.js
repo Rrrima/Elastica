@@ -16,20 +16,19 @@ import useWindowDimensions from "./functions/useWindowDimensions";
 
 function App() {
   const { editor, onReady } = useFabricJSEditor();
-  const { width, height } = useWindowDimensions();
+  // const { width, height } = useWindowDimensions();
   console.warn = console.error = () => {};
   let attr = { left: 50, top: 50, width: 150, fontSize: 20 };
   useEffect(() => {
-    console.log(width, height);
-    const padding = (width - 90 - (height - 60) * 1.2) / 2;
-    document.querySelector(".container").style.padding =
-      "10px " + padding + "px";
-    document.querySelector("#page-header").style.padding =
-      "0px " + padding + "px";
+    // console.log(width, height);
+    // const padding = (width - 90 - (height - 60) * 1.2) / 2;
+    // document.querySelector(".container").style.padding =
+    //   "10px " + padding + "px";
+    // document.querySelector("#page-header").style.padding =
+    //   "0px " + padding + "px";
     if (!editor || !fabric || !editor.canvas.isEmpty()) {
       return;
     }
-
     // fabric.Image.fromURL(Stitch, (image) => {
     //   image.scale(0.2);
     //   image = editor.canvas.add(image);

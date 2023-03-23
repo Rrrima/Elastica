@@ -140,6 +140,14 @@ const VisualPanel = React.forwardRef((props, ref) => {
   };
 
   const detect = async (net) => {
+    // console.log(caches);
+    if ("storage" in navigator && "estimate" in navigator.storage) {
+      navigator.storage.estimate().then(function (storageEstimate) {
+        console.log(
+          `Usage: ${storageEstimate.usage}, Quota: ${storageEstimate.quota}`
+        );
+      });
+    }
     if (
       typeof webcamRef.current !== "undefined" &&
       webcamRef.current !== null &&
