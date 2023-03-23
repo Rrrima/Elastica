@@ -332,6 +332,21 @@ class HandPosArr {
   clearArr() {
     this.allpos = [];
   }
+  getDeltaX(handed) {
+    let arr = this.arrCenterLeft;
+    if (handed === "right") {
+      arr = this.arrCenterRight;
+    }
+    return arr[this.arrLen - 1][0] - arr[this.arrLen - 2][0];
+  }
+  getDeltaY(handed) {
+    let arr = this.arrCenterLeft;
+    if (handed === "right") {
+      arr = this.arrCenterRight;
+    }
+    console.log(arr[this.arrLen]);
+    return arr[this.arrLen - 1][1] - arr[this.arrLen - 2][1];
+  }
   updateHandArr(posVec, centerVec) {
     let leftVec = posVec.left;
     let rightVec = posVec.right;

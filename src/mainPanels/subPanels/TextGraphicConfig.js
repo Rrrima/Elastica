@@ -6,7 +6,7 @@ export default function TextGraphicConfig(props) {
   const status = props.status;
   return (
     <div>
-      <div>Config graphic elements here:</div>
+      {/* <div>Config graphic elements here:</div> */}
       {canvasObjects.getEnterObjects() && (
         <div className="text-graphic-container">
           {canvasObjects.getEnterObjects().map((item) => (

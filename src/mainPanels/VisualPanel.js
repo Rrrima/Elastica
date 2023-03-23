@@ -78,7 +78,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   const handleChangeMode = () => {
-    canvasObjects.removeHand();
     setMode(!previewMode);
     canvasObjects.canmeraOn = !canvasObjects.canmeraOn;
     if (previewMode) {
@@ -89,6 +88,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   const handleChangeScriptFollowing = () => {
     setScriptFollowing(!scriptFollowing);
     if (!scriptFollowing) {
+      canvasObjects.startPresentation();
       canvasObjects.textEditor.current.editor.save().then((data) => {
         let currentScript = data.blocks[0].data.text;
         populateScript(currentScript);
@@ -98,6 +98,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       tracker.revertQ();
       resetTranscript();
       SpeechRecognition.abortListening();
+      canvasObjects.endPresentation();
       ws.send(
         JSON.stringify({
           name: "transcriptionComplete",
@@ -117,8 +118,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
       detectorConfig
     );
     console.log("Handpose model loaded");
-    canvasObjects.initializeIndicator("left");
-    canvasObjects.initializeIndicator("right");
+    // canvasObjects.initializeIndicator("left");
+    // canvasObjects.initializeIndicator("right");
     // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
     // detect every 20ms -- [].length == 10
     setInterval(() => {
@@ -127,10 +128,10 @@ const VisualPanel = React.forwardRef((props, ref) => {
       //   console.log(webcamRef.current.video.width);
       // }
       // webcamRef.current.video.videoWidth = editor.canvas.width;
-      const test = true;
+      const test = false;
       if (
         (canvasObjects.focus &&
-          (canvasObjects.customizeMode || canvasObjects.focus.animateReady)) ||
+          (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
         test
       ) {
         detect(handposeDetector);
@@ -167,29 +168,25 @@ const VisualPanel = React.forwardRef((props, ref) => {
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
       // const isIntentioanl = handPosArr.isIntentional("left");
-      canvasObjects.visHand("left");
-      canvasObjects.visHand("right");
+      canvasObjects.showHand("both");
       // console.log(obj.effect);
       // if (obj.effect === "customize") {
       //   let w = handRecord.calculateDis();
       //   let pm = handPos.getAnimationParam;
       // } else {
       aniDriver.activeObjects.forEach((obj) => {
-        if (obj.animateFocus) {
+        if (obj && obj.animateFocus) {
           if (obj.t < 300) {
             canvasObjects.indicateColor = "red";
           } else {
             canvasObjects.indicateColor = "blue";
           }
           let pm = obj.getAnimationParams();
-          console.log(pm);
-          if (obj.t > obj.timeThred) {
-            obj.endAnimationFocus();
-          }
-          // obj.animateTo(pm);
+          // console.log(pm);
+          obj.animateTo(pm);
         }
-        if (obj.animateReady && !obj.focus.animateFocus) {
-          canvasObjects.focus.detectIntentionality();
+        if (obj && obj.animateReady && !obj.animateFocus) {
+          obj.detectIntentionality();
         }
       });
 
@@ -281,6 +278,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
           }}
         />
       )} */}
+      <div className="bottom left" id="infobox"></div>
+
       <div className="bottom right">
         <Stack direction="row">
           <IconButton aria-label="videocam" onClick={handleChangeMode}>

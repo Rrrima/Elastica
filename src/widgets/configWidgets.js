@@ -8,7 +8,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { canvasObjects } from "../global";
@@ -20,43 +20,77 @@ import { useState } from "react";
 import { ws } from "../global";
 import { handRecord } from "../global";
 import { aniDriver } from "../global";
+import { FabricJSCanvas } from "fabricjs-react";
+import { useFabricJSEditor } from "fabricjs-react";
+import { fabric } from "fabric";
+import Divider from "@mui/material/Divider";
+import StarsIcon from "@mui/icons-material/Stars";
 
 gsap.registerPlugin(Draggable);
 
-function handleCustomizationEnter() {
+function handleCustomizationEnter(e) {
+  const checked = e.target.checked;
   let curObj = canvasObjects.focus;
-  curObj.enterSetting["customize"] = !curObj.enterSetting["customize"];
-  if (curObj.enterSetting["customize"] && !canvasObjects.canmeraOn) {
+  curObj.enterSetting["customize"] = curObj.handRecord.isrecorded(
+    canvasObjects.focusedText
+  );
+  if (checked && !canvasObjects.canmeraOn) {
     console.log("please open camera for customization");
-    canvasObjects.startCustomization();
-  } else if (canvasObjects.canmeraOn) {
-    canvasObjects.startCustomization();
+    canvasObjects.startCustomization(curObj.enterSetting.handed);
+  } else if (checked) {
+    canvasObjects.startCustomization(curObj.enterSetting.handed);
+  } else {
+    canvasObjects.endCustomization();
   }
 }
 
-function triggerPreviewAll() {
-  aniDriver.activeObjects = [];
-  const curText = canvasObjects.focusedText;
-  if (canvasObjects.objectDict[curText]) {
-    canvasObjects.objectDict[curText].forEach((obj) => {
-      aniDriver.activeObjects.push(obj);
-    });
+function handleCustomizationUpdate(e) {
+  const checked = e.target.checked;
+  let curObj = canvasObjects.focus;
+  let curText = canvasObjects.focusedText;
+  curObj.updates[curText].setting.customize = curObj.handRecord.isrecorded(
+    canvasObjects.focusedText
+  );
+  if (curObj.updates[curText].setting.customize && !canvasObjects.canmeraOn) {
+    console.log("please open camera for customization");
+    canvasObjects.startCustomization(curObj.updates[curText].setting.handed);
+  } else if (checked) {
+    canvasObjects.startCustomization(curObj.updates[curText].setting.handed);
+  } else {
+    canvasObjects.endCustomization();
   }
-  if (canvasObjects.updateDict[curText]) {
-    canvasObjects.updateDict[curText].forEach((objid) => {
-      aniDriver.activeObjects.push(canvasObjects.idDict[objid]);
-    });
-  }
-  aniDriver.preview();
-}
-function triggerPreview() {
-  // preview is triggered for focused object
-  aniDriver.activeObjects = [canvasObjects.focus];
-  aniDriver.preview();
 }
 
 function TimelineSection() {
-  // const [isPlay, setPlayMode] = useState(false);
+  // const [isPreview, setPreviewMode] = useState(false);
+
+  function triggerPreviewAll() {
+    aniDriver.activeObjects = [];
+    let tlist = [];
+    const curText = canvasObjects.focusedText;
+    if (canvasObjects.objectDict[curText]) {
+      canvasObjects.objectDict[curText].forEach((obj) => {
+        tlist.push(obj.getTimeThred());
+        aniDriver.activeObjects.push(obj);
+      });
+    }
+    if (canvasObjects.updateDict[curText]) {
+      canvasObjects.updateDict[curText].forEach((objid) => {
+        console.log(objid);
+        tlist.push(canvasObjects.idDict[objid].getTimeThred());
+        aniDriver.activeObjects.push(canvasObjects.idDict[objid]);
+      });
+    }
+    console.log(tlist);
+    aniDriver.preview();
+    if (canvasObjects.canmeraOn) {
+      canvasObjects.startPreview();
+      setTimeout(() => {
+        canvasObjects.endPreview();
+      }, Math.max(...tlist) * 2);
+    }
+  }
+
   // function getTimePercentage(d) {
   //   return (d.x - d.minX) / (d.maxX - d.minX);
   // }
@@ -72,25 +106,36 @@ function TimelineSection() {
   // });
   return (
     <div className="config-section">
-      Play animation at:{" "}
-      <Chip
-        className={`focus-chip`}
-        label={canvasObjects.focusedText}
-        // label = "ohana means family"
-        // onClick={() => {
-        //   console.log("clicked!");
-        // }}
-      />
       {/* <div id="timeline-container"> */}
       <Stack direction="row" spacing={1}>
-        play one
+        <item>
+          <IconButton
+            aria-label="playall"
+            id="playall-button"
+            onClick={triggerPreviewAll}
+            disabled={canvasObjects.customizeMode}
+            className={!canvasObjects.customizeMode ? "" : "disable-button"}
+          >
+            <PlayArrowIcon className="white-icon" fontSize="small" />
+            {/* {!isPreview && <PlayArrowIcon fontSize="small" />} */}
+          </IconButton>
+        </item>
+        <item>
+          Play animation at:{" "}
+          <Chip
+            className={`focus-chip`}
+            label={canvasObjects.focusedText}
+            // label = "ohana means family"
+            // onClick={() => {
+            //   console.log("clicked!");
+            // }}
+          />
+        </item>
+        {/* play one
         <IconButton aria-label="playone" onClick={triggerPreview}>
           <PlayArrowIcon />
-        </IconButton>
-        play all
-        <IconButton aria-label="playall" onClick={triggerPreviewAll}>
-          <PlayArrowIcon />
-        </IconButton>
+        </IconButton> */}
+        {/* play all */}
       </Stack>
       {/* <div id="scrubber" ref={scrubberRef}></div> */}
       {/* </div> */}
@@ -98,28 +143,87 @@ function TimelineSection() {
   );
 }
 
+function Thumbnail(props) {
+  const { editor, onReady } = useFabricJSEditor();
+  useEffect(() => {
+    if (!editor || !fabric || !editor.canvas.isEmpty()) {
+      return;
+    } else {
+      // const curfab = fabric.util.object.clone(
+      //   canvasObjects.idDict[props.id].fabric
+      // );
+      canvasObjects.idDict[props.id].fabric.clone((cloned) => {
+        cloned.set({
+          top: 10,
+          left: 10,
+          scaleX: 0.5,
+          scaleY: 0.5,
+          selectable: false,
+          opacity: 1,
+        });
+        editor.canvas.add(cloned);
+        editor.canvas.renderAll();
+      });
+    }
+  });
+  return (
+    <div>
+      <FabricJSCanvas className="object-thumbnail" onReady={onReady} />
+    </div>
+  );
+}
+
 function InfoBadge(props) {
-  const { status, selectedText } = props;
+  const selectedText = canvasObjects.focusedText;
+  const status = props.status;
+  const curobj = canvasObjects.idDict[props.id];
+  let setting = curobj.enterSetting;
+  if (status === "update") {
+    setting = curobj.updates[selectedText].setting;
+  }
   return (
     <div>
       <span className={`${status}-indicator`}>{status.toUpperCase()}</span>
-      <span> animation for </span>
       <Chip
-        className={`enter-chip`}
-        label={selectedText}
+        label={setting.effect}
+        className={`${status}effect-indicator`}
         // label = "ohana means family"
         // onClick={() => {
         //   console.log("clicked!");
         // }}
       />
+      <span> | </span>
+      {/* <Divider orientation="vertical" flexItem /> */}
+      <Chip
+        label={setting.handed}
+        className={`${setting.handed}hand-indicator`}
+        // label = "ohana means family"
+        // onClick={() => {
+        //   console.log("clicked!");
+        // }}
+      />
+      {curobj.handRecord.isrecorded(selectedText) && (
+        <div className="customize-indicator">
+          <StarsIcon />
+        </div>
+      )}
     </div>
   );
 }
+
+/////////////////////////////////////////////////////
+////////////////// Hand Selection ///////////////////
+/////////////////////////////////////////////////////
 
 function HandedSelection(props) {
   const handleChange = (e) => {
     // console.log("change template animation");
     canvasObjects.focus.changeEnterSetting("handed", e.target.value);
+    canvasObjects.rerenderConfig();
+    if (canvasObjects.customizeMode) {
+      canvasObjects.removeHand("both");
+      canvasObjects.addHandToScene(e.target.value);
+    }
   };
   return (
     <div className="config-section">
@@ -138,7 +242,12 @@ function HandedSelection(props) {
         >
           <FormControlLabel value="left" control={<Radio />} label="left" />
           <FormControlLabel value="right" control={<Radio />} label="right" />
-          <FormControlLabel value="both" control={<Radio />} label="both" />
+          {/* <FormControlLabel
+            value="both"
+            disabled
+            control={<Radio />}
+            label="both"
+          /> */}
           <FormControlLabel value="none" control={<Radio />} label="none" />
         </RadioGroup>
       </FormControl>
@@ -147,6 +256,15 @@ function HandedSelection(props) {
 }
 
 function UpdateHandedSelection(selectedText) {
+  const handleChange = (e) => {
+    // console.log("change template animation");
+    canvasObjects.focus.changeUpdateSetting("handed", e.target.value);
+    canvasObjects.rerenderConfig();
+    if (canvasObjects.customizeMode) {
+      canvasObjects.removeHand("both");
+      canvasObjects.addHandToScene(e.target.value);
+    }
+  };
   return (
     <div className="config-section">
       <FormControl>
@@ -155,30 +273,45 @@ function UpdateHandedSelection(selectedText) {
           row
           aria-labelledby="handed-row-radio-buttons-group-label"
           name="handed-controlp"
+          onChange={handleChange}
           defaultValue={
-            canvasObjects.focus && canvasObjects.focus.updates[selectedText]
-              ? canvasObjects.focus.updates[selectedText].Setting["handed"]
+            canvasObjects.focus &&
+            canvasObjects.focus.updates[canvasObjects.focusedText]
+              ? canvasObjects.focus.updates[canvasObjects.focusedText].setting[
+                  "handed"
+                ]
               : "left"
           }
         >
           <FormControlLabel value="left" control={<Radio />} label="left" />
           <FormControlLabel value="right" control={<Radio />} label="right" />
-          <FormControlLabel value="both" control={<Radio />} label="both" />
+          <FormControlLabel value="none" control={<Radio />} label="none" />
+          {/* <FormControlLabel
+            value="both"
+            disabled
+            control={<Radio />}
+            label="both"
+          />
           <FormControlLabel
             value="disabled"
             disabled
             control={<Radio />}
             label="random"
-          />
+          /> */}
         </RadioGroup>
       </FormControl>
     </div>
   );
 }
 
+/////////////////////////////////////////////////////
+////////////////// After Selection ///////////////////
+/////////////////////////////////////////////////////
+
 function AfterEnterSelection(props) {
   const handleChange = (e) => {
     canvasObjects.focus.changeEnterSetting("after", e.target.value);
+    canvasObjects.rerenderConfig();
   };
   return (
     <div className="config-section">
@@ -201,11 +334,11 @@ function AfterEnterSelection(props) {
             control={<Radio />}
             label="floating"
           /> */}
-          <FormControlLabel
+          {/* <FormControlLabel
             value="following"
             control={<Radio />}
             label="following"
-          />
+          /> */}
           <FormControlLabel value="exit" control={<Radio />} label="exit" />
         </RadioGroup>
       </FormControl>
@@ -214,6 +347,11 @@ function AfterEnterSelection(props) {
 }
 
 function AfterUpdateSelection(selectedText) {
+  const handleChange = (e) => {
+    // console.log("change template animation");
+    canvasObjects.focus.changeUpdateSetting("after", e.target.value);
+    canvasObjects.rerenderConfig();
+  };
   return (
     <div className="config-section">
       <FormControl>
@@ -222,9 +360,13 @@ function AfterUpdateSelection(selectedText) {
           row
           aria-labelledby="after-enter-row-radio-buttons-group-label"
           name="after-enter-control"
+          onChange={handleChange}
           defaultValue={
-            canvasObjects.focus && canvasObjects.focus.updates[selectedText]
-              ? canvasObjects.focus.updates[selectedText].Setting["handed"]
+            canvasObjects.focus &&
+            canvasObjects.focus.updates[canvasObjects.focusedText]
+              ? canvasObjects.focus.updates[canvasObjects.focusedText].setting[
+                  "after"
+                ]
               : "stay"
           }
         >
@@ -234,11 +376,11 @@ function AfterUpdateSelection(selectedText) {
             control={<Radio />}
             label="floating"
           /> */}
-          <FormControlLabel
+          {/* <FormControlLabel
             value="following"
             control={<Radio />}
             label="following"
-          />
+          /> */}
           <FormControlLabel value="exit" control={<Radio />} label="exit" />
           <FormControlLabel value="back" control={<Radio />} label="back" />
           {/* <FormControlLabel value="yoyo" control={<Radio />} label="yoyo" />
@@ -249,9 +391,14 @@ function AfterUpdateSelection(selectedText) {
   );
 }
 
+///////////////////////////////////////////////////////
+////////////////// Effect Selection ///////////////////
+///////////////////////////////////////////////////////
+
 function EnterTemplateSelection(props) {
   const handleChange = (e) => {
     canvasObjects.focus.changeEnterSetting("effect", e.target.value);
+    canvasObjects.rerenderConfig();
   };
   return (
     <div className="config-section">
@@ -294,9 +441,17 @@ function EnterTemplateSelection(props) {
 
 function UpdateTemplateSelection(selectedText) {
   const handleChange = (e) => {
-    console.log("change template animation");
     canvasObjects.focus.changeUpdateSetting("effect", e.target.value);
+    canvasObjects.rerenderConfig();
+    canvasObjects.focus.update();
   };
+  // useEffect(() => {
+  //   console.log(canvasObjects.focus.updates);
+  //   console.log(canvasObjects.focusedText);
+  //   console.log(
+  //     canvasObjects.focus.updates[canvasObjects.focusedText].setting["effect"]
+  //   );
+  // });
   return (
     <div className="config-section">
       <FormControl>
@@ -307,8 +462,11 @@ function UpdateTemplateSelection(selectedText) {
           name="update-template-control"
           onChange={handleChange}
           defaultValue={
-            canvasObjects.focus && canvasObjects.focus.updates[selectedText]
-              ? canvasObjects.focus.updates[selectedText].Setting["effect"]
+            canvasObjects.focus &&
+            canvasObjects.focus.updates[canvasObjects.focusedText]
+              ? canvasObjects.focus.updates[canvasObjects.focusedText].setting[
+                  "effect"
+                ]
               : "transform"
           }
         >
@@ -323,15 +481,18 @@ function UpdateTemplateSelection(selectedText) {
             label="hand follow"
           />
           <FormControlLabel value="seesaw" control={<Radio />} label="seesaw" />
-          <FormControlLabel
-            value="disappear"
-            control={<Radio />}
-            label="disappear"
-          />
-          <FormControlLabel
+          <FormControlLabel value="exit" control={<Radio />} label="exit" />
+          {/* <FormControlLabel
             value="customize"
             control={<Radio />}
             label="customize"
+            onChange={handleCustomizationUpdate}
+          /> */}
+          <FormControlLabel
+            value="customize"
+            control={<Switch />}
+            label="customize"
+            onChange={handleCustomizationUpdate}
           />
         </RadioGroup>
       </FormControl>
@@ -433,4 +594,5 @@ export {
   UpdateHandedSelection,
   UpdateTemplateSelection,
   AfterUpdateSelection,
+  Thumbnail,
 };

@@ -1,8 +1,8 @@
 import gsap from "gsap";
-import { canvasObjects, handPos, handPosArr } from "../global";
+import { aniDriver, canvasObjects, handPos, handPosArr } from "../global";
 import HandRecords from "./HandRecords";
 import { C } from "../global";
-import { gaussianBlending } from "./utils";
+import { gaussianBlending, isValid } from "./utils";
 
 class TextObject {
   // initiate a new object
@@ -44,6 +44,7 @@ class TextObject {
       handed: "left",
       after: "stay",
       customize: false,
+      timeThred: 1500,
     };
     this.updates = {};
     // {focusedText:{}}
@@ -54,9 +55,19 @@ class TextObject {
     this.fixAttr = this.getCurrentAttr();
     this.handRecord = new HandRecords();
   }
-  endAnimationFocus() {
-    this.animateFocus = false;
+  getTimeThred() {
+    if (this.relatedText === canvasObjects.focusedText) {
+      this.timeThred = this.enterSetting.timeThred;
+    } else {
+      this.timeThred =
+        this.updates[canvasObjects.focusedText].setting.timeThred;
+    }
+    return this.timeThred;
   }
+  //   endAnimationFocus() {
+  //     this.animateFocus = false;
+  //     this.animateReady = false;
+  //   }
   detectIntentionality() {
     // for preview;
     // detect intentionality whenever animteFocus == false
@@ -67,31 +78,49 @@ class TextObject {
     const curText = canvasObjects.focusedText;
     let status = "enter";
     let handed = "left";
+    let delayFocus = 500;
+    if (canvasObjects.mode === "presentation") {
+      delayFocus = 0;
+    }
     // get status
     if (this.relatedText !== curText) {
       status = "update";
     }
     if (status === "enter") {
+      console.log(delayFocus);
       handed = this.enterSetting.handed;
-    } else {
-      handed = this.updates[curText].setting.handed;
-    }
-    const intention = this.isIntentional(handed);
-    if (
-      intention.type === "general" &&
-      intention.confidence > C.handStatic.thred
-    ) {
-      this.animateFocus = true; // start adaptation from t
-      this.t = 0;
-    }
-    if (intention.type === "customize") {
-      if (intention.confidence[0] > C.sim.thred) {
-        this.animateFocus = true;
+      const intention = this.isIntentional(handed);
+      // console.log(intention);
+      if (
+        intention.type === "general" &&
+        intention.confidence > C.handStatic.thred
+      ) {
         this.t = 0;
+        this.getReady(handPos.handCenterVec[handed]);
+        setTimeout(() => {
+          this.animateFocus = true; // start adaptation from t
+        }, delayFocus);
       }
-      //   else if (intention.confidence[1] > C.handStatic.thred) {
-      //     this.animateFocus = true;
-      //   }
+      if (intention.type === "customize") {
+        if (intention.confidence[0] > C.sim.thred) {
+          this.t = 0;
+          this.getReady(handPos.handCenterVec[handed]);
+          setTimeout(() => {
+            this.animateFocus = true;
+          }, delayFocus);
+        } else if (intention.confidence[1] === 1) {
+          this.t = 0;
+          this.getReady(handPos.handCenterVec[handed]);
+          setTimeout(() => {
+            this.animateFocus = true;
+          }, delayFocus);
+        }
+      }
+    } else {
+      this.t = 0;
+      setTimeout(() => {
+        this.animateFocus = true;
+      }, delayFocus);
     }
   }
   animateAtMark() {
@@ -135,6 +164,7 @@ class TextObject {
     if (!pos) {
       this.fabric.set(rdict);
     }
+    this.editor.canvas.renderAll();
   }
   animateEnter() {
     this.fabric.set("selectable", true);
@@ -170,6 +200,7 @@ class TextObject {
         onUpdate: () => this.editor.canvas.renderAll(),
       });
     }
+    this.afterEnter(1);
   }
   animateUpdate(t) {
     this.fabric.set("selectable", true);
@@ -184,6 +215,33 @@ class TextObject {
         // console.log(thisfab);
       },
     });
+    const effect = this.updates[t].setting.effect;
+    if (effect === "exit") {
+      gsap.to(this.fabric, {
+        opacity: 0,
+        duration: 1,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    } else if (effect === "seesaw") {
+      gsap.fromTo(
+        this.fabric,
+        { top: this.updates[t].attr.top },
+        {
+          top: this.updates[t].attr.top - 20,
+          yoyo: true,
+          repeat: 3,
+          duration: 0.5,
+          ease: "sin.inOut",
+          onUpdate: () => this.editor.canvas.renderAll(),
+        }
+      );
+    }
+    if (effect === "seesaw") {
+      this.afterUpdate(t, 3);
+    } else {
+      this.afterUpdate(t, 1.5);
+    }
+
     // console.log(" =====  all updated element!! ====");
     // console.log(this.fabric);
   }
@@ -231,7 +289,8 @@ class TextObject {
   changeEnterSetting(d, v) {
     this.enterSetting[d] = v;
     this.enterTL = gsap.timeline();
-    this.createEnter();
+    // this.createEnter();
+    this.animateEnter();
   }
   getCurrentAttr() {
     let k = {};
@@ -250,9 +309,13 @@ class TextObject {
       onUpdate: () => this.editor.canvas.renderAll(),
     });
   }
-  gaussianBlending(pm) {
-    const fa = this.fixAttr;
-    let ts = this.t / C.time.duration;
+  gaussianBlending(status, pm) {
+    let fa = this.fixAttr;
+    if (status === "update") {
+      console.log("update!");
+      fa = this.updates[canvasObjects.focusedText].attr;
+    }
+    let ts = this.t / this.timeThred;
     let bpm = {};
     Object.keys(pm).forEach((k) => {
       if (k !== "opacity") {
@@ -268,26 +331,32 @@ class TextObject {
     const curText = canvasObjects.focusedText;
     let ts = this.t / C.time.duration;
     this.t += C.time.step;
-    let opacity = ts;
-    if (ts > 1) {
+    let opacity = ts * 2.5;
+    if (ts > 0.4) {
       opacity = 1;
     }
     const fa = this.fixAttr;
+    // enter adaptation
     if (curText === this.relatedText) {
       const handed = this.enterSetting.handed;
+      if (handed === "none") {
+        return;
+      }
       const center = handPos.getHandCenters()[handed];
-      if (this.enterSetting.customize) {
+      if (this.enterSetting.customize && this.handRecord.record[curText]) {
         let pm = this.handRecord.getParams();
-        pm = {
-          left: center[0] + pm.dl,
-          top: center[1] + pm.dt,
-          opacity: opacity,
-          scaleX: pm.sx,
-          scaleY: pm.sy,
-          height: 100,
-        };
-        let intention = this.isIntentional().confidence[0];
-        return this.gaussianBlending(pm);
+        if (isValid(pm)) {
+          pm = {
+            left: center[0] + pm.dl,
+            top: center[1] + pm.dt,
+            opacity: opacity,
+            scaleX: pm.sx,
+            scaleY: pm.sy,
+            height: 100,
+          };
+          // let intention = this.isIntentional().confidence[0];
+          return this.gaussianBlending("enter", pm);
+        }
       } else {
         const effect = this.enterSetting.effect;
         let pm = {};
@@ -313,17 +382,109 @@ class TextObject {
             opacity: opacity,
           };
         }
-        return this.gaussianBlending(pm);
+        return this.gaussianBlending("enter", pm);
       }
     } else {
+      // update adaptation
+      const settings = this.updates[curText].setting;
+      const handed = settings.handed;
+      if (handed === "none") {
+        return;
+      }
+      const center = handPos.getHandCenters()[handed];
+      //   console.log(settings);
+      if (settings.customize && this.handRecord.record[curText]) {
+        if (settings.effect === "follow") {
+          let pm = this.handRecord.getParams();
+          if (isValid(pm)) {
+            pm = {
+              left: center[0] + pm.dl,
+              top: center[1] + pm.dt,
+              scaleX: pm.sx,
+              scaleY: pm.sy,
+              height: 100,
+            };
+            // let intention = this.isIntentional().confidence[0];
+            return pm;
+          }
+        } else if (settings.effect === "transform") {
+          let pm = this.handRecord.getParams();
+          if (isValid(pm)) {
+            pm = {
+              left: center[0] + pm.dl,
+              top: center[1] + pm.dt,
+              scaleX: pm.sx,
+              scaleY: pm.sy,
+              height: 100,
+            };
+            // let intention = this.isIntentional().confidence[0];
+            return this.gaussianBlending("update", pm);
+          }
+        } else if (settings.effect === "seesaw") {
+          let pm = this.handRecord.getParams();
+          if (isValid(pm)) {
+            pm = {
+              left: pm.dl,
+              top: pm.dt,
+              scaleX: pm.sx,
+              scaleY: pm.sy,
+              height: 100,
+            };
+            // let intention = this.isIntentional().confidence[0];
+            return pm;
+          }
+        } else if (settings.effect === "exit") {
+          let pm = this.handRecord.getParams();
+          if (isValid(pm)) {
+            pm = {
+              left: center[0] + pm.dl,
+              top: center[1] + pm.dt,
+              opacity: 1 - opacity,
+              scaleX: pm.sx,
+              scaleY: pm.sy,
+              height: 100,
+            };
+            // let intention = this.isIntentional().confidence[0];
+            return this.gaussianBlending("update", pm);
+          }
+        }
+      } else {
+        const effect = settings.effect;
+        let pm = {};
+        if (effect === "follow") {
+          pm = { left: center[0], top: center[1] };
+          return pm;
+        } else if (effect === "exit") {
+          pm = { opacity: 1 - opacity };
+          return pm;
+        } else if (effect === "transform") {
+          pm = {
+            left: center[0],
+            top: center[1],
+          };
+          return this.gaussianBlending("update", pm);
+        } else if (effect === "seesaw") {
+          let fa = this.updates[curText].attr;
+          pm = {
+            left: fa.left + handPosArr.getDeltaX(handed),
+            top: fa.top + handPosArr.getDeltaY(handed),
+          };
+          return pm;
+        }
+      }
     }
   }
   animateTo(params) {
-    gsap.to(this.fabric, {
-      ...params,
-      immediateRender: true,
-      onUpdate: () => this.editor.canvas.renderAll(),
-    });
+    if (isValid(params)) {
+      gsap.to(this.fabric, {
+        ...params,
+        immediateRender: true,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    } else {
+      //   console.log("not valid!");
+    }
+
     // this.fabric.set({ left: pos[0], top: pos[1] });
   }
   createEnter() {
@@ -395,7 +556,6 @@ class TextObject {
   }
   changeUpdateSetting(dim, val) {
     this.updates[canvasObjects.focusedText].setting[dim] = val;
-    this.update();
   }
   update() {
     const base = this.updates[canvasObjects.focusedText].attr;
@@ -405,7 +565,7 @@ class TextObject {
       duration: 0,
       onUpdate: () => this.editor.canvas.renderAll(),
     });
-    if (effect === "disappear") {
+    if (effect === "exit") {
       gsap.to(this.fabric, {
         opacity: 0,
         duration: 1,
@@ -430,11 +590,20 @@ class TextObject {
     if (this.animateReady) {
       // start intentionality detection
       const curText = canvasObjects.focusedText;
+      if (handed === "none") {
+        return {
+          type: "general",
+          confidence: 0,
+        };
+      }
       if (this.relatedText === curText) {
         // enter
         if (this.handRecord.record[curText]) {
           const sim = this.handRecord.getSimilarity(); // euclidean distance between vector
-          const confidence = Math.max(...sim);
+          let confidence = 0;
+          if (sim) {
+            confidence = Math.max(...sim);
+          }
           //   const weights = normalizeSumOne(sim);
           return {
             type: "customize",
@@ -451,22 +620,86 @@ class TextObject {
       console.log("activate object for intentionality detection");
     }
   }
+  afterEnter(d) {
+    gsap.to(this.fabric, {
+      ...this.fixAttr,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+    if (this.enterSetting.after === "exit") {
+      gsap.to(this.fabric, {
+        opacity: 0,
+        delay: d,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    }
+    this.animateReady = false;
+    this.animateFocus = false;
+  }
+  afterUpdate(t, d) {
+    const fa = this.updates[t].attr;
+    const setting = this.updates[t].setting;
+    if (setting.after === "exit") {
+      gsap.to(this.fabric, {
+        opacity: 0,
+        delay: d,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    } else if (setting.after === "back") {
+      if (setting.effect === "follow") {
+        gsap.to(this.fabric, {
+          ...fa,
+          delay: d,
+          onUpdate: () => this.editor.canvas.renderAll(),
+        });
+      } else {
+        const preText = canvasObjects.getPreviousKey(Object.keys(this.updates));
+        let backto = null;
+        if (preText) {
+          backto = this.updates[preText].attr;
+        } else {
+          backto = this.fixAttr;
+        }
+        gsap.to(this.fabric, {
+          ...backto,
+          delay: d,
+          onUpdate: () => this.editor.canvas.renderAll(),
+        });
+      }
+    } else if (setting.after === "stay") {
+      if (setting.effect !== "follow") {
+        gsap.to(this.fabric, {
+          ...fa,
+          delay: d,
+          onUpdate: () => this.editor.canvas.renderAll(),
+        });
+      }
+    }
+    this.animateReady = false;
+    this.animateFocus = false;
+  }
   addListeners() {
     let relatedText = this.relatedText;
     let thisobj = this;
     this.fabric.on("modified", function (e) {
-      if (relatedText === canvasObjects.focusedText) {
-        if (!canvasObjects.customizeMode) {
+      if (!canvasObjects.customizeMode) {
+        if (relatedText === canvasObjects.focusedText) {
           console.log("fix position change");
           thisobj.fixAttr = thisobj.getCurrentAttr();
+        } else {
+          thisobj.updates[canvasObjects.focusedText] = {
+            attr: thisobj.getCurrentAttr(),
+            setting: {
+              effect: "transform",
+              handed: "left",
+              after: "stay",
+              customize: false,
+              timeThred: 3000,
+            },
+          };
+          console.log("updated!");
+          canvasObjects.addToUpdate(canvasObjects.focusedText, thisobj);
+          canvasObjects.rerenderConfig();
         }
-      } else {
-        thisobj.updates[canvasObjects.focusedText] = {
-          attr: thisobj.getCurrentAttr(),
-          setting: { effect: "transform", handed: "left", after: "stay" },
-        };
-        canvasObjects.addToUpdate(canvasObjects.focusedText, thisobj);
-        canvasObjects.rerenderConfig();
       }
     });
 
@@ -479,7 +712,12 @@ class TextObject {
       if (relatedText !== canvasObjects.focusedText) {
         thisobj.updates[canvasObjects.focusedText] = {
           attr: thisobj.getCurrentAttr(),
-          setting: { effect: "transform", handed: "left", after: "stay" },
+          setting: {
+            effect: "transform",
+            handed: "left",
+            after: "stay",
+            customize: false,
+          },
         };
         canvasObjects.addToUpdate(canvasObjects.focusedText, thisobj);
         canvasObjects.rerenderConfig();
@@ -526,7 +764,8 @@ class ImageObject {
   changeEnterSetting(d, v) {
     this.enterSetting[d] = v;
     this.enterTL.clear();
-    this.createEnter();
+    // this.createEnter();
+    this.animateEnter();
   }
   getCurrentAttr() {
     let k = {};
@@ -618,6 +857,7 @@ class ImageObject {
       //   thisobj.animate();
       console.log(thisobj.getCurrentAttr());
     });
+    canvasObjects.rerenderConfig();
   }
 }
 

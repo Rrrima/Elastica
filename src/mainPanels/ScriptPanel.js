@@ -16,16 +16,16 @@ export default function ScriptPanel(props) {
     <div className="main-panel" id="script-panel">
       <TextEditor gCanvas={gCanvas} ref={textEditorRef} />
 
-      <div className="bottom right floatButton">
-        <Stack direction="row">
+      {/* <div className="bottom right floatButton"> */}
+      {/* <Stack direction="row">
           <IconButton aria-label="edit">
             <EditIcon fontSize="small" />
           </IconButton>
           <IconButton aria-label="timeline">
             <ViewTimelineIcon fontSize="small" />
           </IconButton>
-        </Stack>
-      </div>
+        </Stack> */}
+      {/* </div> */}
     </div>
   );
 }

@@ -80,6 +80,13 @@
   height: 84vh;
 }
 
+#infobox {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  padding: 20px;
+  color: #4d87f5;
+}
+
 .bottom {
   position: absolute;
   bottom: 10px;
@@ -362,9 +369,13 @@
 }
 
 .config-section {
-  padding: 15px 0;
-  padding-bottom: 0;
-  font-family: "Baloo Tamma 2", cursive !important;
+  font-family: "Baloo Tamma 2" !important;
+  font-size: small !important;
+}
+
+label {
+  font-family: "Baloo Tamma 2" !important;
+  font-size: medium !important;
 }
 
 .enter-marker:hover {
@@ -419,5 +430,86 @@
   padding: 40px 20px;
   height: 60px;
   width: 95%;
+}
+
+#playall-button {
+  position: relative;
+  top: 3px;
+  background-color: #52efbb;
+  width: 25px;
+  height: 25px;
+}
+
+.white-icon {
+  color: white;
+}
+
+.object-thumbnail {
+  height: 60px;
+}
+
+.entereffect-indicator {
+  margin-left: 6px !important;
+  background-color: rgba(165, 196, 255, 0.37) !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+
+.updateeffect-indicator {
+  margin-left: 6px !important;
+  background-color: #ffd050 !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+
+.lefthand-indicator {
+  margin-left: 6px !important;
+  background-color: #f4bbe198 !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+
+.righthand-indicator {
+  margin-left: 6px !important;
+  background-color: #c1ffa9a7 !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+
+.nonehand-indicator {
+  margin-left: 6px !important;
+  background-color: #fafbfc !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+
+.customize-indicator {
+  color: #ffa9ab;
+  display: inline-block;
+  position: relative;
+  top: 7.5px;
+  margin-left: 10px;
+}
+
+.playsingle-button {
+  background-color: #52efbb !important;
+  color: white !important;
+  width: 25px;
+  height: 25px;
+  margin-right: 10px !important;
+}
+
+.delete-button {
+  margin-left: 20px !important;
+}
+
+.Mui-disabled {
+  background-color: #b1aeae !important;
+  color: #fafbfc !important;
 }
 /*# sourceMappingURL=App.css.map */

@@ -19,7 +19,7 @@ export default class ScriptTracker {
     this.pointer = 0; // the index of the triggerList that is listening to
     this.triggerQ = [];
     this._n = 0;
-    this.offset = 2;
+    this.offset = 3;
   }
   addHighlight(prevText, text) {
     prevText = prevText.trim();
@@ -46,6 +46,7 @@ export default class ScriptTracker {
   }
   revertQ() {
     this.pointer = 0;
+    this.triggerQ = this.triggerQ.map((x) => false);
   }
   log() {
     console.log(this.triggerWord);
@@ -64,7 +65,7 @@ export default class ScriptTracker {
         this.triggerQ[this.pointer] = true;
       }
       if (curIndex >= this.endList[this.pointer] - 1) {
-        aniDriver.backtoPosition();
+        aniDriver.forceEnd(this.triggerWord[this.pointer]); // force to desired position
         this.pointer += 1;
       }
     }

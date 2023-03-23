@@ -19,6 +19,8 @@ class CanvasObject {
     this.objectDict = {}; // selectedText -> [obj,obj]
     this.updateDict = {}; // selectedText -> [objid,objid]
     this.idDict = {};
+    this.mode = "editing";
+    this.presentationMode = false;
     this.textRank = {};
     this._n_marks = 0; // count id for each object
     this.focus = null;
@@ -33,6 +35,8 @@ class CanvasObject {
     this.textEditor = null;
     this.customizeMode = false;
     this.handed = "left";
+    this.initializeIndicator("left");
+    this.initializeIndicator("right");
     //   createRoots() {
     //     console.log("create root");
     //     const container = document.getElementById("configContainer");
@@ -40,31 +44,121 @@ class CanvasObject {
     //     this.roots = { configRoot: root };
     //   }
   }
+  startPresentation() {
+    document.querySelector("#visual-panel").style.filter =
+      "drop-shadow(1px 2px 8px #52efbb";
+    this.mode = "presentation";
+    Object.keys(this.idDict).forEach((k) => {
+      this.idDict[k].getReady();
+    });
+    if (this.canmeraOn) {
+      this.removeHand("both");
+      this.addHandToScene("both");
+      this.indicateColor = "grey";
+    } else {
+      document.querySelector("#infobox").innerHTML = "please open camera";
+      setTimeout(() => {
+        document.querySelector("#infobox").innerHTML = "";
+      }, 1500);
+    }
+    document.querySelector("#visual-panel").style.filter =
+      "drop-shadow(1px 2px 8px #52efbb";
+  }
+  endPresentation() {
+    document.querySelector("#visual-panel").style.filter =
+      "drop-shadow(1px 2px 8px hsl(0deg 0% 0% / 0.1)";
+    this.mode = "editing";
+    if (this.canmeraOn) {
+      this.removeHand("both");
+    }
+  }
 
-  startCustomization() {
+  startPreview() {
+    console.log(" =====  start preview: =====");
+    console.log(aniDriver.activeObjects);
+    this.removeHand("both");
+    this.addHandToScene("both");
+    this.mode = "preview";
+    this.indicateColor = "blue";
+    document.querySelector("#visual-panel").style.border = "3px solid #ffa9ab";
+    // document.querySelector("#visual-panel").style.filter =
+    //   "drop-shadow(1px 2px 8px #52efbb";
+    //  filter: drop-shadow(1px 2px 8px var(--shadow-color));
+  }
+
+  endPreview() {
+    console.log(" =====  end preview: =====");
+    this.removeHand("both");
+    this.mode = "editing";
+    document.querySelector("#visual-panel").style.border = "";
+    // document.querySelector("#visual-panel").style.filter =
+    //   "drop-shadow(1px 2px 8px hsl(0deg 0% 0% / 0.1)";
+    if (this.customizeMode) {
+      document.querySelector("#visual-panel").style.border =
+        "3px solid #52efbb";
+      this.indicateColor = "#52efbb";
+    }
+    aniDriver.forceEnd(canvasObjects.focusedText);
+  }
+
+  startCustomization(handed) {
+    this.removeHand("both");
+    this.addHandToScene(handed);
+    this.indicateColor = "#52efbb";
     console.log("customization started");
+    // this.hideHand();
+    // this.showHand(handed);
     this.customizeMode = true;
     document.addEventListener("keydown", handleCustomization);
+    // console.log(document.querySelector("#visual-panel").style);
+    document.querySelector("#visual-panel").style.border = "3px solid #52efbb";
+    this.rerenderConfig();
   }
   endCustomization() {
+    // this.recoverHand();
     this.customizeMode = false;
+    this.indicateColor = "blue";
     document.removeEventListener("keydown", handleCustomization);
+    document.querySelector("#visual-panel").style.border = "";
+    this.removeHand("both");
+    this.rerenderConfig();
   }
+
   initializeIndicator(handed) {
+    // add fabric object to dictionary, only all once
+    // when you first open the de
     this.allFingers.forEach((f) => {
       this.handIndicators[handed][f] = new fabric.Circle({
         radius: 6,
-        fill: "red",
+        fill: "blue",
         left: 0,
         top: 0,
         opacity: 0,
       });
-      this.canvas.canvas.add(this.handIndicators[handed][f]);
     });
   }
-  removeHand() {
-    console.log("remove!");
-    ["left", "right"].forEach((handed) => {
+
+  addHandToScene(handed) {
+    let handliist = [handed];
+    if (handed === "both") {
+      handliist = ["left", "right"];
+    } else if (handed === "none") {
+      handliist = [];
+    }
+    handliist.forEach((handed) => {
+      this.allFingers.forEach((f) => {
+        this.canvas.canvas.add(this.handIndicators[handed][f]);
+      });
+    });
+    this.canvas.canvas.renderAll();
+  }
+
+  removeHand(handed) {
+    let handliist = [handed];
+    if (handed === "both") {
+      handliist = ["left", "right"];
+    }
+    handliist.forEach((handed) => {
       if (this.handIndicators[handed]) {
         this.allFingers.forEach((f) => {
           if (this.handIndicators[handed][f]) {
@@ -75,19 +169,19 @@ class CanvasObject {
       this.canvas.canvas.renderAll();
     });
   }
+
+  showHand(handed) {
+    if (handed === "both") {
+      this.visHand("left");
+      this.visHand("right");
+    } else {
+      this.visHand(handed);
+    }
+  }
+
   visHand(handed) {
     const ftPos = handPos.getFingertipPos(handed, "all");
-    // let ftAng = handPos.getVisHandAngle(handed);
     const fill = this.indicateColor;
-    // var tl = gsap.timeline();
-    // this.allFingers.forEach((f) => {
-    //   let pm = { top: ftPos[f][1], left: ftPos[f][0], opacity: 1 };
-    //   gsap.to(this.handIndicators[handed][f], {
-    //     ...pm,
-    //     immediateRender: true,
-    //     onUpdate: () => this.canvas.canvas.renderAll(),
-    //   });
-    // });
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {
@@ -105,9 +199,9 @@ class CanvasObject {
         this.handIndicators[handed][f].set(pm);
       });
     }
-
     this.canvas.canvas.renderAll();
   }
+
   getPos(mark) {
     const pnode = mark.parentNode;
     const index = Array.prototype.indexOf.call(pnode.children, mark);

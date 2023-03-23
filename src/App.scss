@@ -80,6 +80,12 @@ $bg-red: #fff6f6;
   // background-color: $light-gray;
   // filter: drop-shadow(0px 0px 0px var(--shadow-color));
 }
+#infobox {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  padding: 20px;
+  color: $blue-dark;
+}
 .bottom {
   position: absolute;
   bottom: 10px;
@@ -289,9 +295,14 @@ $bg-red: #fff6f6;
   width: 100%;
 }
 .config-section {
-  padding: 15px 0;
-  padding-bottom: 0;
-  font-family: "Baloo Tamma 2", cursive !important ;
+  // padding: 15px 0;
+  // padding-bottom: 0;
+  font-family: "Baloo Tamma 2" !important ;
+  font-size: small !important;
+}
+label {
+  font-family: "Baloo Tamma 2" !important ;
+  font-size: medium !important;
 }
 
 // marker style
@@ -346,4 +357,76 @@ $bg-red: #fff6f6;
   height: 60px;
   width: 95%;
   // border-radius: 10px;
+}
+
+#playall-button {
+  position: relative;
+  top: 3px;
+  background-color: #52efbb;
+  width: 25px;
+  height: 25px;
+}
+.white-icon {
+  color: white;
+}
+.object-thumbnail {
+  height: 60px;
+}
+.entereffect-indicator {
+  margin-left: 6px !important;
+  background-color: $blue-highlight !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+.updateeffect-indicator {
+  margin-left: 6px !important;
+  background-color: $orange-highlight !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+.lefthand-indicator {
+  margin-left: 6px !important;
+  background-color: #f4bbe198 !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+.righthand-indicator {
+  margin-left: 6px !important;
+  background-color: #c1ffa9a7 !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+.nonehand-indicator {
+  margin-left: 6px !important;
+  background-color: $bg-grey !important;
+  font-family: "Baloo Tamma 2", cursive !important;
+  border-radius: 10px !important;
+  font-size: medium !important;
+}
+.customize-indicator {
+  color: $light-red;
+  display: inline-block;
+  position: relative;
+  top: 7.5px;
+  margin-left: 10px;
+}
+.playsingle-button {
+  background-color: $green-prim !important;
+  color: white !important;
+  width: 25px;
+  height: 25px;
+  margin-right: 10px !important;
+}
+.delete-button {
+  margin-left: 20px !important;
+}
+.Mui-disabled {
+  background-color: rgb(177, 174, 174) !important;
+  color: $bg-grey !important;
+}
+.config-section {
 }

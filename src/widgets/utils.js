@@ -9,6 +9,28 @@ function angleBetweenVectors(v1, v2) {
   return angleInDegrees;
 }
 
+function isValid(d) {
+  let re = true;
+  if (!d) {
+    return false;
+  }
+  Object.keys(d).forEach((k) => {
+    if (d[k] == null) {
+      re = false;
+    }
+  });
+  return re;
+}
+function hasNan(l) {
+  let re = false;
+  l.forEach((ll) => {
+    if (isNaN(ll)) {
+      re = true;
+    }
+  });
+  return re;
+}
+
 function getIndexOfMinElement(arr) {
   const min = Math.min(...arr);
   return arr.indexOf(min);
@@ -62,10 +84,9 @@ function gaussianBlending(xg, xf, t) {
     return xg;
   } else {
     let w = gaussianRBF(C.ada.gaussian.eps, t - C.ada.gaussian.b);
-    // if (t === 1) {
-    //   w = distPenalty(xg, xf, t) * w;
-    // }
-    // console.log(w);
+    if (t >= 0.8) {
+      w = distPenalty(xg, xf, t) * w;
+    }
     return w * xg + (1 - w) * xf;
   }
 }
@@ -105,8 +126,10 @@ function entropy(arr) {
 }
 
 function normalizeSumOne(weights) {
-  const sum = weights.reduce((acc, val) => acc + val, 0);
-  return weights.map((val) => val / sum);
+  if (weights) {
+    const sum = weights.reduce((acc, val) => acc + val, 0);
+    return weights.map((val) => val / sum);
+  }
 }
 
 export {
@@ -120,4 +143,6 @@ export {
   entropy,
   normalizeSumOne,
   gaussianBlending,
+  isValid,
+  hasNan,
 };
