@@ -368,6 +368,18 @@
   height: 60vh;
 }
 
+.canvas-container {
+  width: 100%;
+}
+
+.lower-canvas {
+  width: 100%;
+}
+
+.upper-canvas {
+  width: 100%;
+}
+
 .webcam_component {
   width: 100%;
 }
