@@ -161,13 +161,14 @@ class CanvasObject {
     handliist.forEach((handed) => {
       if (this.handIndicators[handed]) {
         this.allFingers.forEach((f) => {
+          this.handIndicators[handed][f].set("opacity", 0);
           if (this.handIndicators[handed][f]) {
             this.canvas.canvas.remove(this.handIndicators[handed][f]);
           }
         });
       }
-      this.canvas.canvas.renderAll();
     });
+    this.canvas.canvas.renderAll();
   }
 
   showHand(handed) {
@@ -348,7 +349,7 @@ const canvasObjects = new CanvasObject();
 const handPos = new HandPos([
   0, 2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 19, 20,
 ]);
-const handPosArr = new HandPosArr(5);
+const handPosArr = new HandPosArr(8);
 const ws = new WebSocket("ws://localhost:8000/");
 const tracker = new ScriptTracker();
 const aniDriver = new AnimationDriver();

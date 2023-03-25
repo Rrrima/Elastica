@@ -33,6 +33,11 @@ const VisualPanel = React.forwardRef((props, ref) => {
   let gNumWordsInScript = 0;
   let r = 1;
   canvasObjects.canvas = editor;
+  const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
+  const detectorConfig = {
+    runtime: "tfjs",
+    modelType: "full",
+  };
 
   var { transcript, resetTranscript } = useSpeechRecognition({});
 
@@ -78,11 +83,9 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   const handleChangeMode = () => {
+    canvasObjects.removeHand("both");
     setMode(!previewMode);
     canvasObjects.canmeraOn = !canvasObjects.canmeraOn;
-    if (previewMode) {
-      canvasObjects.removeHand();
-    }
   };
 
   const handleChangeScriptFollowing = () => {
@@ -108,11 +111,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
     }
   };
   const runDetection = async () => {
-    const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
-    const detectorConfig = {
-      runtime: "tfjs",
-      modelType: "full",
-    };
+    canvasObjects.removeHand("both");
+
     const handposeDetector = await handPoseDetection.createDetector(
       handModel,
       detectorConfig
@@ -206,6 +206,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
     if (previewMode) {
       runDetection();
     }
+
     ws.onopen = function () {
       console.log("Socket Connection Open");
     };
