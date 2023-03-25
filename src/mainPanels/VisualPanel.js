@@ -209,7 +209,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
   async function renderPrediction() {
     await checkGuiUpdate();
     beginEstimateHandsStats();
-
     // await renderResult();
     await detect(handposeDetector);
     endEstimateHandsStats();
@@ -229,13 +228,15 @@ const VisualPanel = React.forwardRef((props, ref) => {
     );
 
     console.log("Handpose model loaded");
-    // canvasObjects.initializeIndicator("left");
-    // canvasObjects.initializeIndicator("right");
-    // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
+    canvasObjects.initializeIndicator("left");
+    canvasObjects.initializeIndicator("right");
+    if (canvasObjects.canvas) {
+      canvasObjects.addHandToScene("both");
+    }
     // detect every 20ms -- [].length == 10
     // setInterval(() => {
 
-    const test = false;
+    const test = true;
 
     //   if (
     //     (canvasObjects.focus &&
@@ -292,7 +293,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // }
       xx += 1;
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
-      handPosArr.updateHandArr(handPosVec, handCenterVec);
+      // handPosArr.updateHandArr(handPosVec, handCenterVec);
       // console.log(hands);
       // const isIntentioanl = handPosArr.isIntentional("left");
       canvasObjects.showHand("both");
@@ -301,21 +302,21 @@ const VisualPanel = React.forwardRef((props, ref) => {
       //   let w = handRecord.calculateDis();
       //   let pm = handPos.getAnimationParam;
       // } else {
-      aniDriver.activeObjects.forEach((obj) => {
-        if (obj && obj.animateFocus) {
-          if (obj.t < 300) {
-            canvasObjects.indicateColor = "red";
-          } else {
-            canvasObjects.indicateColor = "blue";
-          }
-          let pm = obj.getAnimationParams();
-          // console.log(pm);
-          obj.animateTo(pm);
-        }
-        if (obj && obj.animateReady && !obj.animateFocus) {
-          obj.detectIntentionality();
-        }
-      });
+      // aniDriver.activeObjects.forEach((obj) => {
+      //   if (obj && obj.animateFocus) {
+      //     if (obj.t < 300) {
+      //       canvasObjects.indicateColor = "red";
+      //     } else {
+      //       canvasObjects.indicateColor = "blue";
+      //     }
+      //     let pm = obj.getAnimationParams();
+      //     // console.log(pm);
+      //     obj.animateTo(pm);
+      //   }
+      //   if (obj && obj.animateReady && !obj.animateFocus) {
+      //     obj.detectIntentionality();
+      //   }
+      // });
 
       detectIdle = true;
 
