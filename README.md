@@ -11,7 +11,7 @@ All the interative features are available with only running the client. Only the
 - in web browser, open `localhost:xxxx` to start. developed with chrome.
   NOTE: the webcam canvas and the fabric canvas alignment stiil need to be fixed. for now, resizing the browser to manually fit them.
 
-#### Run Server;`:
+#### Run Server:
 
 - install venv if haven't `pip install virtualenv`
 - source to venv: `source server/bin/activate`
