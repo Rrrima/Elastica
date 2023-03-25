@@ -6,7 +6,7 @@
 
 All the interative features are available with only running the client. Only the scriptfollowing part needs to run the server.
 
-- `npm install`
+- at root `npm install`
 - `npm run start`
 - in web browser, open `localhost:xxxx` to start. developed with chrome.
   NOTE: the webcam canvas and the fabric canvas alignment stiil need to be fixed. for now, resizing the browser to manually fit them.
