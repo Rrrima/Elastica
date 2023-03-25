@@ -185,10 +185,10 @@ class CanvasObject {
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {
-          // top: ftPos[f][1],
-          // left: ftPos[f][0],
-          top: Math.random(100),
-          left: Math.random(100),
+          top: ftPos[f][1],
+          left: ftPos[f][0],
+          // top: Math.random(100),
+          // left: Math.random(100),
           opacity: 1,
           //   opacity: ftAng[idx],
           fill: fill,
@@ -348,7 +348,7 @@ const canvasObjects = new CanvasObject();
 const handPos = new HandPos([
   0, 2, 3, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 19, 20,
 ]);
-const handPosArr = new HandPosArr(10);
+const handPosArr = new HandPosArr(5);
 const ws = new WebSocket("ws://localhost:8000/");
 const tracker = new ScriptTracker();
 const aniDriver = new AnimationDriver();

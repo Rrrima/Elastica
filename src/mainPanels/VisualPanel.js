@@ -118,8 +118,9 @@ const VisualPanel = React.forwardRef((props, ref) => {
       detectorConfig
     );
     console.log("Handpose model loaded");
-    // canvasObjects.initializeIndicator("left");
-    // canvasObjects.initializeIndicator("right");
+    canvasObjects.initializeIndicator("left");
+    canvasObjects.initializeIndicator("right");
+    canvasObjects.addHandToScene("both");
     // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
     // detect every 20ms -- [].length == 10
     setInterval(() => {
@@ -128,7 +129,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       //   console.log(webcamRef.current.video.width);
       // }
       // webcamRef.current.video.videoWidth = editor.canvas.width;
-      const test = false;
+      const test = true;
       if (
         (canvasObjects.focus &&
           (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
@@ -136,7 +137,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       ) {
         detect(handposeDetector);
       }
-    }, 50);
+    }, 100);
   };
 
   const detect = async (net) => {
@@ -165,7 +166,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // webcamRef.current.video.height = videoHeight;
       webcamRef.current.video.width = editor.canvas.width;
       webcamRef.current.video.height = editor.canvas.height;
-      console.log(editor.canvas.getObjects().length);
+      // console.log(editor.canvas.getObjects().length);
       // console.log(editor.canvas.width, videoWidth);
       // console.log(editor.canvas.height, videoHeight);
       // console.log(editor.canvas.width, webcamRef.current.video.width);
@@ -198,25 +199,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
           obj.detectIntentionality();
         }
       });
-
-      // console.log(handPos.getHandAngle("left"));
-
-      // get animation parameter for currentfocus
-      // TODO: deal with right hand
-      // if (!canvasObjects.focus.entered) {
-      // ws.send(
-      //   JSON.stringify({
-      //     name: "getAnimationParam",
-      //     params: {
-      //       handPosArr: handPosArr.arrLeft,
-      //       handCenterArr: handPosArr.arrCenterLeft,
-      //       focused: canvasObjects.focus.relatedText,
-      //     },
-      //   })
-      // );
-      // } else {
-      //   canvasObjects.focus.moveTo(r);
-      // }
     }
   };
 
