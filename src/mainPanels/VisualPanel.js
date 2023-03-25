@@ -4,11 +4,13 @@ import Stack from "@mui/material/Stack";
 import VideocamIcon from "@mui/icons-material/Videocam";
 // import MicIcon from "@mui/icons-material/Mic";
 import Webcam from "react-webcam";
+import { drawCtx } from "../functions/drawing";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
+import Stitch from "../resources/Images/stitch.png";
 import "@tensorflow/tfjs-backend-webgl";
 import {
   canvasObjects,
@@ -93,7 +95,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   const handleChangeMode = () => {
-    console.log("!!");
+    canvasObjects.removeHand("both");
     setMode(!previewMode);
     canvasObjects.canmeraOn = !canvasObjects.canmeraOn;
     if (previewMode) {
@@ -123,29 +125,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
       );
     }
   };
-
-  async function checkGuiUpdate() {
-    window.cancelAnimationFrame(rafId);
-
-    if (handposeDetector != null) {
-      handposeDetector.dispose();
-    }
-
-    try {
-      const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
-      const detectorConfig = {
-        runtime: "tfjs",
-        modelType: "full",
-      };
-      handposeDetector = await handPoseDetection.createDetector(
-        handModel,
-        detectorConfig
-      );
-    } catch (error) {
-      handposeDetector = null;
-      alert(error);
-    }
-  }
 
   function beginEstimateHandsStats() {
     startInferenceTime = (performance || Date).now();
@@ -207,8 +186,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
   // }
 
   async function renderPrediction() {
-    await checkGuiUpdate();
     beginEstimateHandsStats();
+    // await checkGuiUpdate();
     // await renderResult();
     await detect(handposeDetector);
     endEstimateHandsStats();
@@ -217,6 +196,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   const runDetection = async () => {
+    console.log("ctx:");
+    canvasObjects.removeHand("both");
     const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
     const detectorConfig = {
       runtime: "tfjs",
@@ -233,19 +214,15 @@ const VisualPanel = React.forwardRef((props, ref) => {
     if (canvasObjects.canvas) {
       canvasObjects.addHandToScene("both");
     }
-    // detect every 20ms -- [].length == 10
-    // setInterval(() => {
+    // get video properties
+
+    // console.log(handPos.handPosVec);
+    const videoWidth = webcamRef.current.video.videoWidth;
+    const videoHeight = webcamRef.current.video.videoHeight;
+    handCanvasRef.current.width = videoWidth;
+    handCanvasRef.current.height = videoHeight;
 
     const test = true;
-
-    //   if (
-    //     (canvasObjects.focus &&
-    //       (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
-    //     test
-    //   ) {
-    //     if (detectIdle) detect(handposeDetector);
-    //   }
-    // }, 10);
     if (
       (canvasObjects.focus &&
         (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
@@ -261,13 +238,9 @@ const VisualPanel = React.forwardRef((props, ref) => {
       webcamRef.current !== null &&
       webcamRef.current.video.readyState === 4
     ) {
-      // get video properties
-      const video = webcamRef.current.video;
-      // console.log(handPos.handPosVec);
-      // const videoWidth = webcamRef.current.video.videoWidth;
-      // const videoHeight = webcamRef.current.video.videoHeight;
       // r = editor.canvas.width / videoHeight;
       r = 1;
+      const video = webcamRef.current.video;
       // set video height and width
       // webcamRef.current.video.width = videoWidth;
       // webcamRef.current.video.height = videoHeight;
@@ -279,70 +252,30 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // console.log(editor.canvas.width, webcamRef.current.video.width);
       // console.log(editor.canvas.height, webcamRef.current.video.height);
       // set canvas height and width
-      // handCanvasRef.current.width = videoWidth;
-      // handCanvasRef.current.height = videoHeight;
+
       // let startTime = new Date().getUTCMilliseconds();
       detectIdle = false;
       const hands = await net.estimateHands(video, { flipHorizontal: true });
-      // let endTime = new Date().getUTCMilliseconds();
-      // let timeDelta = endTime - startTime;
-      // console.log("estimate duration: " + timeDelta);
-      // let hands = DH.hand1;
-      // if (xx % 2 === 0) {
-      //   hands = DH.hand2;
+      // if (hands && hands.length > 0) {
+      //   drawResults(hands, ctx);
       // }
-      xx += 1;
+      // drawCtx(ctx, video);
+      const ctx = handCanvasRef.current.getContext("2d");
+      // console.log(video.videoWidth, video.videoHeight);
+      ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
-      // handPosArr.updateHandArr(handPosVec, handCenterVec);
-      // console.log(hands);
-      // const isIntentioanl = handPosArr.isIntentional("left");
+      handPosArr.updateHandArr(handPosVec, handCenterVec);
+
       canvasObjects.showHand("both");
-      // console.log(obj.effect);
-      // if (obj.effect === "customize") {
-      //   let w = handRecord.calculateDis();
-      //   let pm = handPos.getAnimationParam;
-      // } else {
-      // aniDriver.activeObjects.forEach((obj) => {
-      //   if (obj && obj.animateFocus) {
-      //     if (obj.t < 300) {
-      //       canvasObjects.indicateColor = "red";
-      //     } else {
-      //       canvasObjects.indicateColor = "blue";
-      //     }
-      //     let pm = obj.getAnimationParams();
-      //     // console.log(pm);
-      //     obj.animateTo(pm);
-      //   }
-      //   if (obj && obj.animateReady && !obj.animateFocus) {
-      //     obj.detectIntentionality();
-      //   }
-      // });
-
-      detectIdle = true;
-
-      // console.log(handPos.getHandAngle("left"));
-
-      // get animation parameter for currentfocus
-      // TODO: deal with right hand
-      // if (!canvasObjects.focus.entered) {
-      // ws.send(
-      //   JSON.stringify({
-      //     name: "getAnimationParam",
-      //     params: {
-      //       handPosArr: handPosArr.arrLeft,
-      //       handCenterArr: handPosArr.arrCenterLeft,
-      //       focused: canvasObjects.focus.relatedText,
-      //     },
-      //   })
-      // );
-      // } else {
-      //   canvasObjects.focus.moveTo(r);
-      // }
     }
   };
 
   useEffect(() => {
     if (previewMode) {
+      // ctx.drawImage(Stitch, 10, 10);
+      const ctx = handCanvasRef.current.getContext("2d");
+      // console.log(ctx.drawImage);
       runDetection();
     }
     ws.onopen = function () {
@@ -392,27 +325,34 @@ const VisualPanel = React.forwardRef((props, ref) => {
             position: "absolute",
             height: "100%",
             width: "100%",
+            visibility: "hidden",
           }}
           mirrored={true}
         />
       )}
+      <canvas
+        className="webcam_component"
+        id="myCanvas"
+        ref={handCanvasRef}
+        style={{
+          position: "absolute",
+          zIndex: 100,
+          // border: "2px solid black",
+          height: "100%",
+        }}
+      />
       <FabricJSCanvas className="canvas-panel" onReady={onReady} />
-      {/* {previewMode && (
-        <canvas
-          className="webcam_component"
-          id="myCanvas"
-          ref={handCanvasRef}
-          style={{
-            position: "absolute",
-            zIndex: 10,
-          }}
-        />
-      )} */}
       <div className="bottom left" id="infobox"></div>
 
       <div className="bottom right">
         <Stack direction="row">
-          <IconButton aria-label="videocam" onClick={handleChangeMode}>
+          <IconButton
+            aria-label="videocam"
+            onClick={handleChangeMode}
+            style={{
+              zIndex: 999,
+            }}
+          >
             <VideocamIcon
               className={`${previewMode ? "color-primary" : ""}`}
               fontSize="small"
@@ -421,6 +361,9 @@ const VisualPanel = React.forwardRef((props, ref) => {
           <IconButton
             aria-label="scriptfollow"
             onClick={handleChangeScriptFollowing}
+            style={{
+              zIndex: 99,
+            }}
           >
             <AutoGraphIcon
               fontSize="small"
