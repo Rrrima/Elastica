@@ -185,8 +185,10 @@ class CanvasObject {
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {
-          top: ftPos[f][1],
-          left: ftPos[f][0],
+          // top: ftPos[f][1],
+          // left: ftPos[f][0],
+          top: Math.random(100),
+          left: Math.random(100),
           opacity: 1,
           //   opacity: ftAng[idx],
           fill: fill,

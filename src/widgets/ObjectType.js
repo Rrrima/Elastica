@@ -474,6 +474,7 @@ class TextObject {
       }
     }
   }
+
   animateTo(params) {
     if (isValid(params)) {
       gsap.to(this.fabric, {

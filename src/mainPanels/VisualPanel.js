@@ -141,13 +141,13 @@ const VisualPanel = React.forwardRef((props, ref) => {
 
   const detect = async (net) => {
     // console.log(caches);
-    if ("storage" in navigator && "estimate" in navigator.storage) {
-      navigator.storage.estimate().then(function (storageEstimate) {
-        console.log(
-          `Usage: ${storageEstimate.usage}, Quota: ${storageEstimate.quota}`
-        );
-      });
-    }
+    // if ("storage" in navigator && "estimate" in navigator.storage) {
+    //   navigator.storage.estimate().then(function (storageEstimate) {
+    //     console.log(
+    //       `Usage: ${storageEstimate.usage}, Quota: ${storageEstimate.quota}`
+    //     );
+    //   });
+    // }
     if (
       typeof webcamRef.current !== "undefined" &&
       webcamRef.current !== null &&
@@ -165,6 +165,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // webcamRef.current.video.height = videoHeight;
       webcamRef.current.video.width = editor.canvas.width;
       webcamRef.current.video.height = editor.canvas.height;
+      console.log(editor.canvas.getObjects().length);
       // console.log(editor.canvas.width, videoWidth);
       // console.log(editor.canvas.height, videoHeight);
       // console.log(editor.canvas.width, webcamRef.current.video.width);
