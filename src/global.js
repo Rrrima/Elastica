@@ -164,8 +164,8 @@ class CanvasObject {
           }
         });
       }
-      this.canvas.canvas.renderAll();
     });
+    this.canvas.canvas.renderAll();
   }
 
   showHand(handed) {
