@@ -12,6 +12,8 @@
     "@mui/styled-engine-sc": "^5.11.9",
     "@tensorflow-models/hand-pose-detection": "^2.0.0",
     "@tensorflow/tfjs": "^4.2.0",
+    "@tensorflow/tfjs-backend-wasm": "^4.2.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.2.0",
     "@tensorflow/tfjs-converter": "^4.2.0",
     "@tensorflow/tfjs-core": "^4.2.0",
     "@testing-library/jest-dom": "^5.16.5",

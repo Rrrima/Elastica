@@ -61,35 +61,38 @@ function handleCustomizationUpdate(e) {
   }
 }
 
+const triggerPreviewAll = () => {
+  aniDriver.activeObjects = [];
+  let tlist = [];
+  const curText = canvasObjects.focusedText;
+  if (canvasObjects.objectDict[curText]) {
+    canvasObjects.objectDict[curText].forEach((obj) => {
+      tlist.push(obj.getTimeThred());
+      aniDriver.activeObjects.push(obj);
+    });
+  }
+  if (canvasObjects.updateDict[curText]) {
+    canvasObjects.updateDict[curText].forEach((objid) => {
+      // console.log(objid);
+      tlist.push(canvasObjects.idDict[objid].getTimeThred());
+      aniDriver.activeObjects.push(canvasObjects.idDict[objid]);
+    });
+  }
+  // console.log(tlist);
+  aniDriver.preview();
+  if (canvasObjects.canmeraOn) {
+    canvasObjects.startPreview();
+    setTimeout(() => {
+      canvasObjects.endPreview();
+    }, Math.max(...tlist) * 2);
+    setTimeout(() => {
+      triggerPreviewAll();
+    }, Math.max(...tlist) * 2 + 100);
+  }
+};
+
 function TimelineSection() {
   // const [isPreview, setPreviewMode] = useState(false);
-
-  function triggerPreviewAll() {
-    aniDriver.activeObjects = [];
-    let tlist = [];
-    const curText = canvasObjects.focusedText;
-    if (canvasObjects.objectDict[curText]) {
-      canvasObjects.objectDict[curText].forEach((obj) => {
-        tlist.push(obj.getTimeThred());
-        aniDriver.activeObjects.push(obj);
-      });
-    }
-    if (canvasObjects.updateDict[curText]) {
-      canvasObjects.updateDict[curText].forEach((objid) => {
-        console.log(objid);
-        tlist.push(canvasObjects.idDict[objid].getTimeThred());
-        aniDriver.activeObjects.push(canvasObjects.idDict[objid]);
-      });
-    }
-    console.log(tlist);
-    aniDriver.preview();
-    if (canvasObjects.canmeraOn) {
-      canvasObjects.startPreview();
-      setTimeout(() => {
-        canvasObjects.endPreview();
-      }, Math.max(...tlist) * 2);
-    }
-  }
 
   // function getTimePercentage(d) {
   //   return (d.x - d.minX) / (d.maxX - d.minX);

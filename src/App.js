@@ -29,10 +29,10 @@ function App() {
     if (!editor || !fabric || !editor.canvas.isEmpty()) {
       return;
     }
-    // fabric.Image.fromURL(Stitch, (image) => {
-    //   image.scale(0.2);
-    //   image = editor.canvas.add(image);
-    // });
+    fabric.Image.fromURL(Stitch, (image) => {
+      image.scale(0.2);
+      image = editor.canvas.add(image);
+    });
     // const textbox = new fabric.Textbox("Ohana means family", {
     //   ...attr,
     //   fontFamily: "Baloo Tamma 2",
