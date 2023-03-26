@@ -93,11 +93,11 @@ class CanvasObject {
     document.querySelector("#visual-panel").style.border = "";
     // document.querySelector("#visual-panel").style.filter =
     //   "drop-shadow(1px 2px 8px hsl(0deg 0% 0% / 0.1)";
-    if (this.customizeMode) {
-      document.querySelector("#visual-panel").style.border =
-        "3px solid #52efbb";
-      this.indicateColor = "#52efbb";
-    }
+    // if (this.customizeMode) {
+    //   document.querySelector("#visual-panel").style.border =
+    //     "3px solid #52efbb";
+    //   this.indicateColor = "#52efbb";
+    // }
     aniDriver.forceEnd(canvasObjects.focusedText);
   }
 
@@ -127,6 +127,7 @@ class CanvasObject {
   initializeIndicator(handed) {
     // add fabric object to dictionary, only all once
     // when you first open the de
+    console.log(handed + " is initialized");
     this.allFingers.forEach((f) => {
       this.handIndicators[handed][f] = new fabric.Circle({
         radius: 6,
@@ -139,6 +140,7 @@ class CanvasObject {
   }
 
   addHandToScene(handed) {
+    console.log(handed + " is aded to scene");
     let handliist = [handed];
     if (handed === "both") {
       handliist = ["left", "right"];
@@ -154,6 +156,7 @@ class CanvasObject {
   }
 
   removeHand(handed) {
+    console.log(handed + " hand is removed from canvass");
     let handliist = [handed];
     if (handed === "both") {
       handliist = ["left", "right"];
@@ -183,13 +186,12 @@ class CanvasObject {
   visHand(handed) {
     const ftPos = handPos.getFingertipPos(handed, "all");
     const fill = this.indicateColor;
+    console.log("vishand:" + handed);
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {
           top: ftPos[f][1],
           left: ftPos[f][0],
-          // top: Math.random(100),
-          // left: Math.random(100),
           opacity: 1,
           //   opacity: ftAng[idx],
           fill: fill,
@@ -197,6 +199,7 @@ class CanvasObject {
         this.handIndicators[handed][f].set(pm);
       });
     } else {
+      console.log("not detected");
       this.allFingers.forEach((f) => {
         let pm = { opacity: 0 };
         this.handIndicators[handed][f].set(pm);

@@ -20,6 +20,7 @@ export default class HandRecords {
     const rkey = canvasObjects.focusedText;
     const r = {};
     r.objAttr = canvasObjects.focus.getCurrentAttr();
+    console.log(r.objAttr);
     if (rkey === canvasObjects.focus.relatedText) {
       r.handed = canvasObjects.focus.enterSetting.handed;
     } else {
@@ -42,15 +43,18 @@ export default class HandRecords {
     }, 300);
     canvasObjects.rerenderConfig();
   }
-  getSimilarity() {
+  getSimilarity(handed) {
     const rkey = canvasObjects.focusedText;
     const records = this.record[rkey];
     const dist = [];
     records.forEach((r) => {
-      let v1 = r.handPosVec;
-      let v2 = handPos.handPosVec[r.handed];
-      dist.push(euclideanDistance(v1, v2));
+      if (r.handed === handed) {
+        let v1 = r.handPosVec;
+        let v2 = handPos.handPosVec[handed];
+        dist.push(euclideanDistance(v1, v2));
+      }
     });
+    console.log(dist);
     if (hasNan(dist)) {
       return;
     }
@@ -60,21 +64,26 @@ export default class HandRecords {
     );
     return sim;
   }
-  getWeights() {
-    const sim = this.getSimilarity();
+  getWeights(handed) {
+    const sim = this.getSimilarity(handed);
     return normalizeSumOne(sim);
   }
-  getParams() {
+  getParams(handed) {
     const rkey = canvasObjects.focusedText;
     const records = this.record[rkey];
-    const w = this.getWeights();
-    let pm = { dl: 0, dt: 0, sx: 0, sy: 0 };
+    const w = this.getWeights(handed);
+    let j = 0;
+    let pm = { dl: 0, dt: 0, sx: 0, sy: 0, da: 0 };
     if (w && w[0]) {
       records.forEach((r, i) => {
-        pm.dl += w[i] * r.offsets[0];
-        pm.dt += w[i] * r.offsets[1];
-        pm.sx += w[i] * r.objAttr.scaleX;
-        pm.sy += w[i] * r.objAttr.scaleY;
+        if (r.handed === handed) {
+          pm.dl += w[j] * r.offsets[0];
+          pm.dt += w[j] * r.offsets[1];
+          pm.sx += w[j] * r.objAttr.scaleX;
+          pm.sy += w[j] * r.objAttr.scaleY;
+          pm.da += w[j] * r.objAttr.angle;
+          j += 1;
+        }
       });
       return pm;
     } else {

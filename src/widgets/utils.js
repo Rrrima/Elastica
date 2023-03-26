@@ -1,5 +1,18 @@
 import { C } from "../global";
 
+function generateRandomId(length) {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
+}
+
 function angleBetweenVectors(v1, v2) {
   const dotProduct = v1.x * v2.x + v1.y * v2.y;
   const magV1 = Math.sqrt(v1.x * v1.x + v1.y * v1.y);
@@ -145,4 +158,5 @@ export {
   gaussianBlending,
   isValid,
   hasNan,
+  generateRandomId,
 };

@@ -230,7 +230,7 @@ class HandPos {
         opacity: opacity,
       };
     } else if (effect === "customize") {
-      let pm = obj.handRecord.getParams();
+      let pm = obj.handRecord.getParams(handed);
       return {
         left: center[0] + pm.dl,
         top: center[1] + pm.dt,
@@ -344,7 +344,6 @@ class HandPosArr {
     if (handed === "right") {
       arr = this.arrCenterRight;
     }
-    console.log(arr[this.arrLen]);
     return arr[this.arrLen - 1][1] - arr[this.arrLen - 2][1];
   }
   updateHandArr(posVec, centerVec) {

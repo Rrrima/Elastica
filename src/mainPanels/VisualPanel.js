@@ -26,20 +26,28 @@ const VisualPanel = React.forwardRef((props, ref) => {
   // const { editor, onReady } = useFabricJSEditor();
   const [previewMode, setMode] = useState(false);
   const [scriptFollowing, setScriptFollowing] = useState(false);
+  var { transcript, resetTranscript } = useSpeechRecognition({});
   const editor = props.editor;
   const onReady = props.onReady;
   const webcamRef = useRef(null);
-  const handCanvasRef = useRef(null);
-  let gNumWordsInScript = 0;
-  let r = 1;
-  canvasObjects.canvas = editor;
+  const test = false;
+  // const handCanvasRef = useRef(null);
   const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
   const detectorConfig = {
     runtime: "tfjs",
     modelType: "full",
   };
+  let handposeDetector = null;
 
-  var { transcript, resetTranscript } = useSpeechRecognition({});
+  let gNumWordsInScript = 0;
+  // let r = 1;
+  canvasObjects.canvas = editor;
+
+  let rafId;
+  let startInferenceTime,
+    numInferences = 0;
+  let inferenceTimeSum = 0,
+    lastPanelUpdate = 0;
 
   function generateSpan(inToken, inIndex) {
     return '<span id="' + inIndex + '">' + inToken + " </span>";
@@ -60,7 +68,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
     let index = 0;
     for (const token of tokens) {
       if (token.toLowerCase().match(/[^_\W]+/g)) {
-        //
         htmlString += generateSpan(token, index);
         index++;
       }
@@ -86,6 +93,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
     canvasObjects.removeHand("both");
     setMode(!previewMode);
     canvasObjects.canmeraOn = !canvasObjects.canmeraOn;
+    if (previewMode) {
+      if (handposeDetector != null) {
+        handposeDetector.dispose();
+      }
+      window.cancelAnimationFrame(rafId);
+    }
   };
 
   const handleChangeScriptFollowing = () => {
@@ -110,45 +123,58 @@ const VisualPanel = React.forwardRef((props, ref) => {
       );
     }
   };
+
+  function beginEstimateHandsStats() {
+    startInferenceTime = (performance || Date).now();
+  }
+
+  function endEstimateHandsStats() {
+    const endInferenceTime = (performance || Date).now();
+    inferenceTimeSum += endInferenceTime - startInferenceTime;
+    ++numInferences;
+
+    const panelUpdateMilliseconds = 1000;
+    if (endInferenceTime - lastPanelUpdate >= panelUpdateMilliseconds) {
+      const averageInferenceTime = inferenceTimeSum / numInferences;
+      inferenceTimeSum = 0;
+      numInferences = 0;
+      console.log(averageInferenceTime);
+      lastPanelUpdate = endInferenceTime;
+    }
+  }
+
+  async function renderPrediction() {
+    // beginEstimateHandsStats();
+    await detect(handposeDetector);
+    // endEstimateHandsStats();
+    rafId = requestAnimationFrame(renderPrediction);
+  }
+
   const runDetection = async () => {
     canvasObjects.removeHand("both");
-
-    const handposeDetector = await handPoseDetection.createDetector(
+    handposeDetector = await handPoseDetection.createDetector(
       handModel,
       detectorConfig
     );
+
     console.log("Handpose model loaded");
     canvasObjects.initializeIndicator("left");
     canvasObjects.initializeIndicator("right");
-    canvasObjects.addHandToScene("both");
+    if (canvasObjects.canvas) {
+      canvasObjects.addHandToScene("both");
+    }
     // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
-    // detect every 20ms -- [].length == 10
-    setInterval(() => {
-      // if (webcamRef.current) {
-      //   console.log(webcamRef.current.video.videoWidth);
-      //   console.log(webcamRef.current.video.width);
-      // }
-      // webcamRef.current.video.videoWidth = editor.canvas.width;
-      const test = true;
-      if (
-        (canvasObjects.focus &&
-          (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
-        test
-      ) {
-        detect(handposeDetector);
-      }
-    }, 100);
+    // const test = false;
+    // if (
+    //   (canvasObjects.focus &&
+    //     (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
+    //   test
+    // ) {
+    renderPrediction(handposeDetector);
+    // }
   };
 
   const detect = async (net) => {
-    // console.log(caches);
-    // if ("storage" in navigator && "estimate" in navigator.storage) {
-    //   navigator.storage.estimate().then(function (storageEstimate) {
-    //     console.log(
-    //       `Usage: ${storageEstimate.usage}, Quota: ${storageEstimate.quota}`
-    //     );
-    //   });
-    // }
     if (
       typeof webcamRef.current !== "undefined" &&
       webcamRef.current !== null &&
@@ -160,7 +186,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       // const videoWidth = webcamRef.current.video.videoWidth;
       // const videoHeight = webcamRef.current.video.videoHeight;
       // r = editor.canvas.width / videoHeight;
-      r = 1;
+      // r = 1;
       // set video height and width
       // webcamRef.current.video.width = videoWidth;
       // webcamRef.current.video.height = videoHeight;
@@ -178,7 +204,13 @@ const VisualPanel = React.forwardRef((props, ref) => {
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
       // const isIntentioanl = handPosArr.isIntentional("left");
-      canvasObjects.showHand("both");
+      if (
+        (canvasObjects.focus &&
+          (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
+        test
+      ) {
+        canvasObjects.showHand("both");
+      }
       // console.log(obj.effect);
       // if (obj.effect === "customize") {
       //   let w = handRecord.calculateDis();
@@ -192,6 +224,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
             canvasObjects.indicateColor = "blue";
           }
           let pm = obj.getAnimationParams();
+          // console.log(pm);
           // console.log(pm);
           obj.animateTo(pm);
         }
@@ -212,21 +245,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
     };
     ws.onmessage = function (event) {
       let message = JSON.parse(event.data);
-      if (message.name === "registerHandAnalyzer") {
-        canvasObjects.focus.setActive();
-      }
-      if (message.name === "returnAnimationParam") {
-        let gesture = message.gesture;
-        let avgDis = message.avgDis;
-        let dirVec = message.dirVec;
-        canvasObjects.curGesture = gesture;
-        if (avgDis < 1 && !canvasObjects.focus.entered) {
-          canvasObjects.focus.enter();
-        }
-        if (canvasObjects.focus.entered) {
-          canvasObjects.focus.animateTo(r);
-        }
-      }
       if (message.wid) {
         tracker.trackTo(message.wid);
       }
