@@ -7,8 +7,8 @@
   --shadow-color2: rgba(82, 239, 187, 0.4);
 }
 
-.body ::-webkit-scrollbar {
-  width: 0px;
+::-webkit-scrollbar {
+  width: 0;
 }
 
 .App {
