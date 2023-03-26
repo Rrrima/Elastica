@@ -30,6 +30,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   const editor = props.editor;
   const onReady = props.onReady;
   const webcamRef = useRef(null);
+  const test = false;
   // const handCanvasRef = useRef(null);
   const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
   const detectorConfig = {
@@ -67,7 +68,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
     let index = 0;
     for (const token of tokens) {
       if (token.toLowerCase().match(/[^_\W]+/g)) {
-        //
         htmlString += generateSpan(token, index);
         index++;
       }
@@ -144,9 +144,9 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   async function renderPrediction() {
-    beginEstimateHandsStats();
+    // beginEstimateHandsStats();
     await detect(handposeDetector);
-    endEstimateHandsStats();
+    // endEstimateHandsStats();
     rafId = requestAnimationFrame(renderPrediction);
   }
 
@@ -164,14 +164,14 @@ const VisualPanel = React.forwardRef((props, ref) => {
       canvasObjects.addHandToScene("both");
     }
     // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
-    const test = true;
-    if (
-      (canvasObjects.focus &&
-        (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
-      test
-    ) {
-      renderPrediction(handposeDetector);
-    }
+    // const test = false;
+    // if (
+    //   (canvasObjects.focus &&
+    //     (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
+    //   test
+    // ) {
+    renderPrediction(handposeDetector);
+    // }
   };
 
   const detect = async (net) => {
@@ -204,7 +204,13 @@ const VisualPanel = React.forwardRef((props, ref) => {
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
       // const isIntentioanl = handPosArr.isIntentional("left");
-      canvasObjects.showHand("both");
+      if (
+        (canvasObjects.focus &&
+          (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
+        test
+      ) {
+        canvasObjects.showHand("both");
+      }
       // console.log(obj.effect);
       // if (obj.effect === "customize") {
       //   let w = handRecord.calculateDis();
@@ -218,6 +224,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
             canvasObjects.indicateColor = "blue";
           }
           let pm = obj.getAnimationParams();
+          // console.log(pm);
           // console.log(pm);
           obj.animateTo(pm);
         }

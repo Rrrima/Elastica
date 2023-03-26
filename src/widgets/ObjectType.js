@@ -2,7 +2,7 @@ import gsap from "gsap";
 import { aniDriver, canvasObjects, handPos, handPosArr } from "../global";
 import HandRecords from "./HandRecords";
 import { C } from "../global";
-import { gaussianBlending, isValid } from "./utils";
+import { gaussianBlending, isValid, generateRandomId } from "./utils";
 
 class TextObject {
   // initiate a new object
@@ -10,14 +10,15 @@ class TextObject {
   constructor(editor, text, obj) {
     this.editor = editor;
     this.relatedText = text;
-    if (canvasObjects.objectDict[this.relatedText]) {
-      this.objectId =
-        this.relatedText +
-        "-" +
-        canvasObjects.objectDict[this.relatedText].length;
-    } else {
-      this.objectId = this.relatedText + "-0";
-    }
+    // if (canvasObjects.objectDict[this.relatedText]) {
+    //   this.objectId =
+    //     this.relatedText +
+    //     "-" +
+    //     canvasObjects.objectDict[this.relatedText].length;
+    // } else {
+    //   this.objectId = this.relatedText + "-0";
+    // }
+    this.objectId = this.relatedText + "-" + generateRandomId(3);
     this.animateFocus = false; // indicate the intentionality detected
     this.animateReady = false; // indicate the active window start
     this.timeThred = 1500;
@@ -38,6 +39,7 @@ class TextObject {
       "opacity",
       "dynamicMinWidth",
       "height",
+      "angle",
     ];
     this.enterSetting = {
       effect: "appear",
@@ -87,7 +89,7 @@ class TextObject {
       status = "update";
     }
     if (status === "enter") {
-      console.log(delayFocus);
+      // console.log(delayFocus);
       handed = this.enterSetting.handed;
       const intention = this.isIntentional(handed);
       // console.log(intention);
@@ -148,7 +150,7 @@ class TextObject {
     }
   }
   enterWithHand(effect) {
-    this.animateFocus = true;
+    // this.animateFocus = true;
     this.status = "enter";
     this.effect = effect;
   }
@@ -161,9 +163,9 @@ class TextObject {
   getReady(pos) {
     const rdict = { ...this.fixAttr };
     rdict.opacity = 0;
-    if (!pos) {
-      this.fabric.set(rdict);
-    }
+    this.fabric.set(rdict);
+    // if (!pos) {
+    // }
     this.editor.canvas.renderAll();
   }
   animateEnter() {
@@ -171,6 +173,7 @@ class TextObject {
     // this.fixAttr : the enter point
     this.getReady();
     const kf = this.fixAttr;
+    console.log(kf);
     const effect = this.enterSetting.effect;
     const editor = this.editor;
     if (effect === "zoom") {
@@ -200,7 +203,7 @@ class TextObject {
         onUpdate: () => this.editor.canvas.renderAll(),
       });
     }
-    this.afterEnter(1);
+    this.afterEnter(2);
   }
   animateUpdate(t) {
     this.fabric.set("selectable", true);
@@ -297,6 +300,9 @@ class TextObject {
     for (let i = 0; i < this.attrNames.length; i++) {
       k[this.attrNames[i]] = this.fabric.get(this.attrNames[i]);
     }
+    if (k.angle > 180) {
+      k.angle = k.angle - 360;
+    }
     return k;
   }
   enter() {
@@ -331,7 +337,7 @@ class TextObject {
     const curText = canvasObjects.focusedText;
     let ts = this.t / C.time.duration;
     this.t += C.time.step;
-    let opacity = ts * 2.5;
+    let opacity = ts * 2;
     if (ts > 0.4) {
       opacity = 1;
     }
@@ -344,11 +350,12 @@ class TextObject {
       }
       const center = handPos.getHandCenters()[handed];
       if (this.enterSetting.customize && this.handRecord.record[curText]) {
-        let pm = this.handRecord.getParams();
+        let pm = this.handRecord.getParams(handed);
         if (isValid(pm)) {
           pm = {
             left: center[0] + pm.dl,
             top: center[1] + pm.dt,
+            angle: pm.da,
             opacity: opacity,
             scaleX: pm.sx,
             scaleY: pm.sy,
@@ -387,6 +394,7 @@ class TextObject {
     } else {
       // update adaptation
       const settings = this.updates[curText].setting;
+      const attr = this.updates[curText].attr;
       const handed = settings.handed;
       if (handed === "none") {
         return;
@@ -395,11 +403,12 @@ class TextObject {
       //   console.log(settings);
       if (settings.customize && this.handRecord.record[curText]) {
         if (settings.effect === "follow") {
-          let pm = this.handRecord.getParams();
+          let pm = this.handRecord.getParams(handed);
           if (isValid(pm)) {
             pm = {
               left: center[0] + pm.dl,
               top: center[1] + pm.dt,
+              angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
               height: 100,
@@ -408,11 +417,12 @@ class TextObject {
             return pm;
           }
         } else if (settings.effect === "transform") {
-          let pm = this.handRecord.getParams();
+          let pm = this.handRecord.getParams(handed);
           if (isValid(pm)) {
             pm = {
               left: center[0] + pm.dl,
               top: center[1] + pm.dt,
+              angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
               height: 100,
@@ -421,25 +431,28 @@ class TextObject {
             return this.gaussianBlending("update", pm);
           }
         } else if (settings.effect === "seesaw") {
-          let pm = this.handRecord.getParams();
+          let pm = this.handRecord.getParams(handed);
           if (isValid(pm)) {
             pm = {
-              left: pm.dl,
-              top: pm.dt,
+              left: attr.left + handPosArr.getDeltaX(handed),
+              top: attr.top + handPosArr.getDeltaY(handed),
+              angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
               height: 100,
             };
             // let intention = this.isIntentional().confidence[0];
+
             return pm;
           }
         } else if (settings.effect === "exit") {
-          let pm = this.handRecord.getParams();
+          let pm = this.handRecord.getParams(handed);
           if (isValid(pm)) {
             pm = {
               left: center[0] + pm.dl,
               top: center[1] + pm.dt,
               opacity: 1 - opacity,
+              angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
               height: 100,
@@ -464,11 +477,11 @@ class TextObject {
           };
           return this.gaussianBlending("update", pm);
         } else if (effect === "seesaw") {
-          let fa = this.updates[curText].attr;
           pm = {
-            left: fa.left + handPosArr.getDeltaX(handed),
-            top: fa.top + handPosArr.getDeltaY(handed),
+            left: attr.left + handPosArr.getDeltaX(handed),
+            top: attr.top + handPosArr.getDeltaY(handed),
           };
+          // console.log(pm);
           return pm;
         }
       }
@@ -600,7 +613,7 @@ class TextObject {
       if (this.relatedText === curText) {
         // enter
         if (this.handRecord.record[curText]) {
-          const sim = this.handRecord.getSimilarity(); // euclidean distance between vector
+          const sim = this.handRecord.getSimilarity(handed); // euclidean distance between vector
           let confidence = 0;
           if (sim) {
             confidence = Math.max(...sim);
@@ -629,6 +642,7 @@ class TextObject {
     if (this.enterSetting.after === "exit") {
       gsap.to(this.fabric, {
         opacity: 0,
+        duration: 0.5,
         delay: d,
         onUpdate: () => this.editor.canvas.renderAll(),
       });
@@ -642,6 +656,7 @@ class TextObject {
     if (setting.after === "exit") {
       gsap.to(this.fabric, {
         opacity: 0,
+        duration: 0.5,
         delay: d,
         onUpdate: () => this.editor.canvas.renderAll(),
       });
@@ -718,6 +733,7 @@ class TextObject {
             handed: "left",
             after: "stay",
             customize: false,
+            timeThred: 3000,
           },
         };
         canvasObjects.addToUpdate(canvasObjects.focusedText, thisobj);

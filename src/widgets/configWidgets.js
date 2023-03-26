@@ -316,7 +316,7 @@ function AfterEnterSelection(props) {
   return (
     <div className="config-section">
       <FormControl>
-        <FormLabel id="after-enter-selection">after entering:</FormLabel>
+        <FormLabel id="after-enter-selection">after enter:</FormLabel>
         <RadioGroup
           row
           aria-labelledby="after-enter-row-radio-buttons-group-label"
@@ -355,7 +355,7 @@ function AfterUpdateSelection(selectedText) {
   return (
     <div className="config-section">
       <FormControl>
-        <FormLabel id="after-enter-selection">after entering:</FormLabel>
+        <FormLabel id="after-enter-selection">after update:</FormLabel>
         <RadioGroup
           row
           aria-labelledby="after-enter-row-radio-buttons-group-label"
