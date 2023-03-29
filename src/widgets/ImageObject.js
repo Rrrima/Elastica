@@ -4,14 +4,13 @@ import HandRecords from "./HandRecords";
 import { C } from "../global";
 import { gaussianBlending, isValid, generateRandomId } from "./utils";
 
-class TextObject {
+class ImageObject {
   // initiate a new object
   // -- link to a certain object with entering config
   constructor(editor, text, obj) {
     this.editor = editor;
     this.relatedText = text;
-    this.type = "text";
-
+    this.type = "image";
     // if (canvasObjects.objectDict[this.relatedText]) {
     //   this.objectId =
     //     this.relatedText +
@@ -175,7 +174,7 @@ class TextObject {
     // this.fixAttr : the enter point
     this.getReady();
     const kf = this.fixAttr;
-
+    // console.log(kf);
     const effect = this.enterSetting.effect;
     const editor = this.editor;
     if (effect === "zoom") {
@@ -205,9 +204,9 @@ class TextObject {
         onUpdate: () => this.editor.canvas.renderAll(),
       });
     }
-    if (this.enterSetting.after === "exit") {
-      this.afterEnter(1.5);
-    }
+    // if (this.enterSetting.after === "exit") {
+    //   this.afterEnter(1.5);
+    // }
   }
   animateUpdate(t) {
     this.fabric.set("selectable", true);
@@ -243,11 +242,11 @@ class TextObject {
         }
       );
     }
-    if (effect === "seesaw") {
-      this.afterUpdate(t, 3);
-    } else {
-      this.afterUpdate(t, 1.5);
-    }
+    // if (effect === "seesaw") {
+    //   this.afterUpdate(t, 3);
+    // } else {
+    //   this.afterUpdate(t, 1.5);
+    // }
 
     // console.log(" =====  all updated element!! ====");
     // console.log(this.fabric);
@@ -363,7 +362,6 @@ class TextObject {
             opacity: opacity,
             scaleX: pm.sx,
             scaleY: pm.sy,
-            height: 100,
           };
           // let intention = this.isIntentional().confidence[0];
           return this.gaussianBlending("enter", pm);
@@ -415,7 +413,6 @@ class TextObject {
               angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
-              height: 100,
             };
             // let intention = this.isIntentional().confidence[0];
             return pm;
@@ -429,7 +426,6 @@ class TextObject {
               angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
-              height: 100,
             };
             // let intention = this.isIntentional().confidence[0];
             return this.gaussianBlending("update", pm);
@@ -443,7 +439,6 @@ class TextObject {
               angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
-              height: 100,
             };
             // let intention = this.isIntentional().confidence[0];
 
@@ -459,7 +454,6 @@ class TextObject {
               angle: pm.da,
               scaleX: pm.sx,
               scaleY: pm.sy,
-              height: 100,
             };
             // let intention = this.isIntentional().confidence[0];
             return this.gaussianBlending("update", pm);
@@ -701,6 +695,7 @@ class TextObject {
     let relatedText = this.relatedText;
     let thisobj = this;
     this.fabric.on("modified", function (e) {
+      console.log(thisobj.fabric);
       if (!canvasObjects.customizeMode) {
         if (relatedText === canvasObjects.focusedText) {
           console.log("fix position change");
@@ -718,7 +713,7 @@ class TextObject {
           };
           console.log("updated!");
           canvasObjects.addToUpdate(canvasObjects.focusedText, thisobj);
-          canvasObjects.rerenderConfig();
+          //   canvasObjects.rerenderConfig();
         }
       }
     });
@@ -747,4 +742,4 @@ class TextObject {
   }
 }
 
-export { TextObject };
+export { ImageObject };

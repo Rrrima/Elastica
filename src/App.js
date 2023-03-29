@@ -8,7 +8,7 @@ import OverallVisualPanel from "./mainPanels/OverallVisualPanel";
 import { useEffect, useRef } from "react";
 import { fabric } from "fabric";
 import Stitch from "./resources/Images/stitch.png";
-import LottieFabric from "./LottieFabric";
+// import LottieFabric from "./LottieFabric";
 import AnimatedHeart1 from "./resources/lotties/heart1.json";
 import { useFabricJSEditor } from "fabricjs-react";
 import gsap from "gsap";
@@ -32,6 +32,7 @@ function App() {
     // fabric.Image.fromURL(Stitch, (image) => {
     //   image.scale(0.2);
     //   image = editor.canvas.add(image);
+    //   console.log(image);
     // });
     // const textbox = new fabric.Textbox("Ohana means family", {
     //   ...attr,

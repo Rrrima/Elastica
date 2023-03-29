@@ -11,7 +11,7 @@ export default class TextEditor extends Component {
       holderId: "myScript",
       placeholder: "Write your awesome presentation script here OwO",
       tools: {
-        Enter: {
+        Animate: {
           class: EnterMarkerTool,
           inlineToolbar: true,
         },
@@ -28,10 +28,28 @@ export default class TextEditor extends Component {
           //     text: "How can we do this in AR? First, AR programming has a heavy use of realistic 3D models but we should also be able to work with simple 2D sketches. Also, to animate these objects, designers need to define curves, timings or even detailed keyframe animations. However, designer can simply enact animation with gesture in a similar way to the Wizard of Oz technique",
           //   },
           // },
+          // {
+          //   type: "paragraph",
+          //   data: {
+          //     text: "We present ScriptLive, a system for authoring augmented presentations direct using script annotations and gesture demonstration. To achieve these, ScriptLive uses adaptive animations to blend the real time performance with the predefined motion graphics.",
+          //   },
+          // },
           {
             type: "paragraph",
             data: {
-              text: "We present ScriptLive, a system for authoring augmented presentations direct using script annotations and gesture demonstration. To achieve these, ScriptLive uses adaptive animations to blend the real time performance with the predefined motion graphics.",
+              text: "We present ScriptLive, a system for authoring augmented presentations directly using script annotations and gesture demonstration.  With these, ScriptLive generates animations that are adaptive to performance.",
+            },
+          },
+          {
+            type: "paragraph",
+            data: {
+              text: "Stitch is my favorate Disney character.",
+            },
+          },
+          {
+            type: "paragraph",
+            data: {
+              text: "Let the wind to follow my hand",
             },
           },
           // {

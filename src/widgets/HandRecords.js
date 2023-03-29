@@ -16,6 +16,10 @@ export default class HandRecords {
       return true;
     }
   }
+  clear() {
+    const rkey = canvasObjects.focusedText;
+    delete this.record[rkey];
+  }
   addToRecord() {
     const rkey = canvasObjects.focusedText;
     const r = {};
@@ -54,7 +58,7 @@ export default class HandRecords {
         dist.push(euclideanDistance(v1, v2));
       }
     });
-    console.log(dist);
+
     if (hasNan(dist)) {
       return;
     }
