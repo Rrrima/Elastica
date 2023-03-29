@@ -58,7 +58,7 @@ export default class HandRecords {
         dist.push(euclideanDistance(v1, v2));
       }
     });
-    // console.log(dist);
+
     if (hasNan(dist)) {
       return;
     }

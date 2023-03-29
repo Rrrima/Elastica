@@ -144,6 +144,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   //   }
   // }
 
+
   async function renderPrediction() {
     // beginEstimateHandsStats();
     await detect(handposeDetector);
@@ -159,6 +160,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       detectorConfig
     );
 
+    console.log("Handpose model loaded");
     canvasObjects.initializeIndicator("left");
     canvasObjects.initializeIndicator("right");
     if (canvasObjects.canvas) {

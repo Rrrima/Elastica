@@ -11,6 +11,7 @@ class TextObject {
     this.editor = editor;
     this.relatedText = text;
     this.type = "text";
+
     // if (canvasObjects.objectDict[this.relatedText]) {
     //   this.objectId =
     //     this.relatedText +
@@ -174,7 +175,7 @@ class TextObject {
     // this.fixAttr : the enter point
     this.getReady();
     const kf = this.fixAttr;
-    // console.log(kf);
+
     const effect = this.enterSetting.effect;
     const editor = this.editor;
     if (effect === "zoom") {

@@ -186,7 +186,7 @@ class CanvasObject {
   visHand(handed) {
     const ftPos = handPos.getFingertipPos(handed, "all");
     const fill = this.indicateColor;
-    // console.log("vishand:" + handed);
+
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {
@@ -199,7 +199,7 @@ class CanvasObject {
         this.handIndicators[handed][f].set(pm);
       });
     } else {
-      // console.log("not detected");
+
       this.allFingers.forEach((f) => {
         let pm = { opacity: 0 };
         this.handIndicators[handed][f].set(pm);
