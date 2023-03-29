@@ -25,6 +25,7 @@ import { useFabricJSEditor } from "fabricjs-react";
 import { fabric } from "fabric";
 import Divider from "@mui/material/Divider";
 import StarsIcon from "@mui/icons-material/Stars";
+import RotateLeftIcon from "@mui/icons-material/RotateLeft";
 
 gsap.registerPlugin(Draggable);
 
@@ -42,6 +43,11 @@ function handleCustomizationEnter(e) {
   } else {
     canvasObjects.endCustomization();
   }
+}
+
+function clearCustomization() {
+  canvasObjects.focus.handRecord.clear();
+  canvasObjects.rerenderConfig();
 }
 
 function handleCustomizationUpdate(e) {
@@ -81,7 +87,6 @@ function TimelineSection() {
         aniDriver.activeObjects.push(canvasObjects.idDict[objid]);
       });
     }
-    console.log(tlist);
     aniDriver.preview();
     if (canvasObjects.canmeraOn) {
       canvasObjects.startPreview();
@@ -152,18 +157,34 @@ function Thumbnail(props) {
       // const curfab = fabric.util.object.clone(
       //   canvasObjects.idDict[props.id].fabric
       // );
-      canvasObjects.idDict[props.id].fabric.clone((cloned) => {
-        cloned.set({
-          top: 10,
-          left: 10,
-          scaleX: 0.5,
-          scaleY: 0.5,
-          selectable: false,
-          opacity: 1,
+      const type = canvasObjects.idDict[props.id].type;
+      if (type === "image") {
+        canvasObjects.idDict[props.id].fabric.clone((cloned) => {
+          cloned.set({
+            top: 0,
+            left: 0,
+            scaleX: 0.08,
+            scaleY: 0.08,
+            selectable: false,
+            opacity: 1,
+          });
+          editor.canvas.add(cloned);
+          editor.canvas.renderAll();
         });
-        editor.canvas.add(cloned);
-        editor.canvas.renderAll();
-      });
+      } else {
+        canvasObjects.idDict[props.id].fabric.clone((cloned) => {
+          cloned.set({
+            top: 10,
+            left: 10,
+            scaleX: 0.5,
+            scaleY: 0.5,
+            selectable: false,
+            opacity: 1,
+          });
+          editor.canvas.add(cloned);
+          editor.canvas.renderAll();
+        });
+      }
     }
   });
   return (
@@ -427,12 +448,16 @@ function EnterTemplateSelection(props) {
             control={<Radio />}
             label="sketching"
           /> */}
+
           <FormControlLabel
             value="customize"
             control={<Switch />}
             label="customize"
             onChange={handleCustomizationEnter}
           />
+          <IconButton aria-label="fingerprint" onClick={clearCustomization}>
+            <RotateLeftIcon />
+          </IconButton>
         </RadioGroup>
       </FormControl>
     </div>
@@ -487,14 +512,17 @@ function UpdateTemplateSelection(selectedText) {
             control={<Radio />}
             label="customize"
             onChange={handleCustomizationUpdate}
-          /> */}
-          <FormControlLabel
-            value="customize"
-            control={<Switch />}
-            label="customize"
-            onChange={handleCustomizationUpdate}
-          />
+          /> */}{" "}
         </RadioGroup>
+        <FormControlLabel
+          value="customize"
+          control={<Switch />}
+          label="customize"
+          onChange={handleCustomizationUpdate}
+        />
+        <IconButton aria-label="fingerprint" onClick={clearCustomization}>
+          <RotateLeftIcon />
+        </IconButton>
       </FormControl>
     </div>
   );

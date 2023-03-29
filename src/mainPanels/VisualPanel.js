@@ -96,6 +96,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
     if (previewMode) {
       if (handposeDetector != null) {
         handposeDetector.dispose();
+        handposeDetector = null;
       }
       window.cancelAnimationFrame(rafId);
     }
@@ -124,24 +125,24 @@ const VisualPanel = React.forwardRef((props, ref) => {
     }
   };
 
-  function beginEstimateHandsStats() {
-    startInferenceTime = (performance || Date).now();
-  }
+  // function beginEstimateHandsStats() {
+  //   startInferenceTime = (performance || Date).now();
+  // }
 
-  function endEstimateHandsStats() {
-    const endInferenceTime = (performance || Date).now();
-    inferenceTimeSum += endInferenceTime - startInferenceTime;
-    ++numInferences;
+  // function endEstimateHandsStats() {
+  //   const endInferenceTime = (performance || Date).now();
+  //   inferenceTimeSum += endInferenceTime - startInferenceTime;
+  //   ++numInferences;
 
-    const panelUpdateMilliseconds = 1000;
-    if (endInferenceTime - lastPanelUpdate >= panelUpdateMilliseconds) {
-      const averageInferenceTime = inferenceTimeSum / numInferences;
-      inferenceTimeSum = 0;
-      numInferences = 0;
-      console.log(averageInferenceTime);
-      lastPanelUpdate = endInferenceTime;
-    }
-  }
+  //   const panelUpdateMilliseconds = 1000;
+  //   if (endInferenceTime - lastPanelUpdate >= panelUpdateMilliseconds) {
+  //     const averageInferenceTime = inferenceTimeSum / numInferences;
+  //     inferenceTimeSum = 0;
+  //     numInferences = 0;
+  //     console.log(averageInferenceTime);
+  //     lastPanelUpdate = endInferenceTime;
+  //   }
+  // }
 
   async function renderPrediction() {
     // beginEstimateHandsStats();
@@ -152,12 +153,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
 
   const runDetection = async () => {
     canvasObjects.removeHand("both");
+
     handposeDetector = await handPoseDetection.createDetector(
       handModel,
       detectorConfig
     );
 
-    console.log("Handpose model loaded");
     canvasObjects.initializeIndicator("left");
     canvasObjects.initializeIndicator("right");
     if (canvasObjects.canvas) {

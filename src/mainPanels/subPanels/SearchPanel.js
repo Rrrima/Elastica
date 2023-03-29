@@ -2,7 +2,7 @@ import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import TextResult from "./TextResult";
 import ImageResult from "./ImageResult";
-// import LottieResult from "./LottieResult";
+import LottieResult from "./LottieResult";
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
 
@@ -33,8 +33,8 @@ export default function SearchPanel(props) {
         </Grid>
         <Grid item>
           <TextResult selectedText={props.selectedText} />
-          {/* <ImageResult selectedText={selectedText} /> */}
-          {/* <LottieResult selectedText={selectedText} /> */}
+          <ImageResult selectedText={props.selectedText} />
+          {/* <LottieResult selectedText={props.selectedText} /> */}
         </Grid>
       </Grid>
     </div>
