@@ -43,7 +43,7 @@ export default class TextEditor extends Component {
           {
             type: "paragraph",
             data: {
-              text: "Stitch is my favorate Disney character.",
+              text: "Stitch is my favorite Disney character.",
             },
           },
           {

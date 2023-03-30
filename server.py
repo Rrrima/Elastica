@@ -40,15 +40,15 @@ ps = SnowballStemmer(language='english')
 
 server = None
 clients = []
-allHandPosResults = []
-handAnalyzer = None
-model = {}
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model['left'] = GestureClassifier().to(device)
-model['left'].load_state_dict(torch.load('model/gesture_left'))
-model['right'] = GestureClassifier().to(device)
-model['right'].load_state_dict(torch.load('model/gesture_right'))
-print("model loaded!")
+# allHandPosResults = []
+# handAnalyzer = None
+# model = {}
+# device = "cuda" if torch.cuda.is_available() else "cpu"
+# model['left'] = GestureClassifier().to(device)
+# model['left'].load_state_dict(torch.load('model/gesture_left'))
+# model['right'] = GestureClassifier().to(device)
+# model['right'].load_state_dict(torch.load('model/gesture_right'))
+# print("model loaded!")
 
 windowSize = 3
 consumedResponse = []

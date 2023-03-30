@@ -505,7 +505,7 @@ function UpdateTemplateSelection(selectedText) {
             control={<Radio />}
             label="hand follow"
           />
-          <FormControlLabel value="seesaw" control={<Radio />} label="seesaw" />
+          {/* <FormControlLabel value="seesaw" control={<Radio />} label="seesaw" /> */}
           <FormControlLabel value="exit" control={<Radio />} label="exit" />
           {/* <FormControlLabel
             value="customize"
@@ -513,16 +513,16 @@ function UpdateTemplateSelection(selectedText) {
             label="customize"
             onChange={handleCustomizationUpdate}
           /> */}{" "}
+          <FormControlLabel
+            value="customize"
+            control={<Switch />}
+            label="customize"
+            onChange={handleCustomizationUpdate}
+          />
+          <IconButton aria-label="fingerprint" onClick={clearCustomization}>
+            <RotateLeftIcon />
+          </IconButton>
         </RadioGroup>
-        <FormControlLabel
-          value="customize"
-          control={<Switch />}
-          label="customize"
-          onChange={handleCustomizationUpdate}
-        />
-        <IconButton aria-label="fingerprint" onClick={clearCustomization}>
-          <RotateLeftIcon />
-        </IconButton>
       </FormControl>
     </div>
   );
