@@ -31,6 +31,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   const onReady = props.onReady;
   const webcamRef = useRef(null);
   const test = false;
+  console.log(editor);
   // const handCanvasRef = useRef(null);
   const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
   const detectorConfig = {
@@ -40,8 +41,11 @@ const VisualPanel = React.forwardRef((props, ref) => {
   let handposeDetector = null;
 
   let gNumWordsInScript = 0;
-  // let r = 1;
   canvasObjects.canvas = editor;
+  // let r = 1;
+  if (editor) {
+    editor.canvas.setWidth(canvasObjects.canvasWidth);
+  }
 
   let rafId;
   let startInferenceTime,

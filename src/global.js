@@ -16,6 +16,8 @@ function handleCustomization(event) {
 class CanvasObject {
   constructor() {
     this.canvas = null; // == editor
+    this.canvasWidth = 1000;
+    this.canvasHeight = null;
     this.objectDict = {}; // selectedText -> [obj,obj]
     this.updateDict = {}; // selectedText -> [objid,objid]
     this.idDict = {};

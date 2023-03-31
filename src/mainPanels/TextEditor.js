@@ -40,18 +40,6 @@ export default class TextEditor extends Component {
               text: "We present ScriptLive, a system for authoring augmented presentations directly using script annotations and gesture demonstration.  With these, ScriptLive generates animations that are adaptive to performance.",
             },
           },
-          {
-            type: "paragraph",
-            data: {
-              text: "Stitch is my favorite Disney character.",
-            },
-          },
-          {
-            type: "paragraph",
-            data: {
-              text: "Let the wind to follow my hand",
-            },
-          },
           // {
           //   type: "paragraph",
           //   data: {

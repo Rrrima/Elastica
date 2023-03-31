@@ -13,22 +13,26 @@ import AnimatedHeart1 from "./resources/lotties/heart1.json";
 import { useFabricJSEditor } from "fabricjs-react";
 import gsap from "gsap";
 import useWindowDimensions from "./functions/useWindowDimensions";
+import { canvasObjects } from "./global";
 
 function App() {
   const { editor, onReady } = useFabricJSEditor();
-  // const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   console.warn = console.error = () => {};
   let attr = { left: 50, top: 50, width: 150, fontSize: 20 };
   useEffect(() => {
-    // console.log(width, height);
-    // const padding = (width - 90 - (height - 60) * 1.2) / 2;
-    // document.querySelector(".container").style.padding =
-    //   "10px " + padding + "px";
-    // document.querySelector("#page-header").style.padding =
-    //   "0px " + padding + "px";
+    canvasObjects.canvasWidth = (height - 60) * 0.835;
+    canvasObjects.canvasHeight = height - 60;
+    const padding = (width - 90 - (height - 60) * 1.2) / 2;
+    document.querySelector(".container").style.padding =
+      "10px " + padding + "px";
+    document.querySelector("#page-header").style.padding =
+      "0px " + padding + "px";
+
     if (!editor || !fabric || !editor.canvas.isEmpty()) {
       return;
     }
+
     // fabric.Image.fromURL(Stitch, (image) => {
     //   image.scale(0.2);
     //   image = editor.canvas.add(image);
