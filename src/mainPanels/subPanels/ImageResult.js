@@ -13,7 +13,7 @@ export default function ImageResult(props) {
     const target = e.target;
     const imid = parseInt(target.id.split("-")[1]);
     fabric.Image.fromURL(imlist[imid], (image) => {
-      image.scale(0.2);
+      image.scale(0.5);
       image.set({ left: 200, top: 100 });
       const newFab = new ImageObject(editor, selectedText, image);
       canvasObjects.addToDict(selectedText, newFab);

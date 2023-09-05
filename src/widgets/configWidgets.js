@@ -161,10 +161,10 @@ function Thumbnail(props) {
       if (type === "image") {
         canvasObjects.idDict[props.id].fabric.clone((cloned) => {
           cloned.set({
-            top: 0,
+            top: 10,
             left: 0,
-            scaleX: 0.08,
-            scaleY: 0.08,
+            scaleX: 0.2,
+            scaleY: 0.2,
             selectable: false,
             opacity: 1,
           });

@@ -19,7 +19,7 @@ export default class ScriptTracker {
     this.pointer = 0; // the index of the triggerList that is listening to
     this.triggerQ = [];
     this._n = 0;
-    this.offset = 3;
+    this.offset = 2;
   }
   addHighlight(prevText, text) {
     prevText = prevText.trim();

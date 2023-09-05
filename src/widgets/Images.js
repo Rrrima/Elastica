@@ -23,6 +23,12 @@ import incense2 from "../resources/Images/incense2.png";
 import rice from "../resources/Images/rice.png";
 import orecchiette from "../resources/Images/orecchiette.png";
 import death from "../resources/Images/death.png";
+import block from "../resources/Images/videoimg/block.png";
+import blueCircle from "../resources/Images/videoimg/blue-circle.png";
+import greenCricle from "../resources/Images/videoimg/green-circle.png";
+import line from "../resources/Images/videoimg/line.png";
+import scriptlive from "../resources/Images/videoimg/scriptlive.png";
+import scriptliveText from "../resources/Images/videoimg/sltext.png";
 
 const IMDICT = {
   stitch: [Stitch, Stitch2],
@@ -46,6 +52,10 @@ const IMDICT = {
   "bow ties": [bowtie, bowtie2],
   orecchiette: [orecchiette],
   "little ears": [ear],
+  scriptlive: [scriptlive, scriptliveText, block],
+  "setting desired linkage": [line],
+  "script annotations": [blueCircle, greenCricle, line],
+  "gesture demonstrations": [blueCircle, greenCricle, line],
 };
 
 export default IMDICT;

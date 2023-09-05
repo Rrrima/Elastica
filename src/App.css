@@ -231,11 +231,13 @@ body * ::-webkit-scrollbar {
 }
 
 .image-item {
-  height: 60px;
+  max-height: 60px;
+  max-width: 100px;
 }
 
 .image-item > img {
-  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
 }
 
 #image-content-container {
@@ -254,6 +256,7 @@ body * ::-webkit-scrollbar {
 
 .enter-indicator {
   color: #4d87f5;
+  font-size: 1px !important;
 }
 
 .update-indicator {
