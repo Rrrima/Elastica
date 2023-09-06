@@ -16,6 +16,8 @@ function handleCustomization(event) {
 class CanvasObject {
   constructor() {
     this.canvas = null; // == editor
+    this.videoCtx = null; // == canvas for drawing video
+    this.mediaRecorder = null;
     this.canvasWidth = 1000;
     this.canvasHeight = null;
     this.objectDict = {}; // selectedText -> [obj,obj]
@@ -37,6 +39,7 @@ class CanvasObject {
     this.textEditor = null;
     this.customizeMode = false;
     this.handed = "left";
+    // this.mediaRecorder = new MediaRecorder();
     this.initializeIndicator("left");
     this.initializeIndicator("right");
     //   createRoots() {
@@ -46,6 +49,26 @@ class CanvasObject {
     //     this.roots = { configRoot: root };
     //   }
   }
+
+  setUpCanvas(canvas, videoCanvas) {
+    this.canvas = canvas;
+    if (videoCanvas) {
+      this.videoCtx = videoCanvas.getContext("2d");
+      const stream = videoCanvas.captureStream();
+      const options = { mimeType: "video/webm; codecs=vp9" };
+      this.mediaRecorder = new MediaRecorder(stream, options);
+    }
+    if (this.canvas) {
+      this.canvasWidth = this.canvas.canvas.width;
+      this.canvasHeight = this.canvas.canvas.height;
+      console.log(this.canvasWidth, this.canvasHeight);
+    }
+  }
+
+  drawVideoFrame(video) {
+    this.videoCtx.drawImage(video, 0, 0, 310, 150);
+  }
+
   startPresentation() {
     document.querySelector("#visual-panel").style.filter =
       "drop-shadow(1px 2px 8px #52efbb";
@@ -116,6 +139,7 @@ class CanvasObject {
     document.querySelector("#visual-panel").style.border = "3px solid #52efbb";
     this.rerenderConfig();
   }
+
   endCustomization() {
     // this.recoverHand();
     this.customizeMode = false;
@@ -142,7 +166,7 @@ class CanvasObject {
   }
 
   addHandToScene(handed) {
-    console.log(handed + " is aded to scene");
+    console.log(handed + " is added to scene");
     let handliist = [handed];
     if (handed === "both") {
       handliist = ["left", "right"];
@@ -188,7 +212,6 @@ class CanvasObject {
   visHand(handed) {
     const ftPos = handPos.getFingertipPos(handed, "all");
     const fill = this.indicateColor;
-    // console.log("vishand:" + handed);
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {

@@ -23,7 +23,7 @@ function App() {
   useEffect(() => {
     canvasObjects.canvasWidth = (height - 60) * 0.835;
     canvasObjects.canvasHeight = height - 60;
-    const padding = (width - 90 - (height - 60) * 1.2) / 2;
+    const padding = (width - 90 - (height - 60) * 1.3) / 2;
     document.querySelector(".container").style.padding =
       "10px " + padding + "px";
     document.querySelector("#page-header").style.padding =
@@ -32,27 +32,6 @@ function App() {
     if (!editor || !fabric || !editor.canvas.isEmpty()) {
       return;
     }
-
-    // fabric.Image.fromURL(Stitch, (image) => {
-    //   image.scale(0.2);
-    //   image = editor.canvas.add(image);
-    //   console.log(image);
-    // });
-    // const textbox = new fabric.Textbox("Ohana means family", {
-    //   ...attr,
-    //   fontFamily: "Baloo Tamma 2",
-    // });
-    // gsap.to(attr, { left: 1000, top: 500, duration: 1.2 });
-    // editor.canvas.add(textbox);
-    // const fabricImage = new LottieFabric(AnimatedHeart1, {
-    //   scaleX: 0.6,
-    //   scaleY: 0.6,
-    // });
-    // editor.canvas.add(fabricImage);
-    // console.log(attr);
-    // setInterval(() => {
-    //   textbox.set(attr);
-    // }, 10);
   });
   return (
     <div className="App">
@@ -69,7 +48,7 @@ function App() {
               <Grid item xs={12}>
                 <Grid container spacing={0}>
                   <Grid item xs={2} id="overviewContainer">
-                    <OverallVisualPanel />
+                    {/* <OverallVisualPanel /> */}
                   </Grid>
                   <Grid item xs={12} id="canvasContainer">
                     <VisualPanel editor={editor} onReady={onReady} />

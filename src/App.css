@@ -52,6 +52,7 @@ body * ::-webkit-scrollbar {
 }
 
 .main-panel {
+  position: relative;
   -webkit-filter: drop-shadow(1px 2px 8px var(--shadow-color));
           filter: drop-shadow(1px 2px 8px var(--shadow-color));
   background-color: white;
@@ -60,7 +61,9 @@ body * ::-webkit-scrollbar {
 }
 
 #visual-panel {
-  height: 60vh;
+  height: 50vh;
+  overflow: hidden;
+  position: relative;
 }
 
 #overview-panel {
@@ -76,7 +79,7 @@ body * ::-webkit-scrollbar {
 }
 
 #script-panel {
-  height: 25vh;
+  height: 35vh;
   overflow: scroll;
 }
 
@@ -371,8 +374,15 @@ body * ::-webkit-scrollbar {
   color: rgba(112, 112, 112, 0.4);
 }
 
+#videoCanvas {
+  height: 50vh;
+  width: 100%;
+}
+
 .canvas-panel {
-  height: 60vh;
+  position: absolute;
+  top: 0;
+  height: 50vh;
   width: 100%;
 }
 

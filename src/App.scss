@@ -60,13 +60,16 @@ body * {
   border-radius: 7px;
 }
 .main-panel {
+  position: relative;
   filter: drop-shadow(1px 2px 8px var(--shadow-color));
   background-color: white;
   border-radius: 10px;
   border: none;
 }
 #visual-panel {
-  height: 60vh;
+  height: 50vh;
+  overflow: hidden;
+  position: relative;
 }
 #overview-panel {
   background-color: $light-gray;
@@ -78,7 +81,7 @@ body * {
   border-radius: 10px;
 }
 #script-panel {
-  height: 25vh;
+  height: 35vh;
   overflow: scroll;
 }
 #config-panel {
@@ -300,8 +303,14 @@ body * {
 .disabled-field {
   color: rgba(112, 112, 112, 0.4);
 }
+#videoCanvas {
+  height: 50vh;
+  width: 100%;
+}
 .canvas-panel {
-  height: 60vh;
+  position: absolute;
+  top: 0;
+  height: 50vh;
   width: 100%;
 }
 .canvas-container {
@@ -443,6 +452,4 @@ label {
 .Mui-disabled {
   background-color: rgb(177, 174, 174) !important;
   color: $bg-grey !important;
-}
-.config-section {
 }

@@ -60,6 +60,7 @@ class HandPos {
   }
 
   updatePosition(pred) {
+    console.log(pred);
     this.hands = pred;
     this.initPos();
     if (pred.length > 0) {
