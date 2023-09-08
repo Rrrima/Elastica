@@ -21,14 +21,13 @@ function App() {
   console.warn = console.error = () => {};
   let attr = { left: 50, top: 50, width: 150, fontSize: 20 };
   useEffect(() => {
-    canvasObjects.canvasWidth = (height - 60) * 0.835;
+    canvasObjects.canvasWidth = (height - 60) * 0.93;
     canvasObjects.canvasHeight = height - 60;
     const padding = (width - 90 - (height - 60) * 1.3) / 2;
     document.querySelector(".container").style.padding =
       "10px " + padding + "px";
     document.querySelector("#page-header").style.padding =
       "0px " + padding + "px";
-
     if (!editor || !fabric || !editor.canvas.isEmpty()) {
       return;
     }
@@ -39,7 +38,7 @@ function App() {
         <h3>
           <span id="titleHighlight">Script</span>Live
         </h3>
-        <p>A script based author system with adaptive animation.</p>
+        <p>A script based authoring system with adaptive animation.</p>
       </div>
       <div className="container">
         <Grid container spacing={4}>

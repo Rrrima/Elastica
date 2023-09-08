@@ -2,12 +2,13 @@ import * as React from "react";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import VideocamIcon from "@mui/icons-material/Videocam";
 import PauseIcon from "@mui/icons-material/Pause";
 import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+
 import {
   canvasObjects,
   handPos,
@@ -26,14 +27,15 @@ import Webcam from "react-webcam";
 
 const VisualPanel = (props) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [videoMode, setVideoMode] = useState("camera");
+  const [scriptFollowing, setScriptFollowing] = useState(false);
+  var { transcript, resetTranscript } = useSpeechRecognition({});
   const editor = props.editor;
   const onReady = props.onReady;
   const videoRef = useRef(null);
   const videoCanvasRef = useRef(null);
-  const webcamRef = useRef(null);
 
-  let rafId = 0;
+  let rafId;
+  let gNumWordsInScript = 0;
 
   const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
   const detectorConfig = {
@@ -43,11 +45,28 @@ const VisualPanel = (props) => {
   let handposeDetector = null;
 
   useEffect(() => {
-    canvasObjects.setUpCanvas(editor, videoCanvasRef.current);
+    canvasObjects.setUpCanvas(editor, videoRef.current, setIsPlaying);
+    ws.onopen = function () {
+      console.log("Socket Connection Open");
+    };
+    ws.onmessage = function (event) {
+      let message = JSON.parse(event.data);
+      console.log(event);
+      if (message.wid) {
+        tracker.trackTo(message.wid);
+      }
+    };
+    ws.onclose = function () {
+      console.log("socket closed");
+    };
+
+    ws.onerror = function () {
+      console.log("socket error");
+    };
   }, [editor, videoCanvasRef]);
 
-  const handlePlay = () => {
-    if (isPlaying) {
+  useEffect(() => {
+    if (!isPlaying) {
       if (handposeDetector != null) {
         handposeDetector.dispose();
         handposeDetector = null;
@@ -57,128 +76,150 @@ const VisualPanel = (props) => {
     } else {
       runDetection();
     }
+  }, [isPlaying]);
+
+  const handlePlay = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const handleChangeMode = () => {
-    if (videoMode === "camera") {
-      setVideoMode("video");
+  function populateScript(inString) {
+    // Sending the script when populated by default (python server should be connected)
+    ws.send(
+      JSON.stringify({
+        name: "populateScript",
+        params: { referenceScript: inString },
+      })
+    );
+    // split into tokens
+    const tokens = inString.split(/\s+/);
+    // generate spans
+    let index = 0;
+    for (const token of tokens) {
+      if (token.toLowerCase().match(/[^_\W]+/g)) {
+        index++;
+      }
+    }
+
+    gNumWordsInScript = index;
+    console.log("Number of words in the script", gNumWordsInScript);
+
+    // const tpScript = document.getElementById("teleprompter-script");
+    // tpScript.innerHTML = htmlString;
+  }
+
+  if (scriptFollowing && transcript) {
+    ws.send(
+      JSON.stringify({
+        name: "scriptFollowing",
+        params: { transcript: transcript },
+      })
+    );
+  }
+
+  const handleChangeScriptFollowing = () => {
+    setScriptFollowing(!scriptFollowing);
+    if (!scriptFollowing) {
+      canvasObjects.startPresentation();
+      canvasObjects.textEditor.current.editor.save().then((data) => {
+        let currentScript = data.blocks[0].data.text;
+        populateScript(currentScript);
+      });
+      SpeechRecognition.startListening({ continuous: true });
     } else {
-      setVideoMode("camera");
+      tracker.revertQ();
+      resetTranscript();
+      SpeechRecognition.abortListening();
+      canvasObjects.endPresentation();
+      ws.send(
+        JSON.stringify({
+          name: "transcriptionComplete",
+          params: {},
+        })
+      );
     }
   };
 
-  async function renderResult() {
-    await detect(handposeDetector);
-  }
-
-  async function renderPrediction() {
-    // beginEstimateHandsStats();
-    await detect(handposeDetector);
-    // endEstimateHandsStats();
-    rafId = requestAnimationFrame(renderPrediction);
-  }
-
   async function runFrame() {
     if (videoRef.current.paused) {
-      // video has finished.
       canvasObjects.mediaRecorder.stop();
       return;
     }
-    await renderResult();
+    await detect(handposeDetector);
     rafId = requestAnimationFrame(runFrame);
   }
 
   const runDetection = async () => {
     console.log("start run detection");
+    canvasObjects.removeHand("both");
 
     handposeDetector = await handPoseDetection.createDetector(
       handModel,
       detectorConfig
     );
 
-    if (videoMode === "video") {
-      const warmUpTensor = tf.fill(
-        [videoRef.current.videoHeight, videoRef.current.videoWidth, 3],
-        0,
-        "float32"
-      );
-      await handposeDetector.estimateHands(warmUpTensor, {
-        flipHorizontal: false,
-      });
-      warmUpTensor.dispose();
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-      videoRef.current.play();
-      canvasObjects.mediaRecorder.start();
-
-      await new Promise((resolve) => {
-        videoRef.current.onseeked = () => {
-          resolve(videoRef.current);
-        };
-      });
-
-      await runFrame();
-    } else {
-      renderPrediction(handposeDetector);
+    const warmUpTensor = tf.fill(
+      [parseInt(editor.canvas.height), parseInt(editor.canvas.width), 3],
+      0,
+      "float32"
+    );
+    await handposeDetector.estimateHands(warmUpTensor, {
+      flipHorizontal: false,
+    });
+    warmUpTensor.dispose();
+    videoRef.current.currentTime = 0;
+    videoRef.current.play();
+    // canvasObjects.mediaRecorder.start();
+    canvasObjects.initializeIndicator("left");
+    canvasObjects.initializeIndicator("right");
+    if (canvasObjects.canvas) {
+      canvasObjects.addHandToScene("both");
     }
+
+    await runFrame();
   };
 
   const detect = async (net) => {
     if (videoRef.current) {
-      const hands = await net.estimateHands(videoRef.current, {
-        flipHorizontal: false,
+      const video = videoRef.current;
+      videoRef.current.width = editor.canvas.width;
+      videoRef.current.height = editor.canvas.height;
+      const hands = await net.estimateHands(video, { flipHorizontal: false });
+      let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
+      handPosArr.updateHandArr(handPosVec, handCenterVec);
+      // const isIntentioanl = handPosArr.isIntentional("left");
+      canvasObjects.showHand("both");
+
+      aniDriver.activeObjects.forEach((obj) => {
+        if (obj && obj.animateFocus) {
+          if (obj.t < 300) {
+            canvasObjects.indicateColor = "red";
+          } else {
+            canvasObjects.indicateColor = "blue";
+          }
+          let pm = obj.getAnimationParams();
+          // console.log(pm);
+          // console.log(pm);
+          obj.animateTo(pm);
+        }
+        if (obj && obj.animateReady && !obj.animateFocus) {
+          obj.detectIntentionality();
+        }
       });
-      console.log(hands);
-    } else if (webcamRef.current) {
-      console.log("webcam mode");
-      const video = webcamRef.current.video;
-      const hands = await net.estimateHands(video, { flipHorizontal: true });
-      console.log(hands);
     }
   };
 
-  useEffect(() => {
-    if (webcamRef.current) {
-      runDetection();
-    }
-  });
-
   return (
     <div className="main-panel" id="visual-panel">
-      {videoMode === "camera" && (
-        <Webcam
-          className="webcam_component"
-          id="myWebcam"
-          ref={webcamRef}
-          forceScreenshotSourceSize="true"
-          screenshotFormat="image/jpeg"
-          style={{
-            zIndex: -1,
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-          }}
-          mirrored={true}
-        />
-      )}
-      {videoMode === "video" && (
-        <video
-          ref={videoRef}
-          style={{
-            zIndex: -1,
-            position: "absolute",
-            width: 787,
-            height: 665,
-            top: 0,
-            // visibility: "hidden",
-            opacity: 0.2,
-          }}
-          src={vid}
-        />
-      )}
-
-      <canvas id="videoCanvas" ref={videoCanvasRef} />
+      <video
+        ref={videoRef}
+        style={{
+          zIndex: -1,
+          position: "absolute",
+          height: "100%",
+          top: 0,
+        }}
+        src={vid}
+      />
 
       <FabricJSCanvas className="canvas-panel" onReady={onReady} />
 
@@ -192,8 +233,14 @@ const VisualPanel = (props) => {
               <PauseIcon className="color-primary" fontSize="small" />
             )}
           </IconButton>
-          <IconButton aria-label="videocam" onClick={handleChangeMode}>
-            <VideocamIcon className="color-primary" fontSize="small" />
+          <IconButton
+            aria-label="scriptfollow"
+            onClick={handleChangeScriptFollowing}
+          >
+            <AutoGraphIcon
+              fontSize="small"
+              className={`${scriptFollowing ? "color-primary" : ""}`}
+            />
           </IconButton>
         </Stack>
       </div>

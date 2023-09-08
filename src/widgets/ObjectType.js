@@ -90,10 +90,8 @@ class TextObject {
       status = "update";
     }
     if (status === "enter") {
-      // console.log(delayFocus);
       handed = this.enterSetting.handed;
       const intention = this.isIntentional(handed);
-      // console.log(intention);
       if (
         intention.type === "general" &&
         intention.confidence > C.handStatic.thred
@@ -163,7 +161,7 @@ class TextObject {
   }
   getReady(pos) {
     const rdict = { ...this.fixAttr };
-    rdict.opacity = 0;
+    // rdict.opacity = 0;
     this.fabric.set(rdict);
     // if (!pos) {
     // }

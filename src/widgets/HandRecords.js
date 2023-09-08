@@ -42,8 +42,10 @@ export default class HandRecords {
       this.record[rkey] = [r];
     }
     canvasObjects.indicateColor = "red";
+    canvasObjects.canvas.canvas.renderAll();
     setTimeout(() => {
       canvasObjects.indicateColor = "#52efbb";
+      canvasObjects.canvas.canvas.renderAll();
     }, 300);
     canvasObjects.rerenderConfig();
   }

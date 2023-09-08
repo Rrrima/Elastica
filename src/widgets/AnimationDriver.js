@@ -31,11 +31,11 @@ export default class AnimationDriver {
   }
   preview() {
     // canvasObjects.endCustomization();
-    // console.log("preview", this.activeObjects);
     this.activeObjects.forEach((curObj) => {
       if (canvasObjects.canmeraOn) {
         curObj.revert();
         curObj.detectIntentionality();
+        console.log("!!!!!");
       } else {
         curObj.animateAtMark();
       }

@@ -16,6 +16,7 @@ function handleCustomization(event) {
 class CanvasObject {
   constructor() {
     this.canvas = null; // == editor
+    this.setIsPlaying = null;
     this.videoCtx = null; // == canvas for drawing video
     this.mediaRecorder = null;
     this.canvasWidth = 1000;
@@ -30,7 +31,7 @@ class CanvasObject {
     this.focus = null;
     this.focusedText = null;
     this.curGesture = null;
-    this.canmeraOn = false;
+    this.canmeraOn = true; // always camera on for postediting
     this.root = null;
     this.markDict = {}; // seletedText -> {'marker': marker dom, 'pos':}
     this.handIndicators = { left: {}, right: {} };
@@ -39,6 +40,7 @@ class CanvasObject {
     this.textEditor = null;
     this.customizeMode = false;
     this.handed = "left";
+    this.video = null;
     // this.mediaRecorder = new MediaRecorder();
     this.initializeIndicator("left");
     this.initializeIndicator("right");
@@ -50,18 +52,19 @@ class CanvasObject {
     //   }
   }
 
-  setUpCanvas(canvas, videoCanvas) {
+  setUpCanvas(canvas, videoRef, setIsPlaying) {
     this.canvas = canvas;
-    if (videoCanvas) {
-      this.videoCtx = videoCanvas.getContext("2d");
-      const stream = videoCanvas.captureStream();
-      const options = { mimeType: "video/webm; codecs=vp9" };
-      this.mediaRecorder = new MediaRecorder(stream, options);
-    }
+    this.video = videoRef;
+    this.setIsPlaying = setIsPlaying;
     if (this.canvas) {
-      this.canvasWidth = this.canvas.canvas.width;
-      this.canvasHeight = this.canvas.canvas.height;
-      console.log(this.canvasWidth, this.canvasHeight);
+      // this.canvas.canvas.width = this.canvasWidth;
+      this.canvas.canvas.setWidth(this.canvasWidth);
+      // this.canvas.canvas.setHeight(this.canvasHeight);
+      console.log(
+        "this canvas:",
+        this.canvas.canvas.width,
+        this.canvas.canvas.height
+      );
     }
   }
 
@@ -76,16 +79,11 @@ class CanvasObject {
     Object.keys(this.idDict).forEach((k) => {
       this.idDict[k].getReady();
     });
-    if (this.canmeraOn) {
-      this.removeHand("both");
-      this.addHandToScene("both");
-      this.indicateColor = "grey";
-    } else {
-      document.querySelector("#infobox").innerHTML = "please open camera";
-      setTimeout(() => {
-        document.querySelector("#infobox").innerHTML = "";
-      }, 1500);
-    }
+
+    this.removeHand("both");
+    this.addHandToScene("both");
+    this.indicateColor = "grey";
+
     document.querySelector("#visual-panel").style.filter =
       "drop-shadow(1px 2px 8px #52efbb";
   }
@@ -103,6 +101,9 @@ class CanvasObject {
     console.log(aniDriver.activeObjects);
     this.removeHand("both");
     this.addHandToScene("both");
+    // console.log(this.video.currentTime);
+    this.video.play();
+    this.setIsPlaying(true);
     this.mode = "preview";
     this.indicateColor = "blue";
     document.querySelector("#visual-panel").style.border = "3px solid #ffa9ab";
@@ -115,6 +116,8 @@ class CanvasObject {
     console.log(" =====  end preview: =====");
     this.removeHand("both");
     this.mode = "editing";
+    this.video.play();
+    this.setIsPlaying(false);
     document.querySelector("#visual-panel").style.border = "";
     // document.querySelector("#visual-panel").style.filter =
     //   "drop-shadow(1px 2px 8px hsl(0deg 0% 0% / 0.1)";
@@ -130,6 +133,7 @@ class CanvasObject {
     this.removeHand("both");
     this.addHandToScene(handed);
     this.indicateColor = "#52efbb";
+    this.visHand(handed);
     console.log("customization started");
     // this.hideHand();
     // this.showHand(handed);
@@ -175,6 +179,7 @@ class CanvasObject {
     }
     handliist.forEach((handed) => {
       this.allFingers.forEach((f) => {
+        // this.handIndicators[handed][f].set("opacity", 1);
         this.canvas.canvas.add(this.handIndicators[handed][f]);
       });
     });

@@ -308,13 +308,14 @@ body * {
   width: 100%;
 }
 .canvas-panel {
-  position: absolute;
+  position: relative;
   top: 0;
   height: 50vh;
-  width: 100%;
+  width: 100% !important;
 }
 .canvas-container {
   width: 100% !important;
+  height: 100% !important;
 }
 .webcam_component {
   width: 100%;
@@ -329,8 +330,15 @@ label {
   font-family: "Baloo Tamma 2" !important ;
   font-size: medium !important;
 }
-
-// marker style
+.lower-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.upper-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+// // marker style
 .enter-marker:hover {
   border: solid 1px $blue-dark;
   cursor: pointer;
