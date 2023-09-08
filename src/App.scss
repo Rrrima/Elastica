@@ -461,3 +461,23 @@ label {
   background-color: rgb(177, 174, 174) !important;
   color: $bg-grey !important;
 }
+.timeline {
+  position: relative;
+  top: 30px;
+  width: 700px;
+  height: 3px;
+  bottom: 0px;
+  left: 100px;
+  border-radius: 10px;
+  background-color: #52efbb;
+}
+
+#video-ph {
+  width: 16px;
+  height: 16px;
+  background-color: #e58a83;
+  filter: drop-shadow(2px 2px 8px var(--shadow-color));
+  border-radius: 10px;
+  top: -7px;
+  position: absolute;
+}

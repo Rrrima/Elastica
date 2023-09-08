@@ -1,6 +1,7 @@
 import * as React from "react";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
+import Draggable from "gsap/Draggable";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import { FabricJSCanvas } from "fabricjs-react";
@@ -8,7 +9,7 @@ import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
-
+import { gsap } from "gsap";
 import {
   canvasObjects,
   handPos,
@@ -25,14 +26,18 @@ import vid from "../resources/videos/drumeo.mp4";
 import { Hidden } from "@mui/material";
 import Webcam from "react-webcam";
 
+gsap.registerPlugin(Draggable);
+
 const VisualPanel = (props) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [scriptFollowing, setScriptFollowing] = useState(false);
   var { transcript, resetTranscript } = useSpeechRecognition({});
+  const videoPlayHead = useRef(null);
   const editor = props.editor;
   const onReady = props.onReady;
   const videoRef = useRef(null);
   const videoCanvasRef = useRef(null);
+  const videoTimeLine = useRef(null);
 
   let rafId;
   let gNumWordsInScript = 0;
@@ -43,6 +48,31 @@ const VisualPanel = (props) => {
     modelType: "full",
   };
   let handposeDetector = null;
+
+  React.useLayoutEffect(() => {
+    const L = 684;
+    // const videoTime = videoRef.current.duration;
+    const videoTime = 7;
+    const ctx = gsap.context(() => {
+      const playhead = new Draggable(videoPlayHead.current, {
+        type: "x",
+        bounds: "#video-tl",
+        onPress: function (e) {
+          const curTime = (this.x / L) * videoTime;
+          videoRef.current.currentTime = curTime.toFixed(1);
+          setIsPlaying(true);
+        },
+        onDrag: function (e) {
+          const curTime = (this.x / L) * videoTime;
+          videoRef.current.currentTime = curTime.toFixed(1);
+        },
+        onRelease: function (e) {
+          videoRef.current.pause();
+          setIsPlaying(false);
+        },
+      });
+    });
+  }, []);
 
   useEffect(() => {
     canvasObjects.setUpCanvas(editor, videoRef.current, setIsPlaying);
@@ -140,10 +170,6 @@ const VisualPanel = (props) => {
   };
 
   async function runFrame() {
-    if (videoRef.current.paused) {
-      canvasObjects.mediaRecorder.stop();
-      return;
-    }
     await detect(handposeDetector);
     rafId = requestAnimationFrame(runFrame);
   }
@@ -166,8 +192,11 @@ const VisualPanel = (props) => {
       flipHorizontal: false,
     });
     warmUpTensor.dispose();
-    videoRef.current.currentTime = 0;
-    videoRef.current.play();
+    if (canvasObjects.presentationMode) {
+      console.log("******************8");
+      videoRef.current.play();
+    }
+
     // canvasObjects.mediaRecorder.start();
     canvasObjects.initializeIndicator("left");
     canvasObjects.initializeIndicator("right");
@@ -242,6 +271,11 @@ const VisualPanel = (props) => {
               className={`${scriptFollowing ? "color-primary" : ""}`}
             />
           </IconButton>
+          {!canvasObjects.presentationMode && (
+            <div className="timeline" id="video-tl" ref={videoTimeLine}>
+              <div id="video-ph" ref={videoPlayHead}></div>
+            </div>
+          )}
         </Stack>
       </div>
     </div>

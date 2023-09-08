@@ -162,11 +162,17 @@ class ImageObject {
     this.moveBack();
   }
   getReady(pos) {
+    const rkey = canvasObjects.focusedText;
     const rdict = { ...this.fixAttr };
     rdict.opacity = 0;
+    if (pos && this.handRecord.record[rkey]) {
+      const record = this.handRecord.record[rkey][0].objAttr;
+      rdict.left = pos[0];
+      rdict.top = pos[1];
+      rdict.scaleX = record.scaleX;
+      rdict.scaleY = record.scaleY;
+    }
     this.fabric.set(rdict);
-    // if (!pos) {
-    // }
     this.editor.canvas.renderAll();
   }
   animateEnter() {
@@ -204,9 +210,6 @@ class ImageObject {
         onUpdate: () => this.editor.canvas.renderAll(),
       });
     }
-    // if (this.enterSetting.after === "exit") {
-    //   this.afterEnter(1.5);
-    // }
   }
   animateUpdate(t) {
     this.fabric.set("selectable", true);
@@ -217,8 +220,6 @@ class ImageObject {
       immediateRender: true,
       onUpdate: () => {
         this.editor.canvas.renderAll();
-        // console.log("after enter!");
-        // console.log(thisfab);
       },
     });
     const effect = this.updates[t].setting.effect;
@@ -242,23 +243,7 @@ class ImageObject {
         }
       );
     }
-    // if (effect === "seesaw") {
-    //   this.afterUpdate(t, 3);
-    // } else {
-    //   this.afterUpdate(t, 1.5);
-    // }
-
-    // console.log(" =====  all updated element!! ====");
-    // console.log(this.fabric);
   }
-  //   createUpdate(relatedText) {
-  //     const d = {
-  //       relatedText: relatedText,
-  //       effect: "trasform",
-  //       handed: "left",
-  //       after: "stay",
-  //     };
-  //   }
   disabled() {
     this.fabric.set("opacity", 0);
     this.fabric.set("selectable", false);

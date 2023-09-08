@@ -41,6 +41,7 @@ class CanvasObject {
     this.customizeMode = false;
     this.handed = "left";
     this.video = null;
+    this.opacity = 1;
     // this.mediaRecorder = new MediaRecorder();
     this.initializeIndicator("left");
     this.initializeIndicator("right");
@@ -73,6 +74,7 @@ class CanvasObject {
   }
 
   startPresentation() {
+    this.presentationMode = true;
     document.querySelector("#visual-panel").style.filter =
       "drop-shadow(1px 2px 8px #52efbb";
     this.mode = "presentation";
@@ -81,16 +83,20 @@ class CanvasObject {
     });
 
     this.removeHand("both");
-    this.addHandToScene("both");
-    this.indicateColor = "grey";
+    // this.addHandToScene("both");
+    this.indicateColor = "grba(255,255,255,0)";
+    this.opacity = 0;
 
     document.querySelector("#visual-panel").style.filter =
       "drop-shadow(1px 2px 8px #52efbb";
   }
+
   endPresentation() {
+    this.presentationMode = false;
     document.querySelector("#visual-panel").style.filter =
       "drop-shadow(1px 2px 8px hsl(0deg 0% 0% / 0.1)";
     this.mode = "editing";
+    this.opacity = 1;
     if (this.canmeraOn) {
       this.removeHand("both");
     }
@@ -106,7 +112,7 @@ class CanvasObject {
     this.setIsPlaying(true);
     this.mode = "preview";
     this.indicateColor = "blue";
-    document.querySelector("#visual-panel").style.border = "3px solid #ffa9ab";
+    // document.querySelector("#visual-panel").style.border = "3px solid #ffa9ab";
     // document.querySelector("#visual-panel").style.filter =
     //   "drop-shadow(1px 2px 8px #52efbb";
     //  filter: drop-shadow(1px 2px 8px var(--shadow-color));
@@ -140,7 +146,7 @@ class CanvasObject {
     this.customizeMode = true;
     document.addEventListener("keydown", handleCustomization);
     // console.log(document.querySelector("#visual-panel").style);
-    document.querySelector("#visual-panel").style.border = "3px solid #52efbb";
+    // document.querySelector("#visual-panel").style.border = "3px solid #52efbb";
     this.rerenderConfig();
   }
 
@@ -222,7 +228,7 @@ class CanvasObject {
         let pm = {
           top: ftPos[f][1],
           left: ftPos[f][0],
-          opacity: 1,
+          opacity: this.opacity,
           //   opacity: ftAng[idx],
           fill: fill,
         };

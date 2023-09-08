@@ -549,4 +549,26 @@ label {
   background-color: #b1aeae !important;
   color: #fafbfc !important;
 }
+
+.timeline {
+  position: relative;
+  top: 30px;
+  width: 700px;
+  height: 3px;
+  bottom: 0px;
+  left: 100px;
+  border-radius: 10px;
+  background-color: #52efbb;
+}
+
+#video-ph {
+  width: 16px;
+  height: 16px;
+  background-color: #e58a83;
+  -webkit-filter: drop-shadow(2px 2px 8px var(--shadow-color));
+          filter: drop-shadow(2px 2px 8px var(--shadow-color));
+  border-radius: 10px;
+  top: -7px;
+  position: absolute;
+}
 /*# sourceMappingURL=App.css.map */

@@ -7,7 +7,7 @@ export default class AnimationDriver {
   triggerAnimation(k) {
     // trigger animation at certain keywords -- highlighted word
     const curText = k.trim().toLowerCase();
-    document.querySelector("#infobox").innerHTML = curText;
+    // document.querySelector("#infobox").innerHTML = curText;
     canvasObjects.focusedText = curText;
     // if canmera not on
     if (!canvasObjects.canmeraOn) {
@@ -35,7 +35,6 @@ export default class AnimationDriver {
       if (canvasObjects.canmeraOn) {
         curObj.revert();
         curObj.detectIntentionality();
-        console.log("!!!!!");
       } else {
         curObj.animateAtMark();
       }
@@ -47,7 +46,7 @@ export default class AnimationDriver {
     }
   }
   forceEnd(k) {
-    document.querySelector("#infobox").innerHTML = "";
+    // document.querySelector("#infobox").innerHTML = "";
     const curText = k.trim().toLowerCase();
     if (canvasObjects.objectDict[curText]) {
       canvasObjects.objectDict[curText].forEach((obj) => {
