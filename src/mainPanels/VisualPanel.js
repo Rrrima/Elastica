@@ -9,18 +9,12 @@ import { FabricJSCanvas } from "fabricjs-react";
 import { useRef, useEffect, useState } from "react";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import * as tf from "@tensorflow/tfjs";
-import {
-  canvasObjects,
-  handPos,
-  handPosArr,
-  ws,
-  handRecord,
-  aniDriver,
-} from "../global";
+import { canvasObjects, handPos, handPosArr, ws, aniDriver } from "../global";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 import { tracker } from "../global";
+import { Switch } from "@mui/material";
 
 const VisualPanel = React.forwardRef((props, ref) => {
   // const { editor, onReady } = useFabricJSEditor();
@@ -48,17 +42,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   let rafId;
-  let startInferenceTime,
-    numInferences = 0;
-  let inferenceTimeSum = 0,
-    lastPanelUpdate = 0;
 
   function generateSpan(inToken, inIndex) {
     return '<span id="' + inIndex + '">' + inToken + " </span>";
   }
 
   function populateScript(inString) {
-    // Sending the script when populated by default (python server should be connected)
     ws.send(
       JSON.stringify({
         name: "populateScript",
@@ -79,9 +68,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
 
     gNumWordsInScript = index;
     console.log("Number of words in the script", gNumWordsInScript);
-
-    // const tpScript = document.getElementById("teleprompter-script");
-    // tpScript.innerHTML = htmlString;
   }
 
   if (scriptFollowing && transcript) {
@@ -129,25 +115,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
     }
   };
 
-  // function beginEstimateHandsStats() {
-  //   startInferenceTime = (performance || Date).now();
-  // }
-
-  // function endEstimateHandsStats() {
-  //   const endInferenceTime = (performance || Date).now();
-  //   inferenceTimeSum += endInferenceTime - startInferenceTime;
-  //   ++numInferences;
-
-  //   const panelUpdateMilliseconds = 1000;
-  //   if (endInferenceTime - lastPanelUpdate >= panelUpdateMilliseconds) {
-  //     const averageInferenceTime = inferenceTimeSum / numInferences;
-  //     inferenceTimeSum = 0;
-  //     numInferences = 0;
-  //     console.log(averageInferenceTime);
-  //     lastPanelUpdate = endInferenceTime;
-  //   }
-  // }
-
   async function renderPrediction() {
     // beginEstimateHandsStats();
     await detect(handposeDetector);
@@ -168,15 +135,8 @@ const VisualPanel = React.forwardRef((props, ref) => {
     if (canvasObjects.canvas) {
       canvasObjects.addHandToScene("both");
     }
-    // canvasObjects.canvas.canvas.add(canvasObjects.handIndicator);
-    // const test = false;
-    // if (
-    //   (canvasObjects.focus &&
-    //     (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
-    //   test
-    // ) {
+
     renderPrediction(handposeDetector);
-    // }
   };
 
   const detect = async (net) => {
@@ -187,24 +147,10 @@ const VisualPanel = React.forwardRef((props, ref) => {
     ) {
       // get video properties
       const video = webcamRef.current.video;
-      // console.log(handPos.handPosVec);
-      // const videoWidth = webcamRef.current.video.videoWidth;
-      // const videoHeight = webcamRef.current.video.videoHeight;
-      // r = editor.canvas.width / videoHeight;
-      // r = 1;
-      // set video height and width
-      // webcamRef.current.video.width = videoWidth;
-      // webcamRef.current.video.height = videoHeight;
+
       webcamRef.current.video.width = editor.canvas.width;
       webcamRef.current.video.height = editor.canvas.height;
-      // console.log(editor.canvas.getObjects().length);
-      // console.log(editor.canvas.width, videoWidth);
-      // console.log(editor.canvas.height, videoHeight);
-      // console.log(editor.canvas.width, webcamRef.current.video.width);
-      // console.log(editor.canvas.height, webcamRef.current.video.height);
-      // set canvas height and width
-      // handCanvasRef.current.width = videoWidth;
-      // handCanvasRef.current.height = videoHeight;
+
       const hands = await net.estimateHands(video, { flipHorizontal: true });
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
@@ -282,17 +228,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
         />
       )}
       <FabricJSCanvas className="canvas-panel" onReady={onReady} />
-      {/* {previewMode && (
-        <canvas
-          className="webcam_component"
-          id="myCanvas"
-          ref={handCanvasRef}
-          style={{
-            position: "absolute",
-            zIndex: 10,
-          }}
-        />
-      )} */}
+
       <div className="bottom left" id="infobox"></div>
 
       <div className="bottom right">
@@ -312,6 +248,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
               className={`${scriptFollowing ? "color-primary" : ""}`}
             />
           </IconButton>
+          <Switch defaultChecked />
         </Stack>
       </div>
     </div>
