@@ -16,6 +16,7 @@ function handleCustomization(event) {
 class CanvasObject {
   constructor() {
     this.canvas = null; // == editor
+    this.adaptationMode = true;
     this.canvasWidth = 1000;
     this.canvasHeight = null;
     this.objectDict = {}; // selectedText -> [obj,obj]
@@ -189,12 +190,16 @@ class CanvasObject {
     const ftPos = handPos.getFingertipPos(handed, "all");
     const fill = this.indicateColor;
     // console.log("vishand:" + handed);
+    let opacity = 1;
+    if (this.mode === "presentation") {
+      opacity = 0;
+    }
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {
           top: ftPos[f][1],
           left: ftPos[f][0],
-          opacity: 1,
+          opacity: opacity,
           //   opacity: ftAng[idx],
           fill: fill,
         };

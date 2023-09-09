@@ -20,6 +20,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   // const { editor, onReady } = useFabricJSEditor();
   const [previewMode, setMode] = useState(false);
   const [scriptFollowing, setScriptFollowing] = useState(false);
+  const [adaptation, setAdaptation] = useState(true);
   var { transcript, resetTranscript } = useSpeechRecognition({});
   const editor = props.editor;
   const onReady = props.onReady;
@@ -187,6 +188,10 @@ const VisualPanel = React.forwardRef((props, ref) => {
   };
 
   useEffect(() => {
+    canvasObjects.adaptationMode = adaptation;
+  }, [adaptation]);
+
+  useEffect(() => {
     if (previewMode) {
       runDetection();
     }
@@ -248,7 +253,12 @@ const VisualPanel = React.forwardRef((props, ref) => {
               className={`${scriptFollowing ? "color-primary" : ""}`}
             />
           </IconButton>
-          <Switch defaultChecked />
+          <Switch
+            defaultChecked
+            onChange={(e) => {
+              setAdaptation(!adaptation);
+            }}
+          />
         </Stack>
       </div>
     </div>

@@ -33,7 +33,7 @@ export default class AnimationDriver {
     // canvasObjects.endCustomization();
     // console.log("preview", this.activeObjects);
     this.activeObjects.forEach((curObj) => {
-      if (canvasObjects.canmeraOn) {
+      if (canvasObjects.canmeraOn && canvasObjects.adaptationMode) {
         curObj.revert();
         curObj.detectIntentionality();
       } else {
