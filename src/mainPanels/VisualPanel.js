@@ -160,6 +160,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
         canvasObjects.detectPinchedObject();
       } else {
         // if dragging
+        canvasObjects.enbaleAll();
         canvasObjects.dragginObj.dragTo(
           handPos.getFingertipPos(canvasObjects.pinched[0], ["index"])["index"]
         );
@@ -175,7 +176,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       }
 
       aniDriver.activeObjects.forEach((obj) => {
-        if (obj && obj.animateFocus && !canvasObjects.isDragging) {
+        if (obj && obj.animateFocus) {
           // if (obj.t < 300) {
           //   canvasObjects.indicateColor = "red";
           // } else {

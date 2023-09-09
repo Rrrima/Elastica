@@ -346,6 +346,7 @@ class ImageObject {
     });
   }
   setMotionActive() {
+    this.fabric.set("selectable", true);
     // console.log("actve!");
     this.animateReady = true;
     this.animateFocus = true;

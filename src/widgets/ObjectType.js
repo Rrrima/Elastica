@@ -104,6 +104,7 @@ class TextObject {
   }
   react(pos) {
     this.fabric.set("selectable", true);
+    console.log("dragreact", this.relatedText);
     gsap.set(this.fabric, {
       left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
       top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
@@ -112,6 +113,7 @@ class TextObject {
   }
 
   setMotionActive() {
+    this.fabric.set("selectable", true);
     this.animateReady = true;
     this.animateFocus = true;
   }

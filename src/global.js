@@ -55,13 +55,13 @@ class CanvasObject {
         const attr = obj.fixAttr;
         let bbox = [];
         if (attr.width) {
-          // image
-          bbox = [
-            attr.top,
-            attr.top + attr.height * attr.scaleY,
-            attr.left,
-            attr.left + attr.width * attr.scaleX,
-          ];
+          // // image
+          // bbox = [
+          //   attr.top,
+          //   attr.top + attr.height * attr.scaleY,
+          //   attr.left,
+          //   attr.left + attr.width * attr.scaleX,
+          // ];
         } else {
           // text object
           bbox = [
@@ -87,12 +87,10 @@ class CanvasObject {
   }
   async detectPinchedObject() {
     const pinched = await handPos.isPinched();
-    if (pinched.length === 1) {
+    if (pinched.length > 0) {
       const pm = await handPos.getFingertipPos(pinched[0], ["index"])["index"]; //[left,top]
       this.pinched = pinched; // == ['right']
       this.getPinchedObject(pm);
-    } else if (pinched.length === 2) {
-      // TODO: scale
     }
   }
   async detectUnPinch() {

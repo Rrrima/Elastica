@@ -64,20 +64,21 @@ class HandPos {
   async isPinched() {
     const left = this.getFingertipPosList("left", ["thumb", "index"]);
     const right = this.getFingertipPosList("right", ["thumb", "index"]);
-    const leftDis = euclideanDistance(left[0].slice(0, 2), left[1].slice(0, 2));
-    const rightDis = euclideanDistance(
-      right[0].slice(0, 2),
-      right[1].slice(0, 2)
-    );
-    // const leftDis = Math.abs(left[1][1] - left[0][1]);
-    // const rightDis = Math.abs(right[1][1] - right[0][1]);
+    // const leftDis = euclideanDistance(left[0].slice(0, 2), left[1].slice(0, 2));
+    // const rightDis = euclideanDistance(
+    //   right[0].slice(0, 2),
+    //   right[1].slice(0, 2)
+    // );
+    const leftDis = Math.abs(left[1][1] - left[0][1]);
+    const rightDis = Math.abs(right[1][1] - right[0][1]);
     let pinched = [];
     // console.log(leftDis * 1000);
     // console.log(rightDis * 1000);
-    if (leftDis && leftDis * 1000 < 15) {
+
+    if (leftDis && leftDis * 1000 < 10) {
       pinched.push("left");
     }
-    if (rightDis && rightDis * 1000 < 15) {
+    if (rightDis && rightDis * 1000 < 10) {
       pinched.push("right");
     }
     return pinched;
