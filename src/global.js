@@ -53,12 +53,24 @@ class CanvasObject {
       const objs = this.objectDict[k];
       objs.forEach((obj) => {
         const attr = obj.fixAttr;
-        const bbox = [
-          attr.top,
-          attr.top + attr.height * attr.scaleY,
-          attr.left,
-          attr.left + attr.width * attr.scaleX,
-        ];
+        let bbox = [];
+        if (attr.width) {
+          bbox = [
+            attr.top,
+            attr.top + attr.height * attr.scaleY,
+            attr.left,
+            attr.left + attr.width * attr.scaleX,
+          ];
+        } else {
+          bbox = [
+            attr.top,
+            attr.top + attr.height * attr.scaleY,
+            attr.left,
+            attr.left + attr.dynamicMinWidth * attr.scaleX,
+          ];
+          console.log(bbox);
+        }
+
         if (
           pm[1] > bbox[0] &&
           pm[1] < bbox[1] &&
@@ -74,6 +86,7 @@ class CanvasObject {
   }
   detectPinchedObject() {
     const pinched = handPos.isPinched();
+    console.log(pinched);
     if (pinched.length > 0) {
       const pm = handPos.getFingertipPos(pinched[0], ["index"])["index"];
       this.pinched = pinched;

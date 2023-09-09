@@ -25,7 +25,7 @@ export default class TextEditor extends Component {
           // {
           //   type: "paragraph",
           //   data: {
-          //     text: "How can we do this in AR? First, AR programming has a heavy use of realistic 3D models but we should also be able to work with simple 2D sketches. Also, to animate these objects, designers need to define curves, timings or even detailed keyframe animations. However, designer can simply enact animation with gesture in a similar way to the Wizard of Oz technique",
+          //     text: ''' ''',
           //   },
           // },
           // {

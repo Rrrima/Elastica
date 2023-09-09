@@ -320,12 +320,14 @@ class ImageObject {
     });
   }
   dragTo(pos) {
-    gsap.set(this.fabric, {
-      left: pos[0] - (this.fixAttr.width * this.fixAttr.scaleX) / 2,
-      top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
-      opacity: 1,
-      onUpdate: () => this.editor.canvas.renderAll(),
-    });
+    if (pos[0] && pos[1]) {
+      gsap.set(this.fabric, {
+        left: pos[0] - (this.fixAttr.width * this.fixAttr.scaleX) / 2,
+        top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
+        opacity: 1,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    }
   }
   setTo(pos) {
     gsap.set(this.fabric, {
@@ -360,6 +362,20 @@ class ImageObject {
     });
     return bpm;
   }
+  getDmParameters() {
+    // called for adaptation
+    const curText = canvasObjects.focusedText;
+    // enter adaptation
+    if (curText === this.relatedText) {
+      const handed = this.enterSetting.handed;
+      if (handed === "none") {
+        return;
+      }
+      const pm = handPos.getFingertipPos(handed, ["index"])["index"];
+      return pm;
+    }
+  }
+
   getAnimationParams() {
     // called for adaptation
     const curText = canvasObjects.focusedText;

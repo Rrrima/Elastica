@@ -70,6 +70,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   if (scriptFollowing && transcript) {
+    console.log(transcript);
     ws.send(
       JSON.stringify({
         name: "scriptFollowing",
@@ -180,7 +181,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
           }
           // let pm = obj.getAnimationParams();
           // obj.animateTo(pm);
-          const pm = handPos.getFingertipPos("left", ["index"])["index"];
+          const pm = obj.getDmParameters();
           obj.setTo(pm);
         }
         if (obj && obj.animateReady && !obj.animateFocus) {
@@ -252,7 +253,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
               className={`${scriptFollowing ? "color-primary" : ""}`}
             />
           </IconButton>
-          <Switch defaultChecked />
+          {/* <Switch defaultChecked /> */}
         </Stack>
       </div>
     </div>

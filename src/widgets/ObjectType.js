@@ -58,6 +58,7 @@ class TextObject {
     this.fixAttr = this.getCurrentAttr();
     this.handRecord = new HandRecords();
   }
+
   getTimeThred() {
     if (this.relatedText === canvasObjects.focusedText) {
       this.timeThred = this.enterSetting.timeThred;
@@ -67,10 +68,47 @@ class TextObject {
     }
     return this.timeThred;
   }
-  //   endAnimationFocus() {
-  //     this.animateFocus = false;
-  //     this.animateReady = false;
-  //   }
+
+  getDmParameters() {
+    // called for adaptation
+    const curText = canvasObjects.focusedText;
+    // enter adaptation
+    if (curText === this.relatedText) {
+      const handed = this.enterSetting.handed;
+      if (handed === "none") {
+        return;
+      }
+      const pm = handPos.getFingertipPos(handed, ["index"])["index"];
+      return pm;
+    }
+  }
+  dragTo(pos) {
+    if (pos[0] && pos[1]) {
+      gsap.set(this.fabric, {
+        left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
+        top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
+        opacity: 1,
+        onUpdate: () => this.editor.canvas.renderAll(),
+      });
+    }
+  }
+  setTo(pos) {
+    gsap.set(this.fabric, {
+      left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
+      top: pos[1] - this.fixAttr.height * this.fixAttr.scaleY,
+      opacity: 1,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+  }
+  react(pos) {
+    console.log(this.fixAttr);
+    gsap.set(this.fabric, {
+      left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
+      top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+  }
+
   detectIntentionality() {
     // for preview;
     // detect intentionality whenever animteFocus == false
@@ -638,18 +676,18 @@ class TextObject {
     }
   }
   afterEnter(d) {
-    gsap.to(this.fabric, {
-      ...this.fixAttr,
-      onUpdate: () => this.editor.canvas.renderAll(),
-    });
-    if (this.enterSetting.after === "exit") {
-      gsap.to(this.fabric, {
-        opacity: 0,
-        duration: 0.5,
-        delay: d,
-        onUpdate: () => this.editor.canvas.renderAll(),
-      });
-    }
+    // gsap.to(this.fabric, {
+    //   ...this.fixAttr,
+    //   onUpdate: () => this.editor.canvas.renderAll(),
+    // });
+    // if (this.enterSetting.after === "exit") {
+    //   gsap.to(this.fabric, {
+    //     opacity: 0,
+    //     duration: 0.5,
+    //     delay: d,
+    //     onUpdate: () => this.editor.canvas.renderAll(),
+    //   });
+    // }
     this.animateReady = false;
     this.animateFocus = false;
   }
