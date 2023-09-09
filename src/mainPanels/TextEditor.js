@@ -28,12 +28,12 @@ export default class TextEditor extends Component {
           //     text: ''' ''',
           //   },
           // },
-          // {
-          //   type: "paragraph",
-          //   data: {
-          //     text: "We present ScriptLive, a system for authoring augmented presentations direct using script annotations and gesture demonstration. To achieve these, ScriptLive uses adaptive animations to blend the real time performance with the predefined motion graphics.",
-          //   },
-          // },
+          {
+            type: "paragraph",
+            data: {
+              text: "We present ScriptLive, a system for authoring augmented presentations direct using script annotations and gesture demonstration. To achieve these, ScriptLive uses adaptive animations to blend the real time performance with the predefined motion graphics.",
+            },
+          },
           // {
           //   type: "paragraph",
           //   data: {

@@ -20,12 +20,12 @@ export default class AnimationDriver {
           this.activeObjects.push(obj);
         });
       }
-      if (canvasObjects.updateDict[curText]) {
-        canvasObjects.updateDict[curText].forEach((objid) => {
-          canvasObjects.idDict[objid].getTimeThred();
-          this.activeObjects.push(canvasObjects.idDict[objid]);
-        });
-      }
+      // if (canvasObjects.updateDict[curText]) {
+      //   canvasObjects.updateDict[curText].forEach((objid) => {
+      //     canvasObjects.idDict[objid].getTimeThred();
+      //     this.activeObjects.push(canvasObjects.idDict[objid]);
+      //   });
+      // }
       this.preview();
     }
   }
@@ -35,7 +35,8 @@ export default class AnimationDriver {
     this.activeObjects.forEach((curObj) => {
       if (canvasObjects.canmeraOn) {
         curObj.revert();
-        curObj.detectIntentionality();
+        curObj.setMotionActive();
+        // curObj.detectIntentionality();
       } else {
         curObj.animateAtMark();
       }
@@ -47,6 +48,7 @@ export default class AnimationDriver {
     }
   }
   forceEnd(k) {
+    // console.log("!!!!!!! force end");
     document.querySelector("#infobox").innerHTML = "";
     const curText = k.trim().toLowerCase();
     if (canvasObjects.objectDict[curText]) {
@@ -54,10 +56,10 @@ export default class AnimationDriver {
         obj.afterEnter();
       });
     }
-    if (canvasObjects.updateDict[curText]) {
-      canvasObjects.updateDict[curText].forEach((objid) => {
-        canvasObjects.idDict[objid].afterUpdate(curText);
-      });
-    }
+    // if (canvasObjects.updateDict[curText]) {
+    //   canvasObjects.updateDict[curText].forEach((objid) => {
+    //     canvasObjects.idDict[objid].afterUpdate(curText);
+    //   });
+    // }
   }
 }

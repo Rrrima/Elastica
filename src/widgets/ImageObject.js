@@ -163,9 +163,9 @@ class ImageObject {
     this.moveBack();
   }
   getReady(pos) {
-    const rdict = { ...this.fixAttr };
-    rdict.opacity = 0;
-    this.fabric.set(rdict);
+    // const rdict = { ...this.fixAttr };
+    // rdict.opacity = 0;
+    this.fabric.set({ opacity: 0 });
     // if (!pos) {
     // }
     this.editor.canvas.renderAll();
@@ -262,7 +262,7 @@ class ImageObject {
   //   }
   disabled() {
     this.fabric.set("opacity", 0);
-    this.fabric.set("selectable", false);
+    // this.fabric.set("selectable", false);
   }
   moveBack() {
     gsap.to(this.fabric, {
@@ -338,12 +338,17 @@ class ImageObject {
     });
   }
   react(pos) {
-    console.log(this.fixAttr);
+    this.fabric.set("selectable", true);
     gsap.set(this.fabric, {
       left: pos[0] - (this.fixAttr.width * this.fixAttr.scaleX) / 2,
       top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
       onUpdate: () => this.editor.canvas.renderAll(),
     });
+  }
+  setMotionActive() {
+    // console.log("actve!");
+    this.animateReady = true;
+    this.animateFocus = true;
   }
   gaussianBlending(status, pm) {
     let fa = this.fixAttr;

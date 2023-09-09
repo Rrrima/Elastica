@@ -50,21 +50,18 @@ class HandPos {
 
   getFingertipPosList(handed, fingerNames) {
     let res = [];
-    if (fingerNames === "all") {
-      fingerNames = this.allFingers;
-    }
     fingerNames.forEach((fingerName) => {
       let idx = this.fingerMap[fingerName][2];
       if (handed === "left") {
-        res.push(this.left[idx]);
+        res.push(this.left3d[idx]);
       } else if (handed === "right") {
-        res.push(this.right[idx]);
+        res.push(this.right3d[idx]);
       }
     });
     return res;
   }
 
-  isPinched() {
+  async isPinched() {
     const left = this.getFingertipPosList("left", ["thumb", "index"]);
     const right = this.getFingertipPosList("right", ["thumb", "index"]);
     const leftDis = euclideanDistance(left[0].slice(0, 2), left[1].slice(0, 2));
@@ -72,11 +69,15 @@ class HandPos {
       right[0].slice(0, 2),
       right[1].slice(0, 2)
     );
+    // const leftDis = Math.abs(left[1][1] - left[0][1]);
+    // const rightDis = Math.abs(right[1][1] - right[0][1]);
     let pinched = [];
-    if (leftDis && leftDis < 30) {
+    // console.log(leftDis * 1000);
+    // console.log(rightDis * 1000);
+    if (leftDis && leftDis * 1000 < 15) {
       pinched.push("left");
     }
-    if (rightDis && rightDis < 30) {
+    if (rightDis && rightDis * 1000 < 15) {
       pinched.push("right");
     }
     return pinched;

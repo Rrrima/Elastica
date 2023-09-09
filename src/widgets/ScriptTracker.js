@@ -18,7 +18,7 @@ export default class ScriptTracker {
     this.wordIndexList = []; // the actual starting index of the highlighted words
     this.pointer = 0; // the index of the triggerList that is listening to
     this.triggerQ = [];
-    this._n = 0;
+    this._n = 0; // length of triger words
     this.offset = 2;
   }
   addHighlight(prevText, text) {
@@ -43,6 +43,7 @@ export default class ScriptTracker {
     this.triggerList.push(triggerId);
     this.triggerQ.push(false);
     this._n += 1;
+    // this.log();
   }
   revertQ() {
     this.pointer = 0;
@@ -53,18 +54,28 @@ export default class ScriptTracker {
     console.log(this.wordIndexList);
     console.log(this.triggerList);
     console.log(this.endList);
+    console.log(this.pointer);
   }
   trackTo(curIndex) {
-    console.log(curIndex);
+    const _triggerWord = this.triggerWord;
     if (this.pointer < this._n) {
+      // if not finished triggering all the words
       if (
         curIndex >= this.triggerList[this.pointer] &&
         !this.triggerQ[this.pointer]
       ) {
         aniDriver.triggerAnimation(this.triggerWord[this.pointer]);
         this.triggerQ[this.pointer] = true;
+        setTimeout(
+          function (i) {
+            aniDriver.forceEnd(_triggerWord[i]); // force to desired position
+            this.pointer += 1;
+          },
+          1000,
+          this.pointer
+        );
       }
-      if (curIndex >= this.endList[this.pointer] - 2) {
+      if (curIndex >= this.endList[this.pointer] - 1) {
         aniDriver.forceEnd(this.triggerWord[this.pointer]); // force to desired position
         this.pointer += 1;
       }

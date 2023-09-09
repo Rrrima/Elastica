@@ -70,7 +70,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
   }
 
   if (scriptFollowing && transcript) {
-    console.log(transcript);
     ws.send(
       JSON.stringify({
         name: "scriptFollowing",
@@ -152,12 +151,15 @@ const VisualPanel = React.forwardRef((props, ref) => {
       webcamRef.current.video.height = editor.canvas.height;
 
       const hands = await net.estimateHands(video, { flipHorizontal: true });
-      let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
-      handPosArr.updateHandArr(handPosVec, handCenterVec);
 
+      let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
+      handPosArr.updateHandArr(handPosVec, handCenterVec); // did i DETECT INTENTIONALITY??
+
+      // pinch and dragging related
       if (!canvasObjects.isDragging) {
         canvasObjects.detectPinchedObject();
       } else {
+        // if dragging
         canvasObjects.dragginObj.dragTo(
           handPos.getFingertipPos(canvasObjects.pinched[0], ["index"])["index"]
         );
@@ -173,20 +175,20 @@ const VisualPanel = React.forwardRef((props, ref) => {
       }
 
       aniDriver.activeObjects.forEach((obj) => {
-        if (obj && obj.animateFocus) {
-          if (obj.t < 300) {
-            canvasObjects.indicateColor = "red";
-          } else {
-            canvasObjects.indicateColor = "blue";
-          }
+        if (obj && obj.animateFocus && !canvasObjects.isDragging) {
+          // if (obj.t < 300) {
+          //   canvasObjects.indicateColor = "red";
+          // } else {
+          //   canvasObjects.indicateColor = "blue";
+          // }
           // let pm = obj.getAnimationParams();
           // obj.animateTo(pm);
           const pm = obj.getDmParameters();
           obj.setTo(pm);
         }
-        if (obj && obj.animateReady && !obj.animateFocus) {
-          obj.detectIntentionality();
-        }
+        // if (obj && obj.animateReady && !obj.animateFocus) {
+        //   obj.detectIntentionality();
+        // }
       });
     }
   };

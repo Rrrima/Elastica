@@ -61,7 +61,7 @@ class TextObject {
 
   getTimeThred() {
     if (this.relatedText === canvasObjects.focusedText) {
-      this.timeThred = this.enterSetting.timeThred;
+      this.timeThred = this.enterSetting.timeThred; // hyperparameter
     } else {
       this.timeThred =
         this.updates[canvasObjects.focusedText].setting.timeThred;
@@ -83,6 +83,7 @@ class TextObject {
     }
   }
   dragTo(pos) {
+    this.fabric.set("selectable", true);
     if (pos[0] && pos[1]) {
       gsap.set(this.fabric, {
         left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
@@ -93,6 +94,7 @@ class TextObject {
     }
   }
   setTo(pos) {
+    this.fabric.set("selectable", true);
     gsap.set(this.fabric, {
       left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
       top: pos[1] - this.fixAttr.height * this.fixAttr.scaleY,
@@ -101,12 +103,17 @@ class TextObject {
     });
   }
   react(pos) {
-    console.log(this.fixAttr);
+    this.fabric.set("selectable", true);
     gsap.set(this.fabric, {
       left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
       top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
       onUpdate: () => this.editor.canvas.renderAll(),
     });
+  }
+
+  setMotionActive() {
+    this.animateReady = true;
+    this.animateFocus = true;
   }
 
   detectIntentionality() {
@@ -200,11 +207,9 @@ class TextObject {
     this.moveBack();
   }
   getReady(pos) {
-    const rdict = { ...this.fixAttr };
-    rdict.opacity = 0;
-    this.fabric.set(rdict);
-    // if (!pos) {
-    // }
+    // const rdict = { ...this.fixAttr };
+    // rdict.opacity = 0;
+    this.fabric.set({ opacity: 0 });
     this.editor.canvas.renderAll();
   }
   animateEnter() {
@@ -299,7 +304,7 @@ class TextObject {
   //   }
   disabled() {
     this.fabric.set("opacity", 0);
-    this.fabric.set("selectable", false);
+    // this.fabric.set("selectable", false);
   }
   moveBack() {
     gsap.to(this.fabric, {

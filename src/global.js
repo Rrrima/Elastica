@@ -48,13 +48,14 @@ class CanvasObject {
     //     this.roots = { configRoot: root };
     //   }
   }
-  getPinchedObject(pm) {
+  async getPinchedObject(pm) {
     Object.keys(this.objectDict).forEach((k) => {
       const objs = this.objectDict[k];
       objs.forEach((obj) => {
         const attr = obj.fixAttr;
         let bbox = [];
         if (attr.width) {
+          // image
           bbox = [
             attr.top,
             attr.top + attr.height * attr.scaleY,
@@ -62,13 +63,13 @@ class CanvasObject {
             attr.left + attr.width * attr.scaleX,
           ];
         } else {
+          // text object
           bbox = [
             attr.top,
             attr.top + attr.height * attr.scaleY,
             attr.left,
             attr.left + attr.dynamicMinWidth * attr.scaleX,
           ];
-          console.log(bbox);
         }
 
         if (
@@ -84,19 +85,21 @@ class CanvasObject {
       });
     });
   }
-  detectPinchedObject() {
-    const pinched = handPos.isPinched();
-    console.log(pinched);
-    if (pinched.length > 0) {
-      const pm = handPos.getFingertipPos(pinched[0], ["index"])["index"];
-      this.pinched = pinched;
+  async detectPinchedObject() {
+    const pinched = await handPos.isPinched();
+    if (pinched.length === 1) {
+      const pm = await handPos.getFingertipPos(pinched[0], ["index"])["index"]; //[left,top]
+      this.pinched = pinched; // == ['right']
       this.getPinchedObject(pm);
+    } else if (pinched.length === 2) {
+      // TODO: scale
     }
   }
-  detectUnPinch() {
-    const pinched = handPos.isPinched();
+  async detectUnPinch() {
+    const pinched = await handPos.isPinched();
+    // console.log(pinched);
     if (pinched.length === 0) {
-      this.dragginObj.fixAttr = this.dragginObj.getCurrentAttr();
+      this.dragginObj.fixAttr = await this.dragginObj.getCurrentAttr();
       this.dragginObj = null;
       this.isDragging = false;
       this.pinched = pinched;
@@ -107,12 +110,12 @@ class CanvasObject {
       "drop-shadow(1px 2px 8px #52efbb";
     this.mode = "presentation";
     Object.keys(this.idDict).forEach((k) => {
-      this.idDict[k].getReady();
+      this.idDict[k].getReady(); /// ???
     });
     if (this.canmeraOn) {
       this.removeHand("both");
-      this.addHandToScene("both");
-      this.indicateColor = "grey";
+      // this.addHandToScene("both");
+      // this.indicateColor = "grey";
     } else {
       document.querySelector("#infobox").innerHTML = "please open camera";
       setTimeout(() => {
@@ -122,6 +125,7 @@ class CanvasObject {
     document.querySelector("#visual-panel").style.filter =
       "drop-shadow(1px 2px 8px #52efbb";
   }
+
   endPresentation() {
     document.querySelector("#visual-panel").style.filter =
       "drop-shadow(1px 2px 8px hsl(0deg 0% 0% / 0.1)";
@@ -245,12 +249,16 @@ class CanvasObject {
     const ftPos = handPos.getFingertipPos(handed, "all");
     const fill = this.indicateColor;
     // console.log("vishand:" + handed);
+    let opacity = 1;
+    if (this.mode === "presentation") {
+      opacity = 0;
+    }
     if (handPos.isDetected[handed]) {
       this.allFingers.forEach((f, idx) => {
         let pm = {
           top: ftPos[f][1],
           left: ftPos[f][0],
-          opacity: 1,
+          opacity: opacity,
           //   opacity: ftAng[idx],
           fill: fill,
         };
