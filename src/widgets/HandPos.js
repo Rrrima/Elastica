@@ -7,6 +7,7 @@ import {
 import * as math from "mathjs";
 import { handRecord } from "../global";
 import { C } from "../global";
+import { euclideanDistance } from "./utils";
 
 class HandPos {
   constructor(index) {
@@ -45,6 +46,40 @@ class HandPos {
       }
     });
     return res;
+  }
+
+  getFingertipPosList(handed, fingerNames) {
+    let res = [];
+    if (fingerNames === "all") {
+      fingerNames = this.allFingers;
+    }
+    fingerNames.forEach((fingerName) => {
+      let idx = this.fingerMap[fingerName][2];
+      if (handed === "left") {
+        res.push(this.left[idx]);
+      } else if (handed === "right") {
+        res.push(this.right[idx]);
+      }
+    });
+    return res;
+  }
+
+  isPinched() {
+    const left = this.getFingertipPosList("left", ["thumb", "index"]);
+    const right = this.getFingertipPosList("right", ["thumb", "index"]);
+    const leftDis = euclideanDistance(left[0].slice(0, 2), left[1].slice(0, 2));
+    const rightDis = euclideanDistance(
+      right[0].slice(0, 2),
+      right[1].slice(0, 2)
+    );
+    let pinched = [];
+    if (leftDis && leftDis < 30) {
+      pinched.push("left");
+    }
+    if (rightDis && rightDis < 30) {
+      pinched.push("right");
+    }
+    return pinched;
   }
 
   initPos() {

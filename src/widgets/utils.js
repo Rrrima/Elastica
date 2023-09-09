@@ -58,11 +58,13 @@ function sumArray(arr) {
 }
 
 function euclideanDistance(A, B) {
-  let sumOfSquares = 0;
-  for (let i = 0; i < A.length; i++) {
-    sumOfSquares += (A[i] - B[i]) ** 2;
-  }
-  return Math.sqrt(sumOfSquares);
+  if (A[0] != null && B[0] != null) {
+    let sumOfSquares = 0;
+    for (let i = 0; i < A.length; i++) {
+      sumOfSquares += (A[i] - B[i]) ** 2;
+    }
+    return Math.sqrt(sumOfSquares);
+  } else return;
 }
 
 function normalizeVector(vector) {

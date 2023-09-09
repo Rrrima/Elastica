@@ -40,6 +40,7 @@ class ImageObject {
       "opacity",
       "dynamicMinWidth",
       "height",
+      "width",
       "angle",
     ];
     this.enterSetting = {
@@ -315,6 +316,30 @@ class ImageObject {
     gsap.to(this.fabric, {
       left: pos[0],
       top: pos[1],
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+  }
+  dragTo(pos) {
+    gsap.set(this.fabric, {
+      left: pos[0] - (this.fixAttr.width * this.fixAttr.scaleX) / 2,
+      top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
+      opacity: 1,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+  }
+  setTo(pos) {
+    gsap.set(this.fabric, {
+      left: pos[0] - (this.fixAttr.width * this.fixAttr.scaleX) / 2,
+      top: pos[1] - this.fixAttr.height * this.fixAttr.scaleY,
+      opacity: 1,
+      onUpdate: () => this.editor.canvas.renderAll(),
+    });
+  }
+  react(pos) {
+    console.log(this.fixAttr);
+    gsap.set(this.fabric, {
+      left: pos[0] - (this.fixAttr.width * this.fixAttr.scaleX) / 2,
+      top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
       onUpdate: () => this.editor.canvas.renderAll(),
     });
   }
@@ -633,18 +658,18 @@ class ImageObject {
     }
   }
   afterEnter(d) {
-    gsap.to(this.fabric, {
-      ...this.fixAttr,
-      onUpdate: () => this.editor.canvas.renderAll(),
-    });
-    if (this.enterSetting.after === "exit") {
-      gsap.to(this.fabric, {
-        opacity: 0,
-        duration: 0.5,
-        delay: d,
-        onUpdate: () => this.editor.canvas.renderAll(),
-      });
-    }
+    // gsap.to(this.fabric, {
+    //   ...this.fixAttr,
+    //   onUpdate: () => this.editor.canvas.renderAll(),
+    // });
+    // if (this.enterSetting.after === "exit") {
+    //   gsap.to(this.fabric, {
+    //     opacity: 0,
+    //     duration: 0.5,
+    //     delay: d,
+    //     onUpdate: () => this.editor.canvas.renderAll(),
+    //   });
+    // }
     this.animateReady = false;
     this.animateFocus = false;
   }

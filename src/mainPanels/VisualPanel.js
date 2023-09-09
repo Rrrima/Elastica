@@ -25,7 +25,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
   const onReady = props.onReady;
   const webcamRef = useRef(null);
   const test = false;
-  console.log(editor);
   // const handCanvasRef = useRef(null);
   const handModel = handPoseDetection.SupportedModels.MediaPipeHands;
   const detectorConfig = {
@@ -154,7 +153,16 @@ const VisualPanel = React.forwardRef((props, ref) => {
       const hands = await net.estimateHands(video, { flipHorizontal: true });
       let [handPosVec, handCenterVec] = handPos.updatePosition(hands);
       handPosArr.updateHandArr(handPosVec, handCenterVec);
-      // const isIntentioanl = handPosArr.isIntentional("left");
+
+      if (!canvasObjects.isDragging) {
+        canvasObjects.detectPinchedObject();
+      } else {
+        canvasObjects.dragginObj.dragTo(
+          handPos.getFingertipPos(canvasObjects.pinched[0], ["index"])["index"]
+        );
+        canvasObjects.detectUnPinch();
+      }
+
       if (
         (canvasObjects.focus &&
           (canvasObjects.customizeMode || canvasObjects.mode !== "editing")) ||
@@ -162,11 +170,7 @@ const VisualPanel = React.forwardRef((props, ref) => {
       ) {
         canvasObjects.showHand("both");
       }
-      // console.log(obj.effect);
-      // if (obj.effect === "customize") {
-      //   let w = handRecord.calculateDis();
-      //   let pm = handPos.getAnimationParam;
-      // } else {
+
       aniDriver.activeObjects.forEach((obj) => {
         if (obj && obj.animateFocus) {
           if (obj.t < 300) {
@@ -174,10 +178,10 @@ const VisualPanel = React.forwardRef((props, ref) => {
           } else {
             canvasObjects.indicateColor = "blue";
           }
-          let pm = obj.getAnimationParams();
-          // console.log(pm);
-          // console.log(pm);
-          obj.animateTo(pm);
+          // let pm = obj.getAnimationParams();
+          // obj.animateTo(pm);
+          const pm = handPos.getFingertipPos("left", ["index"])["index"];
+          obj.setTo(pm);
         }
         if (obj && obj.animateReady && !obj.animateFocus) {
           obj.detectIntentionality();

@@ -64,7 +64,7 @@ export default class ScriptTracker {
         aniDriver.triggerAnimation(this.triggerWord[this.pointer]);
         this.triggerQ[this.pointer] = true;
       }
-      if (curIndex >= this.endList[this.pointer] - 1) {
+      if (curIndex >= this.endList[this.pointer] - 2) {
         aniDriver.forceEnd(this.triggerWord[this.pointer]); // force to desired position
         this.pointer += 1;
       }

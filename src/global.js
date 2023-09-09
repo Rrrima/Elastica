@@ -23,12 +23,14 @@ class CanvasObject {
     this.idDict = {};
     this.mode = "editing";
     this.presentationMode = false;
+    this.isDragging = false;
     this.textRank = {};
     this._n_marks = 0; // count id for each object
     this.focus = null;
     this.focusedText = null;
     this.curGesture = null;
     this.canmeraOn = false;
+    this.pinched = [];
     this.root = null;
     this.markDict = {}; // seletedText -> {'marker': marker dom, 'pos':}
     this.handIndicators = { left: {}, right: {} };
@@ -45,6 +47,47 @@ class CanvasObject {
     //     const root = createRoot(container);
     //     this.roots = { configRoot: root };
     //   }
+  }
+  getPinchedObject(pm) {
+    Object.keys(this.objectDict).forEach((k) => {
+      const objs = this.objectDict[k];
+      objs.forEach((obj) => {
+        const attr = obj.fixAttr;
+        const bbox = [
+          attr.top,
+          attr.top + attr.height * attr.scaleY,
+          attr.left,
+          attr.left + attr.width * attr.scaleX,
+        ];
+        if (
+          pm[1] > bbox[0] &&
+          pm[1] < bbox[1] &&
+          pm[0] > bbox[2] &&
+          pm[0] < bbox[3]
+        ) {
+          obj.react(pm);
+          this.dragginObj = obj;
+          this.isDragging = true;
+        }
+      });
+    });
+  }
+  detectPinchedObject() {
+    const pinched = handPos.isPinched();
+    if (pinched.length > 0) {
+      const pm = handPos.getFingertipPos(pinched[0], ["index"])["index"];
+      this.pinched = pinched;
+      this.getPinchedObject(pm);
+    }
+  }
+  detectUnPinch() {
+    const pinched = handPos.isPinched();
+    if (pinched.length === 0) {
+      this.dragginObj.fixAttr = this.dragginObj.getCurrentAttr();
+      this.dragginObj = null;
+      this.isDragging = false;
+      this.pinched = pinched;
+    }
   }
   startPresentation() {
     document.querySelector("#visual-panel").style.filter =
