@@ -47,7 +47,7 @@ class ImageObject {
       handed: "left",
       after: "stay",
       customize: false,
-      timeThred: 1500,
+      timeThred: 1000,
     };
     this.updates = {};
     // {focusedText:{}}
@@ -77,7 +77,7 @@ class ImageObject {
     // for performance detect for 600ms
     // called when camera on
     this.animateReady = true; // open active window
-    this.animateFocus = false; // reset to be not the focus
+    this.animateFocus = true; // reset to be not the focus
     const curText = canvasObjects.focusedText;
     let status = "enter";
     let handed = "left";

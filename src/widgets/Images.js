@@ -62,8 +62,11 @@ const IMDICT = {
   "music staff": [musicStaff],
   "the music staff": [musicStaff],
   "the hi-hat": [hihat],
+  "hi-hat": [hihat],
   "the snare drum": [snare],
+  "snare drum": [snare],
   "the bass drum": [bassdrum],
+  "bass drum": [bassdrum],
 };
 
 export default IMDICT;

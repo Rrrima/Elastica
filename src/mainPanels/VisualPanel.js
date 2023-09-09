@@ -103,7 +103,9 @@ const VisualPanel = (props) => {
       }
       window.cancelAnimationFrame(rafId);
       videoRef.current.pause();
+      // videoRef.current.style.visibility = "hidden";
     } else {
+      // videoRef.current.style.visibility = "visible";
       runDetection();
     }
   }, [isPlaying]);
@@ -193,7 +195,6 @@ const VisualPanel = (props) => {
     });
     warmUpTensor.dispose();
     if (canvasObjects.presentationMode) {
-      console.log("******************8");
       videoRef.current.play();
     }
 
