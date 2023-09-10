@@ -55,13 +55,13 @@ class CanvasObject {
         const attr = obj.fixAttr;
         let bbox = [];
         if (attr.width) {
-          // // image
-          // bbox = [
-          //   attr.top,
-          //   attr.top + attr.height * attr.scaleY,
-          //   attr.left,
-          //   attr.left + attr.width * attr.scaleX,
-          // ];
+          // image
+          bbox = [
+            attr.top,
+            attr.top + attr.height * attr.scaleY,
+            attr.left,
+            attr.left + attr.width * attr.scaleX,
+          ];
         } else {
           // text object
           bbox = [
@@ -81,6 +81,7 @@ class CanvasObject {
           obj.react(pm);
           this.dragginObj = obj;
           this.isDragging = true;
+          return;
         }
       });
     });

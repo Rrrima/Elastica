@@ -177,13 +177,6 @@ const VisualPanel = React.forwardRef((props, ref) => {
 
       aniDriver.activeObjects.forEach((obj) => {
         if (obj && obj.animateFocus) {
-          // if (obj.t < 300) {
-          //   canvasObjects.indicateColor = "red";
-          // } else {
-          //   canvasObjects.indicateColor = "blue";
-          // }
-          // let pm = obj.getAnimationParams();
-          // obj.animateTo(pm);
           const pm = obj.getDmParameters();
           obj.setTo(pm);
         }

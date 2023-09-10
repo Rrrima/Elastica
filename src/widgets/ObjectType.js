@@ -211,7 +211,7 @@ class TextObject {
   getReady(pos) {
     // const rdict = { ...this.fixAttr };
     // rdict.opacity = 0;
-    // this.fabric.set({ opacity: 0 });
+    this.fabric.set({ opacity: 0 });
     this.editor.canvas.renderAll();
   }
   animateEnter() {

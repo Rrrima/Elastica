@@ -74,11 +74,11 @@ class HandPos {
     let pinched = [];
     // console.log(leftDis * 1000);
     // console.log(rightDis * 1000);
-
-    if (leftDis && leftDis * 1000 < 10) {
+    // console.log(leftDis * 1000);
+    if (leftDis && leftDis * 1000 < 15) {
       pinched.push("left");
     }
-    if (rightDis && rightDis * 1000 < 10) {
+    if (rightDis && rightDis * 1000 < 15) {
       pinched.push("right");
     }
     return pinched;
