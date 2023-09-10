@@ -87,6 +87,7 @@ class CanvasObject {
   }
   async detectPinchedObject() {
     const pinched = await handPos.isPinched();
+    // console.log(pinched);
     if (pinched.length > 0) {
       const pm = await handPos.getFingertipPos(pinched[0], ["index"])["index"]; //[left,top]
       this.pinched = pinched; // == ['right']
@@ -95,7 +96,7 @@ class CanvasObject {
   }
   async detectUnPinch() {
     const pinched = await handPos.isPinched();
-    // console.log(pinched);
+
     if (pinched.length === 0) {
       this.dragginObj.fixAttr = await this.dragginObj.getCurrentAttr();
       this.dragginObj = null;

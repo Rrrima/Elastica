@@ -31,7 +31,7 @@ export default class TextEditor extends Component {
           {
             type: "paragraph",
             data: {
-              text: "We present ScriptLive, a system for authoring augmented presentations direct using script annotations and gesture demonstration. To achieve these, ScriptLive uses adaptive animations to blend the real time performance with the predefined motion graphics.",
+              text: `Let’s talk about two important linguistic shapes. One is called bouba and another is called kiki. So which is which? The pointy shape is kiki and the rounded shape is bouba. Studies found that the pointy shape is more associated with words such as ‘pikas’, which has invoiced plosives and front vowels. The round shape is more associated with words like  ‘doodle’, which has voiced plosives and back vowels.`,
             },
           },
           // {

@@ -57,6 +57,7 @@ export default class ScriptTracker {
     console.log(this.pointer);
   }
   trackTo(curIndex) {
+    console.log("current index:", curIndex);
     const _triggerWord = this.triggerWord;
     if (this.pointer < this._n) {
       // if not finished triggering all the words
@@ -64,14 +65,17 @@ export default class ScriptTracker {
         curIndex >= this.triggerList[this.pointer] &&
         !this.triggerQ[this.pointer]
       ) {
+        console.log("pinter:", this.pointer);
         aniDriver.triggerAnimation(this.triggerWord[this.pointer]);
         this.triggerQ[this.pointer] = true;
         setTimeout(
           function (i) {
             aniDriver.forceEnd(_triggerWord[i]); // force to desired position
-            this.pointer += 1;
+            if (this.pointer === i) {
+              this.pointer += 1;
+            }
           },
-          1000,
+          1500,
           this.pointer
         );
       }

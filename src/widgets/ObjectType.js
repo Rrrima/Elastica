@@ -88,7 +88,6 @@ class TextObject {
       gsap.set(this.fabric, {
         left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
         top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
-        opacity: 1,
         onUpdate: () => this.editor.canvas.renderAll(),
       });
     }
@@ -104,7 +103,7 @@ class TextObject {
   }
   react(pos) {
     this.fabric.set("selectable", true);
-    console.log("dragreact", this.relatedText);
+    console.log("---------------------");
     gsap.set(this.fabric, {
       left: pos[0] - (this.fixAttr.dynamicMinWidth * this.fixAttr.scaleX) / 2,
       top: pos[1] - (this.fixAttr.height * this.fixAttr.scaleY) / 2,
@@ -113,6 +112,7 @@ class TextObject {
   }
 
   setMotionActive() {
+    console.log("set motion active");
     this.fabric.set("selectable", true);
     this.animateReady = true;
     this.animateFocus = true;
@@ -211,7 +211,7 @@ class TextObject {
   getReady(pos) {
     // const rdict = { ...this.fixAttr };
     // rdict.opacity = 0;
-    this.fabric.set({ opacity: 0 });
+    // this.fabric.set({ opacity: 0 });
     this.editor.canvas.renderAll();
   }
   animateEnter() {

@@ -35,6 +35,7 @@ export default class AnimationDriver {
     this.activeObjects.forEach((curObj) => {
       if (canvasObjects.canmeraOn) {
         curObj.revert();
+        curObj.enter();
         curObj.setMotionActive();
         // curObj.detectIntentionality();
       } else {
@@ -48,7 +49,7 @@ export default class AnimationDriver {
     }
   }
   forceEnd(k) {
-    // console.log("!!!!!!! force end");
+    console.log("!!!!!!! force end", k);
     document.querySelector("#infobox").innerHTML = "";
     const curText = k.trim().toLowerCase();
     if (canvasObjects.objectDict[curText]) {
