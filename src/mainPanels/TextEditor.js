@@ -22,12 +22,12 @@ export default class TextEditor extends Component {
       },
       data: {
         blocks: [
-          // {
-          //   type: "paragraph",
-          //   data: {
-          //     text: "How can we do this in AR? First, AR programming has a heavy use of realistic 3D models but we should also be able to work with simple 2D sketches. Also, to animate these objects, designers need to define curves, timings or even detailed keyframe animations. However, designer can simply enact animation with gesture in a similar way to the Wizard of Oz technique",
-          //   },
-          // },
+          {
+            type: "paragraph",
+            data: {
+              text: `Let’s talk about two important linguistic shapes. One is called bouba and another is called kiki. So which is which? The pointy shape is kiki and the rounded shape is bouba. Studies found that the pointy shape is more associated with words such as ‘pikas’, which has invoiced plosives and front vowels. The round shape is more associated with words like  ‘doodle’, which has voiced plosives and back vowels.`,
+            },
+          },
           // {
           //   type: "paragraph",
           //   data: {
