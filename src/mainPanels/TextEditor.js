@@ -31,7 +31,7 @@ export default class TextEditor extends Component {
           {
             type: "paragraph",
             data: {
-              text: `Here is the music staff, this cross symbol represents the hi-hat note and this one represents the snare and bass drum note. The hihat note sits on the top line of the music staff, and this one sits on the middle.`,
+              text: `Today we are going to make a live augmented presentation, where the speech, gesture and graphic animation should be synchronized with each other.`,
             },
           },
           // {
