@@ -25,7 +25,7 @@ export default class TextEditor extends Component {
           {
             type: "paragraph",
             data: {
-              text: `Let’s talk about two important linguistic shapes. One is called bouba and another is called kiki. So which is which? The pointy shape is kiki and the rounded shape is bouba. Studies found that the pointy shape is more associated with words such as ‘pikas’, which has invoiced plosives and front vowels. The round shape is more associated with words like  ‘doodle’, which has voiced plosives and back vowels.`,
+              text: `Here is the music staff, this cross symbol represents the hi-hat note and this one represents the snare and bass drum note. The hihat note sits on the top line of the music staff, and this one sits on the middle.`,
             },
           },
           // {
