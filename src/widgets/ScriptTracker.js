@@ -75,7 +75,7 @@ export default class ScriptTracker {
               this.pointer += 1;
             }
           },
-          1500,
+          1200,
           this.pointer
         );
       }

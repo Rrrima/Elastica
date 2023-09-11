@@ -336,6 +336,7 @@ class ImageObject {
       opacity: 1,
       onUpdate: () => this.editor.canvas.renderAll(),
     });
+    this.fixAttr = this.getCurrentAttr();
   }
   react(pos) {
     this.fabric.set("selectable", true);

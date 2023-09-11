@@ -97,6 +97,7 @@ class CanvasObject {
   }
   async detectUnPinch() {
     const pinched = await handPos.isPinched();
+    console.log("!!!!!!!");
 
     if (pinched.length === 0) {
       this.dragginObj.fixAttr = await this.dragginObj.getCurrentAttr();
