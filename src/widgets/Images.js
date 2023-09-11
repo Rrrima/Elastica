@@ -29,6 +29,10 @@ import greenCricle from "../resources/Images/videoimg/green-circle.png";
 import line from "../resources/Images/videoimg/line.png";
 import scriptlive from "../resources/Images/videoimg/scriptlive.png";
 import scriptliveText from "../resources/Images/videoimg/sltext.png";
+import musicstaff from "../resources/Images/musicStaff.png";
+import snaredrum from "../resources/Images/snare.png";
+import hihat from "../resources/Images/hihat.png";
+import bass from "../resources/Images/bassDrum.png";
 
 const IMDICT = {
   stitch: [Stitch, Stitch2],
@@ -56,6 +60,9 @@ const IMDICT = {
   "setting desired linkage": [line],
   "script annotations": [blueCircle, greenCricle, line],
   "gesture demonstrations": [blueCircle, greenCricle, line],
+  "music staff": [musicstaff],
+  "hi-hat": [hihat],
+  "snare and bass drum": [snaredrum, bass],
 };
 
 export default IMDICT;
