@@ -449,7 +449,7 @@ function EnterTemplateSelection(props) {
             label="sketching"
           /> */}
 
-          <FormControlLabel
+          {/* <FormControlLabel
             value="customize"
             control={<Switch />}
             label="customize"
@@ -457,7 +457,7 @@ function EnterTemplateSelection(props) {
           />
           <IconButton aria-label="fingerprint" onClick={clearCustomization}>
             <RotateLeftIcon />
-          </IconButton>
+          </IconButton> */}
         </RadioGroup>
       </FormControl>
     </div>
@@ -513,7 +513,7 @@ function UpdateTemplateSelection(selectedText) {
             label="customize"
             onChange={handleCustomizationUpdate}
           /> */}{" "}
-          <FormControlLabel
+          {/* <FormControlLabel
             value="customize"
             control={<Switch />}
             label="customize"
@@ -521,7 +521,7 @@ function UpdateTemplateSelection(selectedText) {
           />
           <IconButton aria-label="fingerprint" onClick={clearCustomization}>
             <RotateLeftIcon />
-          </IconButton>
+          </IconButton> */}
         </RadioGroup>
       </FormControl>
     </div>

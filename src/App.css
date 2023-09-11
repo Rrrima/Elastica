@@ -536,4 +536,16 @@ label {
 .MuiSwitch-track {
   background-color: #7bdfbe !important;
 }
+
+.ce-inline-tool.ce-inline-tool--bold {
+  display: none !important;
+}
+
+.ce-inline-tool.ce-inline-tool--italic {
+  display: none !important;
+}
+
+.ce-inline-tool.ce-inline-tool--link {
+  display: none !important;
+}
 /*# sourceMappingURL=App.css.map */

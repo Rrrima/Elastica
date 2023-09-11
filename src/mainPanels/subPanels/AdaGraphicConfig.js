@@ -131,10 +131,10 @@ export default function AdaGraphicConfig(props) {
                   selectedText={selectedText}
                 />
                 <HandedSelection status={status} selectedText={selectedText} />
-                <AfterEnterSelection
+                {/* <AfterEnterSelection
                   status={status}
                   selectedText={selectedText}
-                />
+                /> */}
                 <IconButton
                   aria-label="playsingle"
                   className="playsingle-button"
