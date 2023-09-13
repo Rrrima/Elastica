@@ -393,7 +393,7 @@ class ImageObject {
         }
         return this.gaussianBlending("enter", pm);
       }
-    } else {
+    } else if (Object.keys(this.updates[curText]).length > 0) {
       // update adaptation
       const settings = this.updates[curText].setting;
       const attr = this.updates[curText].attr;

@@ -25,7 +25,7 @@ export default class TextEditor extends Component {
           {
             type: "paragraph",
             data: {
-              text: `Today we are going to make a live augmented presentation, where the speech, gesture and graphic animation should be synchronized with each other.`,
+              text: `Let's talk about two important linguistic shapes. One is called bouba and another one is called kiki. So which is which? The pointy shape is kiki and the rounded shape is bouba. Studies found that the pointy shape is more associated with words such as 'pikas', which has invoiced plosives and front vowels. The round shape is more associated with words such as 'doodle', which has voiced plosives and back vowels.`,
             },
           },
           // {
