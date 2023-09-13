@@ -323,7 +323,8 @@ label {
 
 // marker style
 .enter-marker:hover {
-  border: solid 1px $blue-dark;
+  // border: solid 1px $blue-dark;
+  opacity: 0.7;
   cursor: pointer;
 }
 
