@@ -320,7 +320,7 @@ def getWordIndex(answer):
         y = []
         y = [getKeyFromValue(wordDict, [lastWordCounter+1]), getKeyFromValue(wordDict, [lastWordCounter + 2]), getKeyFromValue(wordDict, [lastWordCounter + 3])]
         fuzzSimilarity = extractOne(answer, y, scorer=WRatio)
-        if(fuzzSimilarity[1] > 50 and (fuzzSimilarity[0]).startswith(answer[0])):
+        if(fuzzSimilarity and fuzzSimilarity[1] > 50 and (fuzzSimilarity[0]).startswith(answer[0])):
             wordIndex = closest(wordDict.get(fuzzSimilarity[0]), lastWordCounter)
             case = "(4a) fuzzy match for small chunk, transcription error"
             stitchedResponse.pop()
